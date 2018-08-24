@@ -1,0 +1,436 @@
+﻿using System.IO;
+using Common.GameData;
+using HolyTech;
+using HolyTech.Ctrl;
+using HolyTech.GameData;
+using HolyTech.GameEntity;
+using HolyTech.Model;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using GSToGC;
+using System;
+using HolyTech.Effect;
+using UnityEngine;
+using System.Collections;
+
+public partial class MessageHandler: UnitySingleton<MessageHandler> {
+    /////////////////////消息处理///////////////////////
+
+    public int OnNotifyGameObjectDeadState(DeadState pMsg)
+    {
+
+        UInt64 deadID=pMsg.objguid;
+        Vector3 pos = this.ConvertPosToVector3(pMsg.pos);//位置
+        Vector3 dir = this.ConvertDirToVector3(pMsg.dir);//方向
+        Player entity;
+        if (PlayersManager.Instance.PlayerDic.TryGetValue(deadID, out entity))
+        {
+            pos.y = entity.RealEntity.transform.position.y;//         
+            entity.EntityFSMChangeDataOnDead(pos, dir);
+            entity.OnDeadState();        
+        }
+        return (Int32)EErrorCode.eNormal;  
+    }
+    public int OnNotifyHPChange(HPChange pMsg)
+    {
+        UInt64 sGUID= pMsg.guid;
+        int crticalHp = pMsg.hp;//当前血量
+        Player entity;
+        Vector3 posInWorld = Vector3.zero;
+        if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
+        {
+            posInWorld = entity.RealEntity.transform.position + new Vector3(0.0f, 2.0f, 0.0f);
+            //更新实体的血条
+            entity.UpdateHpChange((byte)pMsg.reason, (float)crticalHp); 
+            entity.UpdateHp(entity);
+        }
+        return (Int32)EErrorCode.eNormal;  
+    
+    }
+    public int OnNotifyMPChange(MpChange pMsg)
+    {
+
+        UInt64 sGUID = pMsg.guid;
+        Player entity;
+        if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
+        {       
+            entity.SetMp((float)pMsg.mp);//设置Mp值
+
+            if (entity is Iplayer)
+            {
+                BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
+                //更新蓝条   
+               entity.UpdateMp(entity);
+            }
+ 
+        }
+
+
+        return (Int32)EErrorCode.eNormal;
+    }
+    public int OnNotifyHPInfo(NotifyHPInfo pMsg)
+    {
+
+        foreach (GSToGC.NotifyHPInfo.HPInfo info in pMsg.hpinfo)
+        {
+            UInt64 sGUID = info.guid;
+            Player entity;
+            if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
+            {
+                entity.SetHp((float)info.curhp);
+                entity.SetHpMax((float)info.maxhp);
+                //血条更新
+                entity.UpdateHp(entity);
+            }
+        }
+        //暂时不用
+        //EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHPInfo, pMsg);
+        return (Int32)EErrorCode.eNormal;  
+    }
+    public int OnNotifyMPInfo(NotifyMPInfo pMsg)
+    {
+       foreach (GSToGC.NotifyMPInfo.MPInfo info in pMsg.mpinfo)
+        {
+            UInt64 sGUID= info.guid;
+            Player entity;
+            if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
+            {
+                entity.SetMp((float)info.curmp);        
+                entity.SetMpMax((float)info.maxmp);   
+
+                BloodBarPlayer playerXueTiao = (BloodBarPlayer)entity.BloodBar;
+                //更新实体的蓝条
+                //playerXueTiao.UpdateMp();
+            }
+        }
+
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMPInfo, pMsg);
+        return (Int32)EErrorCode.eNormal;  
+    }
+    public int OnNotifySkillModelEmitDestroy(DestroyEmitEffect pMsg)
+    {
+
+        //从特效字典中取出特效，在创建特效时添加的
+        IEffect effect = EffectManager.Instance.GetEffect(pMsg.uniqueid);
+        if (effect != null)
+        {
+            if (effect.mType == IEffect.ESkillEffectType.eET_FlyEffect)
+            {
+                FlyEffect flyEffect = effect as FlyEffect;
+
+                //拖拽类型
+                if (flyEffect.emitType == 8)
+                {
+                    flyEffect.DragRibbonBack();
+                }
+                else
+                    EffectManager.Instance.DestroyEffect(flyEffect);
+            }
+            else
+            {
+                EffectManager.Instance.DestroyEffect(effect);
+            }
+        }
+
+         return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifySkillModelEmit(EmitSkill pMsg)
+    {    
+        StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(pMsg));     
+        return (Int32)EErrorCode.eNormal;  
+    }
+    public IEnumerator OnNetMsg_NotifySkillModelEmitCoroutine(EmitSkill pMsg)
+    {
+        UInt64 skillPlayerID = pMsg.guid;
+        UInt64 skillTargetID = pMsg.targuid;
+        Vector3 pos = this.ConvertPosToVector3(pMsg.tarpos);
+        Vector3 dir = this.ConvertDirToVector3(pMsg.dir);    
+        //普通追踪特效
+         yield return 1;
+         FlyEffect effect = HolyTech.Effect.EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
+          
+        // EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
+    
+    }
+    public int OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg )
+    {
+        Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
+        Vector3 dir = this.ConvertDirToVector3(pMsg.dir);
+        dir.y = 0.0f;
+        UInt64 targetID = pMsg.targuid;//目标id；
+        UInt64 sGUID = pMsg.objguid;//主动方id
+        Player target,entity;
+        PlayersManager.Instance.PlayerDic.TryGetValue(targetID, out target);
+        PlayersManager.Instance.PlayerDic.TryGetValue(targetID, out entity);
+        if (!target) return (int)EErrorCode.eNormal;
+        if (entity!=null)
+        {
+            pos.y = entity.RealEntity.transform.position.y;  
+            //数据改变 位置 方向 技能id 目标
+             entity.EntityChangeDataOnPrepareSkill(pos, dir, pMsg.skillid, target);
+            //释放技能 
+             entity.OnEntityReleaseSkill();  
+        }   
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int  OnNotifySkillInfo(NotifySkillInfo pMsg){
+
+                                   
+       EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillInfo, pMsg);
+
+       return (int)EErrorCode.eNormal;
+   }
+    public int OnNotifySGameObjectFreeState(FreeState pMsg  )
+    {
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectFreeState, pMsg);
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyGameObjectRunState(RunningState pMsg)
+    {
+
+        if (null == pMsg.dir || null == pMsg.pos)
+            return 0;
+
+        Player entity;
+        PlayersManager.Instance.PlayerDic.TryGetValue(pMsg.objguid, out entity);
+
+        entity.GOSSI.fBeginTime = Time.realtimeSinceStartup;
+        entity.GOSSI.fLastSyncSecond = Time.realtimeSinceStartup;
+        
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectRunState,pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifySkillModelStartForceMoveTeleport(NotifySkillModelStartForceMoveTeleport pMsg)
+    {
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, pMsg);
+        return (int)EErrorCode.eNormal; 
+    }
+    public int OnNotifyBattleHeroInfo(GSToGC.HeroInfo pMsg)
+    {
+        //玩家确定英雄 显示加载界面 
+        //HeroCtrl.Instance.AddRealSelectHero((uint)pMsg.heroposinfo.pos, pMsg.heroposinfo.heroid);
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyEnsureHero, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyHeroInfo(GSToGC.NotifyHeroInfo pMsg)
+    {
+        //包含英雄模型的id  保存创建的英雄模型
+
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyGameObjectAppear(GSToGC.GOAppear pMsg)
+    {    
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectAppear, pMsg);  
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnBroadcastBattleHeroInfo(GSToGC.BroadcastBattleHeroInfo pMsg)
+    {
+        //英雄Id
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleHeroInfo, pMsg);
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyToChooseHero(GSToGC.TryToChooseHero pMsg)
+    {
+       // uint m_un8Seat = (uint)pMsg.pos;
+       // int heroId = pMsg.heroid;//英雄id
+       //// HeroCtrl.Instance.AddPreSelectHero(m_un8Seat, heroId);
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyTryChooseHero, pMsg);
+
+        return (int)EErrorCode.eNormal;
+
+    }
+    public int OnNotifyBattleBaseInfo(GSToGC.BattleBaseInfo pMsg)
+    {
+        GameUserModel.Instance.GameBattleID = pMsg.battleid;
+        GameUserModel.Instance.GameMapID = pMsg.mapid;
+        GameUserModel.Instance.IsReconnect = pMsg.ifReconnect;
+
+        if (pMsg.ifReconnect)
+        {
+            GameUserModel.Instance.GameBattleID = pMsg.battleid;
+            GameUserModel.Instance.GameMapID = (uint)pMsg.mapid;
+            EventCenter.Broadcast(GameEventEnum.GameEvent_ReconnectToBatttle);
+        }
+        else
+        {
+            //向服务器发送消息请求战斗
+            CGLCtrl_GameLogic.Instance.EmsgToss_AskEnterBattle(pMsg.battleid);
+        }
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyBattleSeatPosInfo(GSToGC.BattleSeatPosInfo pMsg)
+    {
+
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, pMsg);
+      
+        //此消息中包含了所有战斗的信息并存储起来
+        //foreach (GSToGC.BattleSeatPosInfo.PosInfo posinfo in pMsg.posinfo)
+        //{
+        //    ulong sGUID = posinfo.guid;
+        //    Iplayer entity = null;
+        //    ulong id = sGUID;
+        //    if (id == 0)
+        //    {
+        //        PlayerManager.Instance.RemoveAccountBySeat((uint)posinfo.pos);
+        //    }
+        //    else
+        //    {
+        //        if (!PlayerManager.Instance.AccountDic.TryGetValue(sGUID, out entity))
+        //        {
+        //            entity = (Iplayer)PlayerManager.Instance.HandleCreateEntity(sGUID, EntityCampType.CampTypeNull);
+        //            PlayerManager.Instance.AddAccount(sGUID, entity);
+        //            if (GameUserModel.Instance.IsLocalPlayer(sGUID))
+        //            {
+        //                PlayerManager.Instance.LocalAccount = entity;
+        //            }
+        //        }
+        //    }
+        //    if (entity != null)
+        //    {
+        //        //设置实体的信息（玩家而非英雄）例如：   1          false              true        正暗守卫者        
+        //        entity.SetSeatPosInfo((uint)posinfo.pos, posinfo.ifmaster, posinfo.ifready, posinfo.nickname, posinfo.headid, (int)posinfo.gold);
+        //    }
+        //}
+
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyBattleMatherCount(GSToGC.BattleMatcherCount pMsg)
+    {
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleMatherCount, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnRequestMatchTeamList()
+    {
+        //请求战斗匹配
+        CGLCtrl_GameLogic.Instance.AskMatchBattle(1001, EBattleMatchType.EBMT_Normal);
+        //申请匹配
+        CGLCtrl_GameLogic.Instance.AskStartTeamMatch();
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyUserBaseInfo(GSToGC.UserBaseInfo pMsg)
+    {
+        ulong sGUID = pMsg.guid;
+        //设置游戏基本信息
+        GameUserModel.Instance.SetGameBaseInfo(pMsg);
+        ////请求战斗匹配
+        CGLCtrl_GameLogic.Instance.EmsgToss_RequestMatchTeamList();
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyMatchTeamSwitch(GSToGC.NotifyMatchTeamSwitch pMsg)
+    {
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMatchTeamSwitch, pMsg.startflag);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyMatchTeamBaseInfo(GSToGC.NotifyMatchTeamBaseInfo pMsg)
+    {
+        //初始化组队伍基本信息  设置队伍地图id 及匹配模式
+        //TeamMatchCtrl.Instance.InitTeamBaseInfo(pMsg.mapid, pMsg.matchtype);
+        EventCenter.Broadcast<bool>(GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, pMsg.teamid!=0);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyMatchTeamPlayerInfo(GSToGC.NotifyMatchTeamPlayerInfo pMsg)
+    {
+        if (pMsg.isInsert)
+        {
+            //新增队友
+            TeamMatchCtrl.Instance.AddTeammate(pMsg.postion, pMsg.nickname, pMsg.headid.ToString(), pMsg.userlevel);
+        }
+        else
+        {
+            //删除队友
+            TeamMatchCtrl.Instance.DelTeammate(pMsg.nickname);
+        }
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyServerAddr(LSToGC.ServerBSAddr pMsg)
+    {
+        SelectServerData.Instance.Clean();
+        for (int i = 0; i < pMsg.serverinfo.Count; i++)
+        {
+            string addr = pMsg.serverinfo[i].ServerAddr;
+            int state = pMsg.serverinfo[i].ServerState;
+            string serverName = pMsg.serverinfo[i].ServerName;
+            string[] sArray = serverName.Split('/');
+            string name = sArray[0];
+            string area = sArray[1];
+            int port = pMsg.serverinfo[i].ServerPort;
+
+            //添加到服务器列表中
+            SelectServerData.Instance.SetServerList(i, name, (SelectServerData.ServerState)state, addr, port, area);
+        }
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyServerAddr);
+        return (int)EErrorCode.eNormal;
+    }
+    //连接Gate服务器
+    public int OnNotifyGateServerInfo(BSToGC.AskGateAddressRet pMsg)
+    {
+        SelectServerData.Instance.GateServerAdress = pMsg.ip;
+        SelectServerData.Instance.GateServerPort = pMsg.port;
+        SelectServerData.Instance.GateServerToken = pMsg.token;
+        SelectServerData.Instance.SetGateServerUin(pMsg.user_name);
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGateServerInfo, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnOneClinetLoginCheckRet(BSToGC.ClinetLoginCheckRet pMsg)
+    {
+        uint loginSuccess = pMsg.login_success;
+        if (loginSuccess != 1)//fail
+        {
+            LoginCtrl.Instance.LoginFail(); //广播登录失败消息  显示失败界面，重新添加监听器
+        }
+        return (int)EErrorCode.eNormal;
+    }
+    //转换到选择英雄状态 显示选择英雄界面
+    public int OnNotifyBattleStateChange(Stream stream)
+    {
+        //这个消息用于显示选择选择英雄界面 所以在显示窗口的位置注册
+      //  EventCenter.Broadcast(GameEventEnum.GameEvent_IntoHero);
+
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyHeroList(GSToGC.HeroList pMsg)
+    {
+        //将服务器传过来的可以选择的英雄的ID添加到英雄列表中 还没有显示出来
+        foreach (int heroId in pMsg.heroid)
+        {
+            GameUserModel.Instance.CanChooseHeroList.Add(heroId);
+        }
+        GameUserModel.Instance.STCTimeDiff = pMsg.timeDiff;
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHeroList, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+    public int OnNotifyBattleStateChange(GSToGC.BattleStateChange pMsg)
+    {
+
+        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleStateChange, pMsg);
+       
+        return (int)EErrorCode.eNormal;
+
+    }
+
+    public Vector3 ConvertPosToVector3(GSToGC.Pos pos)
+    {
+        if (pos != null)
+            return new Vector3((float)pos.x / 100.0f, CGLCtrl_GameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
+        else
+            return Vector3.zero;
+    }
+    public Vector3 ConvertDirToVector3(GSToGC.Dir dir)
+    {
+        float angle = (float)(dir.angle) / 10000;
+        return new Vector3((float)Math.Cos(angle), 0, (float)Math.Sin(angle));
+    }
+
+}
