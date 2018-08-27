@@ -9,7 +9,6 @@ using HolyTech.GuideDate;
 using HolyTech.GameState;
 using HolyTech.Network;
 using HolyTech.Effect;
-using HolyTech.View;
 using HolyTech;
 using HolyTech.Model;
 
@@ -18,7 +17,7 @@ public class HolyTechGameBase : MonoBehaviour {
 
 	public BattleStateEnum Battle_State {private set;get;}
 
-	public static HolyTechGameBase Instance{set;get;}
+    public static HolyTechGameBase Instance{set;get;}
 
 	private bool IsCutLine = false;
 
@@ -32,7 +31,7 @@ public class HolyTechGameBase : MonoBehaviour {
 
     public int LoginServerPort = 49996;
 
-    public HolyTech.AudioManager AudioPlay{get;private set;}
+    public AudioManager AudioPlay{get;private set;}
 
     public bool SkipNewsGuide = false;
 
@@ -62,7 +61,7 @@ public class HolyTechGameBase : MonoBehaviour {
         // 进入初始化状态  然后在Update中    loginState
         GameStateManager.Instance.EnterDefaultState();
         //初始化逻辑对象
-        CGLCtrl_GameLogic logini = CGLCtrl_GameLogic.Instance;
+        HolyGameLogic logini = HolyGameLogic.Instance;
         //预加载，减少进入游戏资源加载卡顿（创建所有配置文件）
         ConfigReader.Init();
         //读取（敏感词汇）配置文件
@@ -70,8 +69,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //预加载特效信息
         ReadPreLoadConfig.Instance.Init();
         //需要释放的资源信息
-        ReadReleaseResourceConfig.Instance.Init();  
-
+        ReadReleaseResourceConfig.Instance.Init(); 
 	}
 
     void Update()
@@ -79,7 +77,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //更新buff
         HolyTech.Skill.BuffManager.Instance.Update();
         //更新特效
-        HolyTech.Effect.EffectManager.Instance.UpdateSelf();
+        EffectManager.Instance.UpdateSelf();
         //更新提示消失
         MsgInfoManager.Instance.Update();
         //场景声音更新
@@ -97,7 +95,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //UI更新 
        // WindowManager.Instance.Update(Time.deltaTime);
         //特效后删除机制 
-        HolyTech.Effect.EffectManager.Instance.HandleDelete();
+        EffectManager.Instance.HandleDelete();
         //GameObjectPool更新
         GameObjectPool.Instance.OnUpdate();
         //游戏时间设置
@@ -139,10 +137,6 @@ public class HolyTechGameBase : MonoBehaviour {
     //游戏退出前执行（玩家强行关闭游戏）
     void OnApplicationQuit()
     {
-//#if UNITY_STANDALONE_WIN || UNITY_EDITOR || SKIP_SDK
-//#else
-//         SdkConector.Quit();
-//#endif
        // Debug.Log("游戏退出前执行了OnAppliactionQuit");     
         NetworkManager.Instance.Close();
     }
@@ -187,7 +181,7 @@ public class HolyTechGameBase : MonoBehaviour {
         {
             yield return new WaitForSeconds(30);
           
-            CGLCtrl_GameLogic.Instance.EmsgToss_AskPing();
+            HolyGameLogic.Instance.EmsgToss_AskPing();
         }
     }
 

@@ -532,6 +532,4 @@ public class Entity : MonoBehaviour
             focoEffectStart = null;
         }
     }
-
-
 }

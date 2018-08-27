@@ -10,7 +10,6 @@ public class AdjustUI : MonoBehaviour
     //保存原来的位移值
     public Vector3 defaultPos = new Vector3(0, 0, 0);
 
-
     [System.Serializable]
     public class ResolutionInfo
     {      

@@ -261,7 +261,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         else
         {
             //向服务器发送消息请求战斗
-            CGLCtrl_GameLogic.Instance.EmsgToss_AskEnterBattle(pMsg.battleid);
+            HolyGameLogic.Instance.EmsgToss_AskEnterBattle(pMsg.battleid);
         }
         return (int)EErrorCode.eNormal;
     }
@@ -311,9 +311,9 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     public int OnRequestMatchTeamList()
     {
         //请求战斗匹配
-        CGLCtrl_GameLogic.Instance.AskMatchBattle(1001, EBattleMatchType.EBMT_Normal);
+        HolyGameLogic.Instance.AskMatchBattle(1001, EBattleMatchType.EBMT_Normal);
         //申请匹配
-        CGLCtrl_GameLogic.Instance.AskStartTeamMatch();
+        HolyGameLogic.Instance.AskStartTeamMatch();
 
         return (int)EErrorCode.eNormal;
     }
@@ -323,7 +323,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         //设置游戏基本信息
         GameUserModel.Instance.SetGameBaseInfo(pMsg);
         ////请求战斗匹配
-        CGLCtrl_GameLogic.Instance.EmsgToss_RequestMatchTeamList();
+        HolyGameLogic.Instance.EmsgToss_RequestMatchTeamList();
         return (int)EErrorCode.eNormal;
     }
     public int OnNotifyMatchTeamSwitch(GSToGC.NotifyMatchTeamSwitch pMsg)
@@ -423,7 +423,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     public Vector3 ConvertPosToVector3(GSToGC.Pos pos)
     {
         if (pos != null)
-            return new Vector3((float)pos.x / 100.0f, CGLCtrl_GameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
+            return new Vector3((float)pos.x / 100.0f, HolyGameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
         else
             return Vector3.zero;
     }

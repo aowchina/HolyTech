@@ -248,7 +248,7 @@ public class GameStart : HolyTechGameBase {
         if (pMsg.state== 2)
         {
             mHandleMsg = false;
-            CGLCtrl_GameLogic.Instance.AskLoadComplete();
+            HolyGameLogic.Instance.AskLoadComplete();
             EventCenter.RemoveListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
             NetworkManager.Instance.Pause();
             Debug.Log("加载场景");
@@ -365,7 +365,7 @@ public class GameStart : HolyTechGameBase {
         grid.Reposition();
         UIEventListener.Get(HeroItem.gameObject).onClick = (GameObject go)=>
         {
-            CGLCtrl_GameLogic.Instance.EmsgTocs_TryToSelectHero((uint)heroSelectNum);
+            HolyGameLogic.Instance.EmsgTocs_TryToSelectHero((uint)heroSelectNum);
         };
     }
     void onNotifyBattleMatherCount(BattleMatcherCount pMsg) {
@@ -455,7 +455,7 @@ public class GameStart : HolyTechGameBase {
   
     public  void OnEnsureHero(GameObject go){   
         
-        CGLCtrl_GameLogic.Instance.EmsgToss_AskSelectHero((uint)heroSelectNum);
+        HolyGameLogic.Instance.EmsgToss_AskSelectHero((uint)heroSelectNum);
         mSelectHero.SetActive(false);
         mLoadingUI.SetActive(true);
         mCurHeroModel.SetActive(false);
@@ -514,7 +514,7 @@ public class GameStart : HolyTechGameBase {
     public void OnMatch(GameObject go)//申请匹配
     {
         //申请匹配
-        CGLCtrl_GameLogic.Instance.AskStartTeamMatch();
+        HolyGameLogic.Instance.AskStartTeamMatch();
     }
     //取消匹配
     public void OnCancelBtn()
@@ -531,7 +531,7 @@ public class GameStart : HolyTechGameBase {
     public void OnChooseHero(GameObject go)
     {
          int id =Convert.ToInt32( go.GetComponent<UISprite>().spriteName) + 10000;       
-         CGLCtrl_GameLogic.Instance.EmsgTocs_TryToSelectHero((uint)id);
+         HolyGameLogic.Instance.EmsgTocs_TryToSelectHero((uint)id);
     }
 
     void LoadModel(int heroid, string path)

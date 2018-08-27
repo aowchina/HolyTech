@@ -251,7 +251,7 @@ public class GamePlay : UnitySingleton<GamePlay>{
 
     public void OnAutoAttack()
     {
-        CGLCtrl_GameLogic.Instance.GameAutoFight(); //向服务器请求自动战斗
+        HolyGameLogic.Instance.GameAutoFight(); //向服务器请求自动战斗
 
     }
     public void OnReleaseSkill1()
@@ -269,7 +269,7 @@ public class GamePlay : UnitySingleton<GamePlay>{
         {
             return;  
         }
-        CGLCtrl_GameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
+        HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
   
     }
     public void OnReleaseSkill2()
@@ -288,7 +288,7 @@ public class GamePlay : UnitySingleton<GamePlay>{
         {
             return;
         }
-        CGLCtrl_GameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
+        HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
 
     }
     public void OnLockTarget()
@@ -322,7 +322,7 @@ public class GamePlay : UnitySingleton<GamePlay>{
     public Vector3 ConvertPosToVector3(GSToGC.Pos pos)
     {
         if (pos != null)
-            return new Vector3((float)pos.x / 100.0f, CGLCtrl_GameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
+            return new Vector3((float)pos.x / 100.0f, HolyGameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
         else
             return Vector3.zero;
     }

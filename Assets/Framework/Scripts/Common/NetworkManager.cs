@@ -404,7 +404,7 @@ namespace HolyTech.Network
             {
                 case ServerType.BalanceServer://2
                     {
-                        CGLCtrl_GameLogic.Instance.BsOneClinetLogin();
+                        HolyGameLogic.Instance.BsOneClinetLogin();
                     }
                     break;
                 case ServerType.GateServer://3
@@ -412,7 +412,7 @@ namespace HolyTech.Network
                         ++m_n32ConnectTimes;
                         if (m_n32ConnectTimes > 1)
                         {
-                            CGLCtrl_GameLogic.Instance.EmsgTocsAskReconnect();//重新连接
+                            HolyGameLogic.Instance.EmsgTocsAskReconnect();//重新连接
                         }
                         else
                         {
@@ -428,7 +428,7 @@ namespace HolyTech.Network
                     break;
                 case ServerType.LoginServer://1
                     {
-                        CGLCtrl_GameLogic.Instance.EmsgToLs_AskLogin();//如果登录服务器则请求登录
+                        HolyGameLogic.Instance.EmsgToLs_AskLogin();//如果登录服务器则请求登录
                     }
                     break;
             }
@@ -523,7 +523,7 @@ namespace HolyTech.Network
                     {
                         EventCenter.Broadcast<System.IO.Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, iostream, type);
                     } else {                        
-                        CGLCtrl_GameLogic.Instance.HandleNetMsg(iostream, type);
+                        HolyGameLogic.Instance.HandleNetMsg(iostream, type);
                     }
 
                     //通知收到了网络消息

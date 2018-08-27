@@ -1,14 +1,9 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Linq;
 using HolyTech;
 using HolyTech.Resource;
 using HolyTech.Effect;
-
-//[yaz重构]
-
 
 //缓存物体类型
 public enum PoolObjectTypeEnum
@@ -18,16 +13,16 @@ public enum PoolObjectTypeEnum
     POT_Entity,
     POT_UITip,
     POT_XueTiao,
- 
+
 }
 
 //缓存GameObject
 public class PoolGameObjectInfo
-{  
+{
     public string name;
 
     //缓存时间
-    public float mCacheTime= 0.0f;
+    public float mCacheTime = 0.0f;
 
     //缓存物体类型
     public PoolObjectTypeEnum type;
@@ -62,7 +57,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
     private Dictionary<String, PoolInfo> mPoolDic = new Dictionary<String, PoolInfo>();
     //缓存GameObject节点
     private GameObject objectsPool;
-    
+
     private float mCachTime = 1800.0f;
 
     //删除队列
@@ -111,7 +106,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
             {
                 Debug.Log("can not find the resource" + res);
             }
-            return GameObject.Instantiate(unit.Asset) as GameObject;            
+            return GameObject.Instantiate(unit.Asset) as GameObject;
         }
 
         //出队列数据
@@ -134,14 +129,14 @@ public class GameObjectPool : Singleton<GameObjectPool>
         if (objectsPool == null)
         {
             objectsPool = new GameObject("ObjectPool");
-            objectsPool.AddComponent<UIPanel>();            
+            objectsPool.AddComponent<UIPanel>();
             objectsPool.transform.localPosition = new Vector3(0, -5000, 0);
         }
 
         if (null == res || null == go) return;
-       
 
-         //拖尾处理
+
+        //拖尾处理
         if (go.tag == "nopool")
         {
             GameObject.Destroy(go);
@@ -152,21 +147,21 @@ public class GameObjectPool : Singleton<GameObjectPool>
         //没有创建 
         if (!mPoolDic.TryGetValue(res, out poolInfo))
         {
-            poolInfo = new PoolInfo();            
+            poolInfo = new PoolInfo();
             mPoolDic.Add(res, poolInfo);
         }
 
 
-        PoolGameObjectInfo poolGameObjInfo = new PoolGameObjectInfo();     
+        PoolGameObjectInfo poolGameObjInfo = new PoolGameObjectInfo();
         poolGameObjInfo.type = type;
         poolGameObjInfo.name = res;
-        
+
         //无效缓存物体
         DisablePoolGameObject(go, poolGameObjInfo);
 
         //保存缓存GameObject,会传入相同的go, 有隐患
         //poolInfo.mQueue.Add(go,poolGameObjInfo);           
-        poolInfo.mQueue[go] = poolGameObjInfo;           
+        poolInfo.mQueue[go] = poolGameObjInfo;
     }
 
     //设置缓存物体无效
@@ -174,7 +169,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
     {
         //特效Enable          
         if (info.type == PoolObjectTypeEnum.POT_Effect)
-        {         
+        {
             go.SetActive(true);
 
             //prewarm的情况需要模拟一个周期运行
@@ -193,7 +188,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
                 }
                 go.transform.localPosition = new Vector3(0, 0, 0);
             }
-            
+
             //拖尾处理
             if (go.tag == "trail")
             {
@@ -242,7 +237,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
         }
         else if (info.type == PoolObjectTypeEnum.POT_XueTiao)
         {
-           //do nothing
+            //do nothing
         }
 
         info.mCacheTime = 0.0f;
@@ -256,8 +251,8 @@ public class GameObjectPool : Singleton<GameObjectPool>
         {
             ParticleSystem[] particles = go.GetComponentsInChildren<ParticleSystem>(true);
             foreach (ParticleSystem part in particles)
-            {                
-                part.Clear();             
+            {
+                part.Clear();
             }
 
             //解绑到poolGameobject节点
@@ -298,17 +293,17 @@ public class GameObjectPool : Singleton<GameObjectPool>
                 info.mCanUse = true;
                 go.SetActive(false);
             }
-                                                 
+
         }
         else if (info.type == PoolObjectTypeEnum.POT_MiniMap)
         {
             //go.transform.parent = objectsPool.transform;   
-            go.SetActive(false);                                           
+            go.SetActive(false);
         }
         else if (info.type == PoolObjectTypeEnum.POT_Entity)
-        {   
+        {
             //解绑到poolGameobject节点
-            go.transform.parent = objectsPool.transform;            
+            go.transform.parent = objectsPool.transform;
             go.SetActive(false);
         }
         else if (info.type == PoolObjectTypeEnum.POT_UITip)
@@ -353,7 +348,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
         float deltaTime = Time.deltaTime;
 
         //遍历数据
-        foreach(PoolInfo poolInfo in mPoolDic.Values)
+        foreach (PoolInfo poolInfo in mPoolDic.Values)
         {
             //死亡列表
             mDestoryPoolGameObjects.Clear();
@@ -374,7 +369,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
                 //缓存时间到
                 if (info.mCacheTime >= mAllCachTime)
                 {
-                    mDestoryPoolGameObjects.Add(obj);                 
+                    mDestoryPoolGameObjects.Add(obj);
                 }
 
                 //拖尾重置计时
@@ -393,14 +388,14 @@ public class GameObjectPool : Singleton<GameObjectPool>
             }
 
             //移除
-            for(int k=0; k < mDestoryPoolGameObjects.Count; k++)
+            for (int k = 0; k < mDestoryPoolGameObjects.Count; k++)
             {
                 GameObject obj = mDestoryPoolGameObjects[k];
                 //obj.transform.parent = null;
                 GameObject.DestroyImmediate(obj);
 
                 poolInfo.mQueue.Remove(obj);
-            }                 
+            }
         }
-    }        
+    }
 }

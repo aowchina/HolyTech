@@ -99,7 +99,7 @@ namespace HolyTech.GameEntity
 		public const bool ReadyTag = true;
         public const int GameLookTag = 7;
 
-        private float mDefaultHeight = CGLCtrl_GameLogic.Instance.GetGlobalHeight();
+        private float mDefaultHeight = HolyGameLogic.Instance.GetGlobalHeight();
 
         public void SetObjType(ObPlayerOrPlayer obType)
         {

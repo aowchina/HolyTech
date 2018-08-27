@@ -209,17 +209,16 @@ namespace HolyTech.View
                     {
                         if (mBatttleFinished)
                         {
-                            CGLCtrl_GameLogic.Instance.EmsgToss_AskReEnterRoom();
+                            HolyGameLogic.Instance.EmsgToss_AskReEnterRoom();
                         }
                         else
                         {
-                            CGLCtrl_GameLogic.Instance.EmsgTocs_AskReConnetToBattle();
+                            HolyGameLogic.Instance.EmsgTocs_AskReConnetToBattle();
                         }
                     }
                     break;
                 case EMessageType.EMT_Disconnect:
                 case EMessageType.EMT_KickOut:
-                    LoginCtrl.Instance.SdkLogOff();
                     Hide();
                     //Application.Quit();
                     break;

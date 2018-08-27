@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class ShowFPS : MonoBehaviour {
+public class ShowFPS : MonoBehaviour
+{
 
     public static ShowFPS Instance
     {
@@ -18,7 +19,7 @@ public class ShowFPS : MonoBehaviour {
         Instance = null;
     }
 
-	public float f_UpdateInterval = 0.5F;
+    public float f_UpdateInterval = 0.5F;
 
     private float f_LastInterval;
 
@@ -41,7 +42,7 @@ public class ShowFPS : MonoBehaviour {
         get;
     }
 
-    void Start() 
+    void Start()
     {
         Application.targetFrameRate = 300;
         f_LastInterval = Time.realtimeSinceStartup;
@@ -52,7 +53,7 @@ public class ShowFPS : MonoBehaviour {
     }
 
 
-    void OnGUI() 
+    void OnGUI()
     {
 
         GUI.Label(new Rect(0, 0, 200, 200), "FPS:" + f_Fps.ToString("f2"), style);
@@ -61,12 +62,12 @@ public class ShowFPS : MonoBehaviour {
     }
 
 
-    void Update() 
+    void Update()
     {
         ++i_Frames;
 
 
-        if (Time.realtimeSinceStartup > f_LastInterval + f_UpdateInterval) 
+        if (Time.realtimeSinceStartup > f_LastInterval + f_UpdateInterval)
         {
             f_Fps = i_Frames / (Time.realtimeSinceStartup - f_LastInterval);
 

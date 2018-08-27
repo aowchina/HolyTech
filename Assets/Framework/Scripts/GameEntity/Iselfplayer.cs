@@ -140,7 +140,7 @@ namespace HolyTech.GameEntity
             OnFocusTargetChanged();//创建光圈并设置
 
             UInt64 objId = (entity == null) ? 0 : entity.GameObjGUID;//获取目标id
-            CGLCtrl_GameLogic.Instance.EmsgToss_AskLockTarget(objId);//请求锁定目标
+            HolyGameLogic.Instance.EmsgToss_AskLockTarget(objId);//请求锁定目标
             if (entity != null && entity is Iplayer) //如果目标是玩家
             {
                 AddOrDelEnemy((Iplayer)entity, true);//在敌人窗口显示目标
@@ -417,7 +417,7 @@ namespace HolyTech.GameEntity
                 return;
             }
             int npcType = -1;
-            CGLCtrl_GameLogic.Instance.EmsgToss_AskAbsorb(npcType);//通知服务器请求吸附
+            HolyGameLogic.Instance.EmsgToss_AskAbsorb(npcType);//通知服务器请求吸附
         }
 
         void CreateSoleSoldier()
@@ -442,7 +442,7 @@ namespace HolyTech.GameEntity
                 MsgInfoManager.Instance.ShowMsg((int)ERROR_TYPE.eT_AbsentSkillNULL);
                 return;
             }
-            CGLCtrl_GameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
+            HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
         }
 
         public override int GetSkillIdBySkillType(SkillType type)
