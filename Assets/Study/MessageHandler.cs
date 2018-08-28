@@ -9,6 +9,7 @@ using GSToGC;
 using System;
 using HolyTech.Effect;
 using System.Collections;
+using HolyTech.GameEntity;
 
 public partial class MessageHandler: UnitySingleton<MessageHandler> {
     /////////////////////消息处理///////////////////////
@@ -125,7 +126,9 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (int)EErrorCode.eNormal;
     }
-
+    /************************************************************************/
+    //===================skill effect=====================
+    /************************************************************************/
     public int OnNotifySkillModelEmit(EmitSkill pMsg)
     {    
         StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(pMsg));     
@@ -139,11 +142,90 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         Vector3 pos = this.ConvertPosToVector3(pMsg.tarpos);
         Vector3 dir = this.ConvertDirToVector3(pMsg.dir);    
         //普通追踪特效
-         yield return 1;
-         FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
+        yield return 1;
+        FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
         // EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
-    
     }
+
+    public Int32 OnNotifySkillModelHitTarget(HitTar pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+
+    public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(HitTar pMsg)
+    {
+        //创建特效
+        UInt64 ownerID;
+        ownerID = pMsg.guid;
+        UInt64 targetID;
+        targetID = pMsg.targuid;
+
+        EventCenter.Broadcast<UInt64, uint, UInt64>(GameEventEnum.GameEvent_BroadcastBeAtk, ownerID, pMsg.effectid, targetID);//添加警告  光圈
+        yield return 1;
+        HolyTech.Effect.EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
+    }
+
+    public Int32 OnNotifySkillModelRange(RangeEffect pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelRangeCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+
+    public IEnumerator OnNetMsg_NotifySkillModelRangeCoroutine(RangeEffect pMsg)
+    {
+        if (pMsg != null)
+        {
+            UInt64 owner = pMsg.guid;
+            Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
+            Vector3 dir = this.ConvertDirToVector3(pMsg.dir);
+
+            //创建特效
+            yield return 1;
+            // 创建技能范围特效
+            HolyTech.Effect.EffectManager.Instance.CreateAreaEffect(owner, pMsg.effectid, pMsg.uniqueid, dir, pos);
+        }
+        else
+        {
+            Debug.LogError("msg is null in OnNetMsg_NotifySkillModelRangeCoroutine");
+        }
+    }
+
+    public Int32 OnNotifySkillModelBuf(GSToGC.BuffEffect pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+
+    public IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
+    {
+        //解析消息
+        yield return 1;
+
+        //创建特效
+        UInt64 skillowner;
+        skillowner = pMsg.guid;
+        UInt64 skilltarget;
+        skilltarget = pMsg.targuid;
+        float rTime = pMsg.time / 1000.0f;
+        Ientity target = null;
+        EntityManager.AllEntitys.TryGetValue(skilltarget, out target);
+        if (0 == pMsg.state)
+        {
+            HolyTech.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
+            Ientity entity = null;
+            EntityManager.AllEntitys.TryGetValue(skilltarget, out entity);
+            HolyTech.Effect.EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid);    //ToReview uniqueid是否就是instid
+        }
+        else if (1 == pMsg.state)
+        {
+            HolyTech.Skill.BuffManager.Instance.RemoveBuff(pMsg.uniqueid);
+            HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+        }
+    }
+
+    /*==========================================================================*/
+
 
     public int OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg )
     {
@@ -169,28 +251,22 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     }
 
     public int  OnNotifySkillInfo(NotifySkillInfo pMsg){
-
-                                   
        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillInfo, pMsg);
-
        return (int)EErrorCode.eNormal;
    }
+
     public int OnNotifySGameObjectFreeState(FreeState pMsg  )
     {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectFreeState, pMsg);
-
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifyGameObjectRunState(RunningState pMsg)
     {
-
         if (null == pMsg.dir || null == pMsg.pos)
             return 0;
-
         Player entity;
         PlayersManager.Instance.PlayerDic.TryGetValue(pMsg.objguid, out entity);
-
         entity.GOSSI.fBeginTime = Time.realtimeSinceStartup;
         entity.GOSSI.fLastSyncSecond = Time.realtimeSinceStartup;
         
