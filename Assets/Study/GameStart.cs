@@ -551,6 +551,7 @@ public class GameStart : HolyTechGameBase {
     {
         GameObject heroModel = Resources.Load(path) as GameObject;
         GameObject model = GameObject.Instantiate(heroModel);
+        model.AddComponent<HeroRotation>();
         model.SetActive(false);
         heroModelTable.Add(heroid, model);
     } 
