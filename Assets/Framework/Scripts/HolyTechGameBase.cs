@@ -65,7 +65,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //预加载，减少进入游戏资源加载卡顿（创建所有配置文件）
         ConfigReader.Init();
         //读取（敏感词汇）配置文件
-        GameMethod.FileRead();       
+        //GameMethod.FileRead();       
         //预加载特效信息
         ReadPreLoadConfig.Instance.Init();
         //需要释放的资源信息
