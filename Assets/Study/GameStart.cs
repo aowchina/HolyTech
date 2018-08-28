@@ -11,6 +11,7 @@ using System.IO;
 using UnityEngine;
 using GSToGC;
 using BSToGC;
+using LSToGC;
 using System;
 using HolyTech.Resource;
 using GameDefine;
@@ -33,6 +34,7 @@ public class GameStart : HolyTechGameBase {
     public GameObject mBackLogin;
     public GameObject mSelectHero;
     public GameObject mLoadingUI;
+    public GameObject mCenterButtonWindow;
     public UIToggle mAgreement;
     public GameObject mServerItem;
     public UILabel mSelectServer;
@@ -47,11 +49,11 @@ public class GameStart : HolyTechGameBase {
     private bool mHandleMsg;
 
     private Dictionary<string, List<SelectServerData.ServerInfo>> mServerDict;
+    private List<GameObject> mListServerItems = new List<GameObject>();
  
     List<HeroSelectConfigInfo> heroInfoList = new List<HeroSelectConfigInfo>();
 
     Dictionary<int, GameObject> heroModelTable = new Dictionary<int, GameObject>();
-
 
 
     public GameObject TeamMatch;
@@ -63,7 +65,8 @@ public class GameStart : HolyTechGameBase {
 
     GameObject mCurHeroModel;
     float mStartTime;
-    float mPercent=0;
+    int mPercent = 0;
+    int mEnemyPercent = 0;
     bool mIsDownTime=false;
     bool mIsSelectHero = false;
     bool mIsLoading = false;
@@ -114,6 +117,8 @@ public class GameStart : HolyTechGameBase {
 
     void Start () {
         NetworkManager.Instance.Init(mLoginServer, port, NetworkManager.ServerType.LoginServer, true);
+
+        //HolyGameLogic.Instance.EmsgToLs_AskLogin();
     }
    
     void Update()
@@ -135,26 +140,23 @@ public class GameStart : HolyTechGameBase {
         }
         if (mIsLoading)
         {
-            mPercent += 1f;       
-            if (mPercent >= 101) return;
-            EnmyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString()+"%";
-            MyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString() + "%";
+            if (mPercent < 100)
+            {
+                var datatemp = new System.Random().Next(0, 2);
+                mPercent += datatemp;
+                MyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString() + "%";
+            }
+            if (mEnemyPercent<100) {
+                var datatemp = new System.Random().Next(0, 2);
+                mEnemyPercent += datatemp;
+                EnmyLoadintTime.GetComponent<UILabel>().text = mEnemyPercent.ToString() + "%";
+            }
         }
-
-        //if (async!=null)
-        //{
-        //  string name=  SceneManager.GetActiveScene().name;
-        //  if (name == "pvp_004")
-        //    {
-        //        string path = "Monsters" + "/" + ConfigReader.HeroSelectXmlInfoDict[(int)tryTopMsg.heroid].HeroSelectName;
-        //        LoadModel((int)tryTopMsg.heroid, path);
-        //    }   
-        //}
     }
+
     void OnApplicationQuit()
     {
         NetworkManager.Instance.Close();
-
     }
    
     /////////////////////消息接收//////////////////////////
@@ -165,7 +167,7 @@ public class GameStart : HolyTechGameBase {
         switch (n32ProtocalID)
         {
             case (int)LSToGC.MsgID.eMsgToGCFromLS_NotifyServerBSAddr://513  选择服务器返回
-               // OnNotifyServerAddr(stream);
+                MessageHandler.Instance.OnNotifyServerAddr(ProtobufMsg.MessageDecode<ServerBSAddr>(stream));
                 break;
             case (int)BSToGC.MsgID.eMsgToGCFromBS_AskGateAddressRet://203 开始游戏后返回
                 MessageHandler.Instance.OnNotifyGateServerInfo(ProtobufMsg.MessageDecode<AskGateAddressRet>(stream));
@@ -328,8 +330,6 @@ public class GameStart : HolyTechGameBase {
             enmyName.GetComponent<UILabel>().text = ConfigReader.HeroSelectXmlInfoDict[(int)tryTopMsg.heroid].HeroSelectNameCh.ToString();
         }
         Thumbnail.GetComponent<UISprite>().spriteName = spriteName;
-
-
     }
 
     void onNotifyBattleSeatPosInfo(BattleSeatPosInfo pMsg) {
@@ -411,6 +411,12 @@ public class GameStart : HolyTechGameBase {
                 var svrList = new List<SelectServerData.ServerInfo>();
                 svrList.Add(item.Value);
                 mServerDict.Add(strName, svrList);
+            } else {
+                List<SelectServerData.ServerInfo> serverList;
+                bool hasList = mServerDict.TryGetValue(strName, out serverList);
+                if (hasList) {
+                    serverList.Add(item.Value);
+                }
             }
         }
         mAreaGrid.Reposition();        
@@ -425,18 +431,24 @@ public class GameStart : HolyTechGameBase {
     }
 
     public void onSelectArea(GameObject btnObject) {
-        foreach(var item in mServerGrid.GetChildList()) {
-            Destroy(item.gameObject);  
+        var text = btnObject.GetComponentInChildren<UILabel>().text;
+        if (mSelectArea.text==text) {
+            return;
         }
 
-        var text = btnObject.GetComponentInChildren<UILabel>().text;
         mSelectArea.text = text;
+
+        foreach (var item in mServerGrid.GetChildList())
+        {
+            Destroy(item.gameObject);
+            mServerGrid.Reposition();
+        }
         foreach(var item in this.mServerDict[text]) {
             GameObject obj = Instantiate(mServerItem);
             obj.gameObject.SetActive(true);
             obj.transform.SetParent(mServerGrid.transform);
             obj.transform.localScale = Vector3.one;
-            obj.GetComponentInChildren<UILabel>().text = item.area + " " + item.name;            
+            obj.GetComponentInChildren<UILabel>().text = item.area + " " + item.name;
         }
         mServerGrid.Reposition();
     }
@@ -486,13 +498,13 @@ public class GameStart : HolyTechGameBase {
     // 切换服务器选择窗口
     public void OnPlayServer(GameObject go)
     {
+        //mCenterButtonWindow.SetActive(false);
         //showSever  首先显示窗体，其次显示列表
         bool showLogin = false;
         bool showServer = true;
         mRootLogin.gameObject.SetActive(showLogin);
         mRootSever.gameObject.SetActive(showServer);
         ShowSeverItem();
-
     }
 
     //返回登录窗口
@@ -503,11 +515,27 @@ public class GameStart : HolyTechGameBase {
         bool showServer = false;
         mRootLogin.gameObject.SetActive(showLogin);
         mRootSever.gameObject.SetActive(showServer);
+
+        //mCenterButtonWindow.SetActive(true);
     }
 
     //显示服务器列表
     public void ShowSeverItem()
     {
+        foreach (var item in mServerGrid.GetChildList())
+        {
+            Destroy(item.gameObject);
+            mServerGrid.Reposition();
+        }
+        mSelectArea.text = "";
+
+        foreach (var transItem in this.mListServerItems)
+        {
+            Destroy(transItem.gameObject);
+            mAreaGrid.Reposition();
+        }
+        mListServerItems.Clear();
+
         Dictionary<int, SelectServerData.ServerInfo> serverInfoDic = SelectServerData.Instance.GetServerDicInfo();
         foreach (var item in mServerDict)
         {
@@ -517,6 +545,7 @@ public class GameStart : HolyTechGameBase {
             obj.transform.localScale = Vector3.one;
             obj.transform.localPosition = new Vector3(0, 0, 0);
             obj.GetComponentInChildren<UILabel>().text = item.Key;
+            mListServerItems.Add(obj);
         }
         mAreaGrid.Reposition();
     }
