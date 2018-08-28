@@ -32,41 +32,41 @@ public static class Debugger
 {
     public static void Log(object message)
     {
-        #if RELEASE_BUILD         //预编译命令
-        #else
-            if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
-                DebugManager.Log(message.ToString());
-            else
-                UnityEngine.Debug.Log(message.ToString());
-         #endif
+#if RELEASE_BUILD         //预编译命令
+#else
+        if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
+            DebugManager.Log(message.ToString());
+        else
+            UnityEngine.Debug.Log(message.ToString());
+#endif
     }
 
     public static void LogError(object message)
     {
-        #if RELEASE_BUILD
-        #else
+#if RELEASE_BUILD
+#else
         if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             DebugManager.Log(message.ToString());
         else
             UnityEngine.Debug.LogError(message.ToString());
-        #endif
+#endif
     }
     public static void LogWarning(object message)
     {
-        #if RELEASE_BUILD
-        #else
+#if RELEASE_BUILD
+#else
         if (Application.platform == RuntimePlatform.Android || Application.platform == RuntimePlatform.IPhonePlayer)
             DebugManager.Log(message.ToString());
         else
             UnityEngine.Debug.LogWarning(message.ToString());
-        #endif
+#endif
     }
 }
 
 
 
 //[yaz]调试管理器
-public class DebugManager : MonoBehaviour 
+public class DebugManager : MonoBehaviour
 {
     public bool DebugEffect = false;
     static public bool DebugInfo = false;
@@ -79,11 +79,11 @@ public class DebugManager : MonoBehaviour
     //void Start ()
     //{
     //}
-	
+
     //// Update is called once per frame
     //void Update () 
     //{
-       
+
     //}
 
     public static void Switch()
@@ -123,13 +123,13 @@ public class DebugManager : MonoBehaviour
         //调试特效信息
         if (DebugEffect)
         {
-            effectInfoWindowRect = GUILayout.Window(0, effectInfoWindowRect, DebugEffectWindow, "Debug Effect Window");            
-        }                
+            effectInfoWindowRect = GUILayout.Window(0, effectInfoWindowRect, DebugEffectWindow, "Debug Effect Window");
+        }
 
         //调试错误信息
         if (DebugInfo)
         {
-            errorInfoWindowRect = GUILayout.Window(1, errorInfoWindowRect, DebugErrorWindow, "Debug Error Window");            
+            errorInfoWindowRect = GUILayout.Window(1, errorInfoWindowRect, DebugErrorWindow, "Debug Error Window");
         }
     }
 
@@ -148,7 +148,7 @@ public class DebugManager : MonoBehaviour
         GUILayout.BeginVertical();
 
         //特效总数
-        int effectNum = effectMap.Count;        
+        int effectNum = effectMap.Count;
         GUILayout.Label("alive effect num:" + effectNum.ToString(), GUILayout.Width(800));
 
         //显示特效信息
@@ -197,13 +197,13 @@ public class DebugManager : MonoBehaviour
         }
         //GUI.color = Color.white;
         GUILayout.EndVertical();
-        GUILayout.EndScrollView();        
+        GUILayout.EndScrollView();
     }
-   
+
     //错误信息显示窗口
     private Vector2 errorInfoPos = new Vector2(0, 0);
     void DebugErrorWindow(int windowID)
-    {      
+    {
         errorInfoPos = GUILayout.BeginScrollView(errorInfoPos, false, true, GUILayout.Width(800), GUILayout.Height(600));
 
         GUILayout.Space(30);
@@ -213,7 +213,7 @@ public class DebugManager : MonoBehaviour
         {
             GUILayout.Label(str, GUILayout.Width(800));
         }
-    
+
         //GUI.color = Color.white;
         GUILayout.EndVertical();
         GUILayout.EndScrollView();

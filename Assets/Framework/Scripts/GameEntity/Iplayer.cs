@@ -545,19 +545,19 @@ namespace HolyTech.GameEntity
         }
        
         
-        public override int GetSkillIdBySkillType(SkillType type)
+        public override int GetSkillIdBySkillType(SkillTypeEnum type)
         {
             switch (type)
             {
-                case SkillType.SKILL_TYPE1:
+                case SkillTypeEnum.SKILL_TYPE1:
                     return ConfigReader.GetHeroInfo(NpcGUIDType).HeroSkillType1;
-                case SkillType.SKILL_TYPE2:
+                case SkillTypeEnum.SKILL_TYPE2:
                     return ConfigReader.GetHeroInfo(NpcGUIDType).HeroSkillType2;
-                case SkillType.SKILL_TYPE3:
+                case SkillTypeEnum.SKILL_TYPE3:
                     return ConfigReader.GetHeroInfo(NpcGUIDType).HeroSkillType3;
-                case SkillType.SKILL_TYPE4:
+                case SkillTypeEnum.SKILL_TYPE4:
                     return ConfigReader.GetHeroInfo(NpcGUIDType).HeroSkillType4;
-                case SkillType.SKILL_TYPE5:
+                case SkillTypeEnum.SKILL_TYPE5:
                     return ConfigReader.GetHeroInfo(NpcGUIDType).HeroSkillType5;
             }
             return -1;

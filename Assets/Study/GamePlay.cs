@@ -3,24 +3,24 @@ using GSToGC;
 using HolyTech;
 using HolyTech.Network;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class GamePlay : UnitySingleton<GamePlay>{
-
+public class GamePlay : UnitySingleton<GamePlay> {
     public UISprite[] buttonSprite=new  UISprite[4];// 0 技能1   1技能2   2自动攻击  3 锁定
     public UIButton aotoAttack;
-    public UIButton skill_1;
-    public UIButton skill_2;
+    public UIButton btnSkill_1;
+    public UIButton btnSkill_2;
     public UIButton lockTarget;
+    public System.UInt64 mMyGuid { get; set; }
 
     public GameObject  LocalPlayer { set; get;}
-    public   Dictionary<int, GameObject> mPlayerModel = new Dictionary<int, GameObject>();//模型
+    public Dictionary<int, GameObject> mPlayerModel = new Dictionary<int, GameObject>();//模型
    
-    void Awake()
+    public override void Awake()
     {
+        base.Awake();
         EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
         EventCenter.AddListener<BroadcastBattleHeroInfo>(GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
         EventCenter.AddListener<GOAppear>(GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);
@@ -30,18 +30,15 @@ public class GamePlay : UnitySingleton<GamePlay>{
        // EventCenter.AddListener<NotifySkillInfo>(GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息
         EventCenter.AddListener<ReleasingSkillState>(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, OnNotifyGameObjectReleaseSkillState);//自由状态
         EventCenter.AddListener<NotifyHPInfo>(GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
-        EventCenter.AddListener<NotifyMPInfo>(GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo);
-        
-
-   
+        EventCenter.AddListener<NotifyMPInfo>(GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
     }
 
 	void Start () {
         NetworkManager.Instance.Resume();        
     }
-	void Update () {
+
+    void Update () {
         NetworkManager.Instance.Update(Time.deltaTime);
-      
 	}
   
     void HandleNetMsg(Stream stream, int n32ProtocalID)
@@ -95,20 +92,27 @@ public class GamePlay : UnitySingleton<GamePlay>{
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyGameObjectDeadState:
                 MessageHandler.Instance.OnNotifyGameObjectDeadState(ProtobufMsg.MessageDecode<DeadState>(stream));  //通知游戏对象进入死亡状态       
                 break;
+            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyHeroReborn:
+                //MessageHandler.Instance.OnNotifyHeroReborn(ProtobufMsg.MessageDecode<DeadState>(stream));
+                break;
         }
     }
+
     void OnNotifyHPInfo(NotifyHPInfo pMsg)
-    { 
+    {
+        Debug.Log("OnNotifyHPInfo");
     }
+
     void OnNotifyMPInfo(NotifyMPInfo pMsg)
     {
-
+        Debug.Log("OnNotifyMPInfo");
     }
+
     void OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg)
     {
-
-
+        Debug.Log("OnNotifyGameObjectReleaseSkillState");
     }
+
     void OnNotifyGameObjectFreeState(FreeState pMsg)
     {
         UInt64 sGUID;
@@ -132,9 +136,9 @@ public class GamePlay : UnitySingleton<GamePlay>{
             entity.OnFreeState();
         }
     }
+
     void OnNotifyGameObjectRunState(RunningState pMsg )
     {
-      
         UInt64 sGUID;
         sGUID = pMsg.objguid;
         Vector3 mvPos = this.ConvertPosToVector3(pMsg.pos);
@@ -157,14 +161,14 @@ public class GamePlay : UnitySingleton<GamePlay>{
             entity.EntityChangedata(mvPos, mvDir);
             entity.isRuning = true;
             //调用子类执行状态
-            entity.OnRuntate();
+            //entity.OnRuntate();
 	    }
     }
+
     void onNotifySkillModelStartForceMoveTeleport(NotifySkillModelStartForceMoveTeleport pMsg)
     {
-       
-
     }
+
     void onNotifyGameObjectAppear(GOAppear pMsg)
     {
         //目的：创建并显示实体 设置实体信息
@@ -192,10 +196,11 @@ public class GamePlay : UnitySingleton<GamePlay>{
             //为模型添加组件
             GameObject model = mPlayerModel[(int)info.obj_type_id];
             Player playerComponent = null;
-            if (HolyGame.Instance.mMyGuid == sMasterGUID)
+            if (mMyGuid == sMasterGUID)
             {
                 playerComponent = model.AddComponent<MyPlayer>();
                 PlayersManager.Instance.LocalPlayer = playerComponent;
+                LocalPlayer = model;
                 OnLocalPlayerInit((int)sObjID);//设置技能图标
             }
             else
@@ -208,7 +213,6 @@ public class GamePlay : UnitySingleton<GamePlay>{
             playerComponent.ObjTypeID = sObjID;
             playerComponent.InitSkillDic();//初始化技能列表
             playerComponent.showHeroLifePlate(info);      //显示血条    
-         // playerComponent.heroLife.SetActive(true); 
             playerComponent.RealEntity = model;
             playerComponent.objTransform = model.transform;
             playerComponent.EntityFSMPosition = mvPos;
@@ -216,52 +220,47 @@ public class GamePlay : UnitySingleton<GamePlay>{
             model.transform.position = mvPos;
             model.transform.rotation = Quaternion.LookRotation(mvDir);
             model.SetActive(true);
-
-          
-           
-        
         }      
     }
+
     void onNotifyBattleHeroInfor(BroadcastBattleHeroInfo pMsg)
     {
          foreach (GSToGC.BroadcastBattleHeroInfo.HeroInfo info in pMsg.heroinfo)
-         {
-
-             string path = "Monsters" + "/" + ConfigReader.HeroSelectXmlInfoDict[(int)info.heroid].HeroSelectName;
-             GameObject model= LoadModel((int)info.heroid, path);
+        {
+            string path = "Monsters" + "/" + ConfigReader.HeroSelectXmlInfoDict[(int)info.heroid].HeroSelectName;
+            GameObject model = LoadModel((int)info.heroid, path);
             //model.transform.SetParent(GameObject.Find("GameObjects").transform);
             if (mPlayerModel.ContainsKey(info.heroid))
             {
                 continue;
             }
-            else {
+            else
+            {
                 mPlayerModel.Add(info.heroid, model);
             }
-             //指定本地玩家
-             if (GameStart.heroid == info.heroid)
-             {
-                 LocalPlayer = model;
-                 HolyGame.Instance.mMyGuid = (ulong)info.masterguid;
-             }
-          
-         }
+            //指定本地玩家
+            if (GameStart.heroid == info.heroid)
+            {
+                LocalPlayer = model;
+                mMyGuid = (ulong)info.masterguid;
+            }
+        }
     }
     
     // //////////////////UI事件响应//////////////////////
-
     public void OnAutoAttack()
     {
         HolyGameLogic.Instance.GameAutoFight(); //向服务器请求自动战斗
-
     }
+
     public void OnReleaseSkill1()
     {
         Player target = PlayersManager.Instance.targetPlayer;
         if (!target) return;
 
-        SkillType type = GetSkillType((int)ShortCutBarBtn.BTN_SKILL_1);
+        SkillTypeEnum type = GetSkillType((int)ShortCutBarBtnEnum.BTN_SKILL_1);
 
-        if (type == SkillType.SKILL_NULL) return;
+        if (type == SkillTypeEnum.SKILL_NULL) return;
 
         int skillID = 0;
         PlayersManager.Instance.LocalPlayer.skillDic.TryGetValue(type, out skillID);
@@ -270,17 +269,17 @@ public class GamePlay : UnitySingleton<GamePlay>{
             return;  
         }
         HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
-  
     }
+
     public void OnReleaseSkill2()
     {
 
         Player target = PlayersManager.Instance.targetPlayer;
         if (!target) return;
 
-        SkillType type = GetSkillType((int)ShortCutBarBtn.BTN_SKILL_2);
+        SkillTypeEnum type = GetSkillType((int)ShortCutBarBtnEnum.BTN_SKILL_2);
 
-        if (type == SkillType.SKILL_NULL) return;
+        if (type == SkillTypeEnum.SKILL_NULL) return;
 
         int skillID = 0;
         PlayersManager.Instance.LocalPlayer.skillDic.TryGetValue(type, out skillID);
@@ -291,14 +290,13 @@ public class GamePlay : UnitySingleton<GamePlay>{
         HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
 
     }
+
     public void OnLockTarget()
     {
-
-     
     }
+
     public void OnLocalPlayerInit(int sObjID)
     {
-
         //更新技能图片   
         HeroConfigInfo heroInfo = ConfigReader.GetHeroInfo((int)sObjID);
         if (ConfigReader.GetSkillManagerCfg(heroInfo.HeroSkillType2) != null)
@@ -311,14 +309,15 @@ public class GamePlay : UnitySingleton<GamePlay>{
         }
 
     }
+
     GameObject LoadModel(int heroid, string path)
     {
         GameObject heroModel = Resources.Load(path) as GameObject;
         GameObject model = GameObject.Instantiate(heroModel);
         model.SetActive(true);
         return model;
-
     }
+
     public Vector3 ConvertPosToVector3(GSToGC.Pos pos)
     {
         if (pos != null)
@@ -326,36 +325,30 @@ public class GamePlay : UnitySingleton<GamePlay>{
         else
             return Vector3.zero;
     }
+
     public Vector3 ConvertDirToVector3(GSToGC.Dir dir)
     {
         float angle = (float)(dir.angle) / 10000;
         return new Vector3((float)Math.Cos(angle), 0, (float)Math.Sin(angle));
     }
 
-   
-
-
-
-
-    SkillType GetSkillType(int ie)
+    SkillTypeEnum GetSkillType(int ie)
     {
-        SkillType type = SkillType.SKILL_NULL;
-        switch ((ShortCutBarBtn)ie)
+        SkillTypeEnum type = SkillTypeEnum.SKILL_NULL;
+        switch ((ShortCutBarBtnEnum)ie)
         {
-            case ShortCutBarBtn.BTN_SKILL_1:
-                type = SkillType.SKILL_TYPE1;
+            case ShortCutBarBtnEnum.BTN_SKILL_1:
+                type = SkillTypeEnum.SKILL_TYPE1;
                 break;
-            case ShortCutBarBtn.BTN_SKILL_2:
-                type = SkillType.SKILL_TYPE2;
+            case ShortCutBarBtnEnum.BTN_SKILL_2:
+                type = SkillTypeEnum.SKILL_TYPE2;
                 break;
         }
         return type;
     }
-  
 }
 
-
-public enum SkillType
+public enum SkillTypeEnum
 {
     SKILL_NULL = -1,
     SKILL_TYPE1,
@@ -366,11 +359,11 @@ public enum SkillType
     SKILL_TYPEABSORB1,
     SKILL_TYPEABSORB2,
 }
-public enum ShortCutBarBtn
+
+public enum ShortCutBarBtnEnum
 {
     BTN_SKILL_1 = 0,    //0 技能1
     BTN_SKILL_2,        //1 技能2  
     BTN_AUTOFIGHT,      //6 自动攻击
     BTN_CHANGELOCK,     //7 改变锁定
 }
-

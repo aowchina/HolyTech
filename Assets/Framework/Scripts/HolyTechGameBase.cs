@@ -19,7 +19,7 @@ public class HolyTechGameBase : MonoBehaviour {
 
     public static HolyTechGameBase Instance{set;get;}
 
-	private bool IsCutLine = false;
+	//private bool IsCutLine = false;
 
     public bool IsInitialize = false;
 

@@ -3,14 +3,11 @@ using Common.GameData;
 using HolyTech;
 using HolyTech.Ctrl;
 using HolyTech.GameData;
-using HolyTech.GameEntity;
 using HolyTech.Model;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using GSToGC;
 using System;
 using HolyTech.Effect;
-using UnityEngine;
 using System.Collections;
 
 public partial class MessageHandler: UnitySingleton<MessageHandler> {
@@ -31,6 +28,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (Int32)EErrorCode.eNormal;  
     }
+
     public int OnNotifyHPChange(HPChange pMsg)
     {
         UInt64 sGUID= pMsg.guid;
@@ -47,30 +45,24 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         return (Int32)EErrorCode.eNormal;  
     
     }
+
     public int OnNotifyMPChange(MpChange pMsg)
     {
-
         UInt64 sGUID = pMsg.guid;
         Player entity;
         if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
         {       
             entity.SetMp((float)pMsg.mp);//设置Mp值
 
-            if (entity is Iplayer)
-            {
-                BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
-                //更新蓝条   
-               entity.UpdateMp(entity);
-            }
- 
+            BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
+            //更新蓝条   
+            entity.UpdateMp(entity);
         }
-
-
         return (Int32)EErrorCode.eNormal;
     }
+
     public int OnNotifyHPInfo(NotifyHPInfo pMsg)
     {
-
         foreach (GSToGC.NotifyHPInfo.HPInfo info in pMsg.hpinfo)
         {
             UInt64 sGUID = info.guid;
@@ -87,6 +79,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         //EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
+
     public int OnNotifyMPInfo(NotifyMPInfo pMsg)
     {
        foreach (GSToGC.NotifyMPInfo.MPInfo info in pMsg.mpinfo)
@@ -103,14 +96,12 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
                 //playerXueTiao.UpdateMp();
             }
         }
-
-
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
+
     public int OnNotifySkillModelEmitDestroy(DestroyEmitEffect pMsg)
     {
-
         //从特效字典中取出特效，在创建特效时添加的
         IEffect effect = EffectManager.Instance.GetEffect(pMsg.uniqueid);
         if (effect != null)
@@ -132,14 +123,15 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
                 EffectManager.Instance.DestroyEffect(effect);
             }
         }
-
-         return (int)EErrorCode.eNormal;
+        return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifySkillModelEmit(EmitSkill pMsg)
     {    
         StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(pMsg));     
         return (Int32)EErrorCode.eNormal;  
     }
+
     public IEnumerator OnNetMsg_NotifySkillModelEmitCoroutine(EmitSkill pMsg)
     {
         UInt64 skillPlayerID = pMsg.guid;
@@ -148,11 +140,11 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         Vector3 dir = this.ConvertDirToVector3(pMsg.dir);    
         //普通追踪特效
          yield return 1;
-         FlyEffect effect = HolyTech.Effect.EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
-          
+         FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
         // EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
     
     }
+
     public int OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg )
     {
         Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
@@ -162,7 +154,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         UInt64 sGUID = pMsg.objguid;//主动方id
         Player target,entity;
         PlayersManager.Instance.PlayerDic.TryGetValue(targetID, out target);
-        PlayersManager.Instance.PlayerDic.TryGetValue(targetID, out entity);
+        PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity);
         if (!target) return (int)EErrorCode.eNormal;
         if (entity!=null)
         {
@@ -175,6 +167,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, pMsg);
         return (int)EErrorCode.eNormal;
     }
+
     public int  OnNotifySkillInfo(NotifySkillInfo pMsg){
 
                                    
@@ -188,6 +181,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
 
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyGameObjectRunState(RunningState pMsg)
     {
 
@@ -203,11 +197,13 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectRunState,pMsg);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifySkillModelStartForceMoveTeleport(NotifySkillModelStartForceMoveTeleport pMsg)
     {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, pMsg);
         return (int)EErrorCode.eNormal; 
     }
+
     public int OnNotifyBattleHeroInfo(GSToGC.HeroInfo pMsg)
     {
         //玩家确定英雄 显示加载界面 
@@ -215,37 +211,32 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyEnsureHero, pMsg);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyHeroInfo(GSToGC.NotifyHeroInfo pMsg)
     {
         //包含英雄模型的id  保存创建的英雄模型
-
-
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyGameObjectAppear(GSToGC.GOAppear pMsg)
     {    
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectAppear, pMsg);  
         return (int)EErrorCode.eNormal;
     }
+
     public int OnBroadcastBattleHeroInfo(GSToGC.BroadcastBattleHeroInfo pMsg)
     {
         //英雄Id
-
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleHeroInfo, pMsg);
-
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyToChooseHero(GSToGC.TryToChooseHero pMsg)
     {
-       // uint m_un8Seat = (uint)pMsg.pos;
-       // int heroId = pMsg.heroid;//英雄id
-       //// HeroCtrl.Instance.AddPreSelectHero(m_un8Seat, heroId);
-
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyTryChooseHero, pMsg);
-
         return (int)EErrorCode.eNormal;
-
     }
+
     public int OnNotifyBattleBaseInfo(GSToGC.BattleBaseInfo pMsg)
     {
         GameUserModel.Instance.GameBattleID = pMsg.battleid;
@@ -270,53 +261,24 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
 
 
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, pMsg);
-      
-        //此消息中包含了所有战斗的信息并存储起来
-        //foreach (GSToGC.BattleSeatPosInfo.PosInfo posinfo in pMsg.posinfo)
-        //{
-        //    ulong sGUID = posinfo.guid;
-        //    Iplayer entity = null;
-        //    ulong id = sGUID;
-        //    if (id == 0)
-        //    {
-        //        PlayerManager.Instance.RemoveAccountBySeat((uint)posinfo.pos);
-        //    }
-        //    else
-        //    {
-        //        if (!PlayerManager.Instance.AccountDic.TryGetValue(sGUID, out entity))
-        //        {
-        //            entity = (Iplayer)PlayerManager.Instance.HandleCreateEntity(sGUID, EntityCampType.CampTypeNull);
-        //            PlayerManager.Instance.AddAccount(sGUID, entity);
-        //            if (GameUserModel.Instance.IsLocalPlayer(sGUID))
-        //            {
-        //                PlayerManager.Instance.LocalAccount = entity;
-        //            }
-        //        }
-        //    }
-        //    if (entity != null)
-        //    {
-        //        //设置实体的信息（玩家而非英雄）例如：   1          false              true        正暗守卫者        
-        //        entity.SetSeatPosInfo((uint)posinfo.pos, posinfo.ifmaster, posinfo.ifready, posinfo.nickname, posinfo.headid, (int)posinfo.gold);
-        //    }
-        //}
-
-
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyBattleMatherCount(GSToGC.BattleMatcherCount pMsg)
     {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleMatherCount, pMsg);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnRequestMatchTeamList()
     {
         //请求战斗匹配
         HolyGameLogic.Instance.AskMatchBattle(1001, EBattleMatchType.EBMT_Normal);
         //申请匹配
         HolyGameLogic.Instance.AskStartTeamMatch();
-
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyUserBaseInfo(GSToGC.UserBaseInfo pMsg)
     {
         ulong sGUID = pMsg.guid;
@@ -326,11 +288,13 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         HolyGameLogic.Instance.EmsgToss_RequestMatchTeamList();
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyMatchTeamSwitch(GSToGC.NotifyMatchTeamSwitch pMsg)
     {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMatchTeamSwitch, pMsg.startflag);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyMatchTeamBaseInfo(GSToGC.NotifyMatchTeamBaseInfo pMsg)
     {
         //初始化组队伍基本信息  设置队伍地图id 及匹配模式
@@ -338,6 +302,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast<bool>(GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, pMsg.teamid!=0);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyMatchTeamPlayerInfo(GSToGC.NotifyMatchTeamPlayerInfo pMsg)
     {
         if (pMsg.isInsert)
@@ -352,6 +317,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyServerAddr(LSToGC.ServerBSAddr pMsg)
     {
         SelectServerData.Instance.Clean();
@@ -372,6 +338,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyServerAddr);
         return (int)EErrorCode.eNormal;
     }
+
     //连接Gate服务器
     public int OnNotifyGateServerInfo(BSToGC.AskGateAddressRet pMsg)
     {
@@ -379,10 +346,10 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         SelectServerData.Instance.GateServerPort = pMsg.port;
         SelectServerData.Instance.GateServerToken = pMsg.token;
         SelectServerData.Instance.SetGateServerUin(pMsg.user_name);
-
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGateServerInfo, pMsg);
         return (int)EErrorCode.eNormal;
     }
+
     public int OnOneClinetLoginCheckRet(BSToGC.ClinetLoginCheckRet pMsg)
     {
         uint loginSuccess = pMsg.login_success;
@@ -392,14 +359,15 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (int)EErrorCode.eNormal;
     }
+
     //转换到选择英雄状态 显示选择英雄界面
     public int OnNotifyBattleStateChange(Stream stream)
     {
         //这个消息用于显示选择选择英雄界面 所以在显示窗口的位置注册
       //  EventCenter.Broadcast(GameEventEnum.GameEvent_IntoHero);
-
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifyHeroList(GSToGC.HeroList pMsg)
     {
         //将服务器传过来的可以选择的英雄的ID添加到英雄列表中 还没有显示出来
@@ -411,26 +379,24 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHeroList, pMsg);
         return (int)EErrorCode.eNormal;
     }
-    public int OnNotifyBattleStateChange(GSToGC.BattleStateChange pMsg)
+
+    public int OnNotifyBattleStateChange(BattleStateChange pMsg)
     {
-
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleStateChange, pMsg);
-       
         return (int)EErrorCode.eNormal;
-
     }
 
-    public Vector3 ConvertPosToVector3(GSToGC.Pos pos)
+    public Vector3 ConvertPosToVector3(Pos pos)
     {
         if (pos != null)
             return new Vector3((float)pos.x / 100.0f, HolyGameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
         else
             return Vector3.zero;
     }
-    public Vector3 ConvertDirToVector3(GSToGC.Dir dir)
+
+    public Vector3 ConvertDirToVector3(Dir dir)
     {
         float angle = (float)(dir.angle) / 10000;
         return new Vector3((float)Math.Cos(angle), 0, (float)Math.Sin(angle));
     }
-
 }

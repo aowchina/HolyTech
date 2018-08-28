@@ -8,7 +8,7 @@ using UnityEngine;
 
 public class Player:MonoBehaviour{
 
-    public Dictionary<SkillType, int> skillDic = new Dictionary<SkillType, int>();
+    public Dictionary<SkillTypeEnum, int> skillDic = new Dictionary<SkillTypeEnum, int>();
     public Dictionary<int, GameObject> heroLifeDic = new Dictionary<int, GameObject>();
     public bool isRuning=false;
     private CGameObjectSyncInfo m_pcGOSSI = new CGameObjectSyncInfo();  
@@ -47,9 +47,6 @@ public class Player:MonoBehaviour{
     private UISprite mpSprite = null;
     private UISprite hpSprite = null;
 
-
-
-
     //设置Mp   
     public virtual void SetMp(float curMp)
     {
@@ -76,12 +73,17 @@ public class Player:MonoBehaviour{
         if (BloodBar != null)
         {
             BloodBar.SetVisible(false);
+            mHasLifeBar = false;
         }
     }
+
     public virtual void OnFreeState(){
-
-
         if (RealEntity == null) return;
+        if (!mHasLifeBar)
+        {
+            this.heroLife.SetActive(true);
+            mHasLifeBar = true;
+        }
 
         Vector2 serverPos2D = new Vector2(m_pcGOSSI.sServerBeginPos.x, m_pcGOSSI.sServerBeginPos.z);
         Vector2 objPos2D = new Vector2(objTransform.position.x, objTransform.position.z);
@@ -92,15 +94,12 @@ public class Player:MonoBehaviour{
         {
             objTransform.position = m_pcGOSSI.sServerBeginPos;//按服务器的位置设置      
             objTransform.rotation = Quaternion.LookRotation(EntityFSMDirection);//方向调整。
-            RealEntity.GetComponent<Animation>().Play("free");
+            //RealEntity.GetComponent<Animation>().Play("free");
         }
         RealEntity.GetComponent<Animation>().Play("free");
-
-
-
     }
-    public virtual void OnRuntate(){
 
+    public virtual void OnRuntate(){
         Animation ani = this.gameObject.GetComponent<Animation>();
         if (ani!=null)
         {
@@ -211,8 +210,8 @@ public class Player:MonoBehaviour{
         Quaternion DestQuaternion = Quaternion.LookRotation(sThisSyncDir);
         Quaternion sMidQuater = Quaternion.Lerp(objTransform.rotation, DestQuaternion, 3 * Time.deltaTime);
         objTransform.rotation = sMidQuater;
-
     }
+
     public virtual void OnEntityReleaseSkill()
     {
         SkillManagerConfig skillManagerConfig = ConfigReader.GetSkillManagerCfg(EntitySkillID);
@@ -230,8 +229,9 @@ public class Player:MonoBehaviour{
                 ani.CrossFadeQueued("free");//淡入free动画
             }       
         } 
-         objTransform.rotation = Quaternion.LookRotation(EntityFSMDirection);
+        objTransform.rotation = Quaternion.LookRotation(EntityFSMDirection);
     }
+
     public virtual void OnDeadState()
     {
         //目标死亡主角相关处理
@@ -239,40 +239,29 @@ public class Player:MonoBehaviour{
         this.HideBloodBar();//隐藏血条
         Animation ani = this.gameObject.GetComponent<Animation>();//播放死亡动画
         ani.Play("death");    
-    }   
+    }
+
     public void EntityChangedata(Vector3 mvPos, Vector3 mvDir)
     {
 
         EntityFSMPosition = mvPos;
         EntityFSMDirection = mvDir;
     }
+
     public void EntityChangeDataOnPrepareSkill(Vector3 mvPos, Vector3 mvDir, int skillID, Player targetID)
     {
         EntityFSMPosition = mvPos;
         EntityFSMDirection = mvDir;
         EntitySkillID = skillID;
         entitySkillTarget = targetID;
-    
     }
+
     public void EntityFSMChangeDataOnDead(Vector3 mvPos, Vector3 mvDir)
     {
         EntityFSMPosition = mvPos;
         EntityFSMDirection = mvDir;
     }
-    protected virtual void Update()
-    {
-        if (isRuning)
-        {
-            OnRuntate();
-        } 
-        if (heroLifeDic.Count>0)
-        {
-            foreach (var item in heroLifeDic)
-            {
-                item.Value.transform.position = WorldToUI(item.Key);
-            }
-        }      
-    }
+
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
         String path = null;
@@ -286,6 +275,7 @@ public class Player:MonoBehaviour{
         }
         if (mHasLifeBar)
         {
+            BloodBar.SetVisible(true);
             return;
         }
         mHasLifeBar = true;
@@ -295,13 +285,14 @@ public class Player:MonoBehaviour{
         hpSprite = heroLife.transform.Find("Control_Hp/Foreground").GetComponent<UISprite>();//绿
         mpSprite = heroLife.transform.Find("Control_Mp/Foreground").GetComponent<UISprite>();
 
-        Debug.LogError("showHeroLifePlate" + info.obj_type_id);
+        //Debug.LogError("showHeroLifePlate" + info.obj_type_id);
     }
 
     public virtual void  UpdateHp(Player player)
     {
         hpSprite.fillAmount =player.Hp/player.HpMax ;
     }
+
     public virtual void UpdateMp(Player player)
     {
         mpSprite.fillAmount = player.Mp / player.MpMax;
@@ -333,21 +324,23 @@ public class Player:MonoBehaviour{
         }
         return ff;
     }
+
     float GetXueTiaoHeight(UInt64 guidType)
     {
         HeroConfigInfo info = ConfigReader.GetHeroInfo((int)ObjTypeID);
         return info.HeroXueTiaoHeight;
     }
+
     public void InitSkillDic()
     {
         int id = (int)ObjTypeID;
         HeroConfigInfo heroInfo = ConfigReader.GetHeroInfo(id);
-        skillDic.Add(SkillType.SKILL_TYPE1, heroInfo.HeroSkillType1);
-        skillDic.Add(SkillType.SKILL_TYPE2, heroInfo.HeroSkillType2);
-        skillDic.Add(SkillType.SKILL_TYPE3, heroInfo.HeroSkillType3);
-        skillDic.Add(SkillType.SKILL_TYPE4, heroInfo.HeroSkillType4);
-        skillDic.Add(SkillType.SKILL_TYPEABSORB1, 0);
-        skillDic.Add(SkillType.SKILL_TYPEABSORB2, 0);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPE1, heroInfo.HeroSkillType1);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPE2, heroInfo.HeroSkillType2);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPE3, heroInfo.HeroSkillType3);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPE4, heroInfo.HeroSkillType4);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB1, 0);
+        skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB2, 0);
     }
   
     public void UpdateHpChange(byte reason, float curHp)
@@ -356,18 +349,22 @@ public class Player:MonoBehaviour{
         SetHp((float)curHp);
        
     }
-    //public  Vector3 ConvertPosToVector3(GSToGC.Pos pos)
-    //{
-    //    if (pos != null)
-    //        return new Vector3((float)pos.x / 100.0f, CGLCtrl_GameLogic.Instance.GetGlobalHeight(), (float)pos.z / 100.0f);
-    //    else
-    //        return Vector3.zero;
-    //}
-    //public  Vector3 ConvertDirToVector3(GSToGC.Dir dir)
-    //{
-    //    float angle = (float)(dir.angle) / 10000;
-    //    return new Vector3((float)Math.Cos(angle), 0, (float)Math.Sin(angle));
-    //}
+
+    protected virtual void Update()
+    {
+        if (isRuning)
+        {
+            OnRuntate();
+        }
+
+        if (heroLifeDic.Count > 0)
+        {
+            foreach (var item in heroLifeDic)
+            {
+                item.Value.transform.position = WorldToUI(item.Key);
+            }
+        }
+    }
 }
 
 public class CGameObjectSyncInfo

@@ -66,8 +66,8 @@ namespace HolyTech.GameEntity
 
         private const int SKILL_UPDATE_TOTAL_LEVEL = 3;
 
-        public Dictionary<SkillType, int> SkillIdDic = new Dictionary<SkillType, int>();
-        public Dictionary<SkillType, int> BaseSkillIdDic = new Dictionary<SkillType, int>();
+        public Dictionary<SkillTypeEnum, int> SkillIdDic = new Dictionary<SkillTypeEnum, int>();
+        public Dictionary<SkillTypeEnum, int> BaseSkillIdDic = new Dictionary<SkillTypeEnum, int>();
 
        
         //
@@ -111,7 +111,7 @@ namespace HolyTech.GameEntity
                 }
             }
 
-            SetBaseSkillType((SkillType.SKILL_TYPEABSORB1 + slot), skillId);//set absorb skill
+            SetBaseSkillType((SkillTypeEnum.SKILL_TYPEABSORB1 + slot), skillId);//set absorb skill
             SetAbsorbEffect(slot, effect);//set absorb btn effect          
             AbsorbMonsterType[slot] = monsterID;        //set absorb    monster id
             //广播吸收结果   创建灵魂特效  设置吸附按钮
@@ -431,7 +431,7 @@ namespace HolyTech.GameEntity
         /// </summary>
         /// <param name="skType">Sk type.</param>
         /// 技能类型
-        public void SendPreparePlaySkill(SkillType skType)
+        public void SendPreparePlaySkill(SkillTypeEnum skType)
         {
             int skillID = GetSkillIdBySkillType(skType);
             //沉默 小谷
@@ -445,7 +445,7 @@ namespace HolyTech.GameEntity
             HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
         }
 
-        public override int GetSkillIdBySkillType(SkillType type)
+        public override int GetSkillIdBySkillType(SkillTypeEnum type)
         {
             return GetSkillId(type);
         }
@@ -655,19 +655,19 @@ namespace HolyTech.GameEntity
         }
 
         //初始化技能升级列表
-        private void InitSkillDic(Dictionary<SkillType, int> skillDic)
+        private void InitSkillDic(Dictionary<SkillTypeEnum, int> skillDic)
         {
             int id = (int)ObjTypeID;
             HeroConfigInfo heroInfo = ConfigReader.GetHeroInfo(id);
-            skillDic.Add(SkillType.SKILL_TYPE1, heroInfo.HeroSkillType1);
-            skillDic.Add(SkillType.SKILL_TYPE2, heroInfo.HeroSkillType2);
-            skillDic.Add(SkillType.SKILL_TYPE3, heroInfo.HeroSkillType3);
-            skillDic.Add(SkillType.SKILL_TYPE4, heroInfo.HeroSkillType4);
-            skillDic.Add(SkillType.SKILL_TYPEABSORB1, 0);
-            skillDic.Add(SkillType.SKILL_TYPEABSORB2, 0);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPE1, heroInfo.HeroSkillType1);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPE2, heroInfo.HeroSkillType2);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPE3, heroInfo.HeroSkillType3);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPE4, heroInfo.HeroSkillType4);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB1, 0);
+            skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB2, 0);
         }
 
-        private void CleanSkillDic(Dictionary<SkillType, int> skillDic)
+        private void CleanSkillDic(Dictionary<SkillTypeEnum, int> skillDic)
         {
             skillDic.Clear();
         }
@@ -675,17 +675,17 @@ namespace HolyTech.GameEntity
         //技能升级时获得对应技能的Id
         private void SetUpdateSkillId(int lv)
         {
-            SetSkillUpdate(SkillType.SKILL_TYPE1, lv);
-            SetSkillUpdate(SkillType.SKILL_TYPE2, lv);
-            SetSkillUpdate(SkillType.SKILL_TYPE3, lv);
-            SetSkillUpdate(SkillType.SKILL_TYPE4, lv);
+            SetSkillUpdate(SkillTypeEnum.SKILL_TYPE1, lv);
+            SetSkillUpdate(SkillTypeEnum.SKILL_TYPE2, lv);
+            SetSkillUpdate(SkillTypeEnum.SKILL_TYPE3, lv);
+            SetSkillUpdate(SkillTypeEnum.SKILL_TYPE4, lv);
             //暂时屏蔽随从技能升级
             //SetSkillUpdate(SkillType.SKILL_TYPEABSORB1, lv);
             //SetSkillUpdate(SkillType.SKILL_TYPEABSORB2, lv);            
         }
 
         //更具技能类型，换算出满足指定技能的准确id
-        private void SetSkillUpdate(SkillType skillType, int lv)
+        private void SetSkillUpdate(SkillTypeEnum skillType, int lv)
         {
             int baseId = 0;
             if (!BaseSkillIdDic.TryGetValue(skillType, out baseId)) return;//技能id不存在
@@ -706,13 +706,13 @@ namespace HolyTech.GameEntity
         }
 
         //当更改基础技能时，比如随从技能改变
-        private void SetBaseSkillType(SkillType skillType, int skillId)
+        private void SetBaseSkillType(SkillTypeEnum skillType, int skillId)
         {
 
             BaseSkillIdDic[skillType] = skillId;
 
             //暂时屏蔽随从技能升级
-            if (skillType == SkillType.SKILL_TYPEABSORB1 || skillType == SkillType.SKILL_TYPEABSORB2)
+            if (skillType == SkillTypeEnum.SKILL_TYPEABSORB1 || skillType == SkillTypeEnum.SKILL_TYPEABSORB2)
             {
                 SkillIdDic[skillType] = skillId;
                 return;
@@ -729,7 +729,7 @@ namespace HolyTech.GameEntity
         }
 
         //得到换算后的技能id
-        private int GetSkillId(SkillType type)
+        private int GetSkillId(SkillTypeEnum type)
         {
             int baseId = 0;
             if (SkillIdDic.TryGetValue(type, out baseId))
@@ -741,30 +741,30 @@ namespace HolyTech.GameEntity
 
         public override void OnSkillInfoChange(int skillID, float time, float maxTime, int slot)
         {
-            SkillType skillType = SkillType.SKILL_NULL;
-            if (skillID == SkillIdDic[SkillType.SKILL_TYPE1])
+            SkillTypeEnum skillType = SkillTypeEnum.SKILL_NULL;
+            if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPE1])
             {
-                skillType = SkillType.SKILL_TYPE1;
+                skillType = SkillTypeEnum.SKILL_TYPE1;
             }
-            else if (skillID == SkillIdDic[SkillType.SKILL_TYPE3])
+            else if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPE3])
             {
-                skillType = SkillType.SKILL_TYPE3;
+                skillType = SkillTypeEnum.SKILL_TYPE3;
             }
-            else if (skillID == SkillIdDic[SkillType.SKILL_TYPE2])
+            else if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPE2])
             {
-                skillType = SkillType.SKILL_TYPE2;
+                skillType = SkillTypeEnum.SKILL_TYPE2;
             }
-            else if (skillID == SkillIdDic[SkillType.SKILL_TYPE4])
+            else if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPE4])
             {
-                skillType = SkillType.SKILL_TYPE4;
+                skillType = SkillTypeEnum.SKILL_TYPE4;
             }
-            else if (skillID == SkillIdDic[SkillType.SKILL_TYPEABSORB1])
+            else if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPEABSORB1])
             {
-                skillType = SkillType.SKILL_TYPEABSORB1;
+                skillType = SkillTypeEnum.SKILL_TYPEABSORB1;
             }
-            else if (skillID == SkillIdDic[SkillType.SKILL_TYPEABSORB2])
+            else if (skillID == SkillIdDic[SkillTypeEnum.SKILL_TYPEABSORB2])
             {
-                skillType = SkillType.SKILL_TYPEABSORB2;
+                skillType = SkillTypeEnum.SKILL_TYPEABSORB2;
             }
             else
             {
@@ -776,7 +776,7 @@ namespace HolyTech.GameEntity
                 bPlaySkill = false;
             }
 
-            EventCenter.Broadcast<SkillType, float, float>(GameEventEnum.GameEvent_LocalPlayerSkillCD, skillType, maxTime, time);
+            EventCenter.Broadcast<SkillTypeEnum, float, float>(GameEventEnum.GameEvent_LocalPlayerSkillCD, skillType, maxTime, time);
         }
         //获取对应技能的冷却时间
         public float getSkillCoolDownTime(int skillID)

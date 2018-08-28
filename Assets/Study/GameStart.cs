@@ -77,6 +77,12 @@ public class GameStart : HolyTechGameBase {
 
     private void Awake()
     {
+        //DontDestroyOnLoad(this.gameObject);
+
+        mGateServer = LoginServerAdress;
+        mLoginServer = LoginServerAdress;
+        mBalanceServer = LoginServerAdress;
+        port = LoginServerPort;
         mCurHeroModel = null;
         //网络过来的消息处理
         EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
@@ -91,10 +97,6 @@ public class GameStart : HolyTechGameBase {
         EventCenter.AddListener<TryToChooseHero>(GameEventEnum.UserEvent_NotifyTryChooseHero, onNotifyTryChooseHero);
         EventCenter.AddListener<HeroInfo>(GameEventEnum.UserEvent_NotifyEnsureHero, onNotifyEnsureHero);
         EventCenter.AddListener<BattleStateChange>(GameEventEnum.UserEvent_NotifyBattleStateChange, onNotifyBattleStateChange);
-
-
-      
-  
        
         mServerDict = new Dictionary<string, List<SelectServerData.ServerInfo>>();
         var areaItemOld = mAreaItem;
@@ -111,10 +113,7 @@ public class GameStart : HolyTechGameBase {
     }
 
     void Start () {
-      
         NetworkManager.Instance.Init(mLoginServer, port, NetworkManager.ServerType.LoginServer, true);
-      
-
     }
    
     void Update()
@@ -234,15 +233,13 @@ public class GameStart : HolyTechGameBase {
 
     void onNotifyGameObjectAppear(GOAppear pMsg)
     {
-     //   Debug.Log(pMsg.info);
-       
         foreach (GSToGC.GOAppear.AppearInfo info in pMsg.info)
         {
             string path = "Monsters" + "/" + ConfigReader.HeroSelectXmlInfoDict[(int)info.objguid].HeroSelectName;
            // LoadModel((int)info, path);          
         }
-
     }
+
     void onNotifyBattleStateChange(BattleStateChange pMsg)
     {
         if (pMsg.state== 2)
@@ -255,12 +252,9 @@ public class GameStart : HolyTechGameBase {
             async=  SceneManager.LoadSceneAsync("pvp_001");
         }
     }
+
     void onNotifyTryChooseHero(TryToChooseHero pMsg)
     {
-        if (mCurHeroModel != null)
-        {
-            mCurHeroModel.SetActive(false);
-        }
         tryTopMsg = pMsg;
         var spriteName = ConfigReader.HeroSelectXmlInfoDict[(int)pMsg.heroid].HeroSelectHead.ToString();
         heroSelectNum =ConfigReader.HeroSelectXmlInfoDict[(int)pMsg.heroid].HeroSelectNum;
@@ -272,6 +266,11 @@ public class GameStart : HolyTechGameBase {
         
         if (pMsg.pos==1)
         {
+            if (mCurHeroModel != null)
+            {
+                mCurHeroModel.SetActive(false);
+            }
+
             Thumbnail = teamSelectInfo.transform.Find("HeroIcon");
             name = teamSelectInfo.transform.Find("HeroName");
             Thumbnail.GetComponent<UISprite>().spriteName = spriteName;
@@ -290,8 +289,8 @@ public class GameStart : HolyTechGameBase {
                 }
             }
         }  
-        
     }
+
     void onNotifyHeroList(HeroList pMsg)
     {
         foreach (var id in pMsg.heroid)
@@ -332,6 +331,7 @@ public class GameStart : HolyTechGameBase {
 
 
     }
+
     void onNotifyBattleSeatPosInfo(BattleSeatPosInfo pMsg) {
 
         TeamMatch.SetActive(false);
@@ -340,9 +340,8 @@ public class GameStart : HolyTechGameBase {
         mSelectHero.SetActive(true);
         mIsSelectHero = true;
         mStartTime = 11f;
-      
-        
     } 
+
     public void LoadSelectHero(int heroSelectHead, int heroSelectNum,string name)
     {
         mMidShow.SetActive(true);
@@ -361,18 +360,19 @@ public class GameStart : HolyTechGameBase {
         HeroItem.GetComponentInChildren<UILabel>().text =name.ToString() ;
         HeroItem.SetActive(true);
        
-
         grid.Reposition();
         UIEventListener.Get(HeroItem.gameObject).onClick = (GameObject go)=>
         {
             HolyGameLogic.Instance.EmsgTocs_TryToSelectHero((uint)heroSelectNum);
         };
     }
+
     void onNotifyBattleMatherCount(BattleMatcherCount pMsg) {
         Debug.Log(pMsg.count);
         //  更新玩家匹配数量
         mMatchNum.text = "(" + pMsg.count + "/" + pMsg.maxcount + ")";
     }
+
     void onNotifyMatchTeamSwitch(bool state) {
         if (state)//开始匹配时返回的值为true
         {
@@ -387,11 +387,13 @@ public class GameStart : HolyTechGameBase {
             this.mStartTime = 0;
         }        
     }
+
     void onNotifyGateServerInfo(AskGateAddressRet pMsg) {
         NetworkManager.Instance.canReconnect = false;
         NetworkManager.Instance.Close();
         NetworkManager.Instance.Init(mGateServer ,port, NetworkManager.ServerType.GateServer, true);        
     }
+
     void onNotifyServerAddr() {
         foreach (var item in SelectServerData.Instance.GetServerDicInfo())
         {
@@ -413,12 +415,15 @@ public class GameStart : HolyTechGameBase {
         }
         mAreaGrid.Reposition();        
     }
+
     void onNotifyMatchTeamBaseInfo(bool state) {
         TeamMatch.SetActive(state);//显示组对界
     }
+
     public void onAgreementValueChange() {
         this.mAgreement.Set(!this.mAgreement.value);
     }
+
     public void onSelectArea(GameObject btnObject) {
         foreach(var item in mServerGrid.GetChildList()) {
             Destroy(item.gameObject);  
@@ -435,10 +440,12 @@ public class GameStart : HolyTechGameBase {
         }
         mServerGrid.Reposition();
     }
+
     public void onSelectServer(GameObject btnObject) {
         mSelectServer.text = btnObject.GetComponentInChildren<UILabel>().text;
         OnBackLogin(null);
     }
+
     public void OnClickQuit()
     {
         Application.Quit();
@@ -475,6 +482,7 @@ public class GameStart : HolyTechGameBase {
         };
         NetworkManager.Instance.SendMsg(pMsg, (int)pMsg.msgnum);
     }
+
     // 切换服务器选择窗口
     public void OnPlayServer(GameObject go)
     {
@@ -486,6 +494,7 @@ public class GameStart : HolyTechGameBase {
         ShowSeverItem();
 
     }
+
     //返回登录窗口
     public void OnBackLogin(GameObject go)
     {
@@ -495,6 +504,7 @@ public class GameStart : HolyTechGameBase {
         mRootLogin.gameObject.SetActive(showLogin);
         mRootSever.gameObject.SetActive(showServer);
     }
+
     //显示服务器列表
     public void ShowSeverItem()
     {
@@ -510,23 +520,26 @@ public class GameStart : HolyTechGameBase {
         }
         mAreaGrid.Reposition();
     }
+
     //申请匹配
     public void OnMatch(GameObject go)//申请匹配
     {
         //申请匹配
         HolyGameLogic.Instance.AskStartTeamMatch();
     }
+
     //取消匹配
     public void OnCancelBtn()
     {
         TeamMatchCtrl.Instance.AskStopMatch();
-
     }
+
     ////取消组队
     public void OnQuitTeam()
     {
         TeamMatchCtrl.Instance.QuitTeam();
     }
+
     //当选择英雄时
     public void OnChooseHero(GameObject go)
     {

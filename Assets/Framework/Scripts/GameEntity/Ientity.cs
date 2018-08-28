@@ -1194,19 +1194,19 @@ namespace HolyTech.GameEntity
         {
         }
 
-        public virtual int GetSkillIdBySkillType(SkillType type)
+        public virtual int GetSkillIdBySkillType(SkillTypeEnum type)
         {
             switch (type)
             {
-                case SkillType.SKILL_TYPE1:
+                case SkillTypeEnum.SKILL_TYPE1:
                     return ConfigReader.GetNpcInfo(NpcGUIDType).NpcSkillType1;
-                case SkillType.SKILL_TYPE2:
+                case SkillTypeEnum.SKILL_TYPE2:
                     return ConfigReader.GetNpcInfo(NpcGUIDType).NpcSkillType2;
-                case SkillType.SKILL_TYPE3:
+                case SkillTypeEnum.SKILL_TYPE3:
                     return ConfigReader.GetNpcInfo(NpcGUIDType).NpcSkillType3;
-                case SkillType.SKILL_TYPE4:
+                case SkillTypeEnum.SKILL_TYPE4:
                     return ConfigReader.GetNpcInfo(NpcGUIDType).NpcSkillType4;
-                case SkillType.SKILL_TYPE5:
+                case SkillTypeEnum.SKILL_TYPE5:
                     return ConfigReader.GetNpcInfo(NpcGUIDType).NpcSkillType5;
             }
             return -1;
