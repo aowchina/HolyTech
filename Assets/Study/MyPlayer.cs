@@ -8,11 +8,8 @@ using UnityEngine;
 public class MyPlayer : Player {
     public override void OnFreeState()
     {
-        {
-            OnCameraUpdatePosition();
-            VirtualStickUI.Instance.SetVirtualStickUsable(true);
-        }
-        
+        OnCameraUpdatePosition();
+        VirtualStickUI.Instance.SetVirtualStickUsable(true);      
         base.OnFreeState();
     }
 

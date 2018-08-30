@@ -19,7 +19,7 @@ public class HeroRotation : MonoBehaviour
         {
             OnMouseDrag();
             onDrag = false;
-            Debug.Log(axisX);
+        
             this.transform.Rotate(new Vector3(0, axisX, 0) * 4f, Space.World);
         }
     }

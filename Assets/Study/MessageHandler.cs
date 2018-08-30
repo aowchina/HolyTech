@@ -13,6 +13,72 @@ using System.Collections;
 public partial class MessageHandler: UnitySingleton<MessageHandler> {
     /////////////////////消息处理///////////////////////
 
+    public int OnNotifySkillModelBufEffect(GSToGC.BuffEffect pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+     IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
+    {     
+        yield return 1;
+        //创建特效
+        UInt64 skillowner= pMsg.guid;
+        UInt64 skilltarget= pMsg.targuid;
+        float rTime = pMsg.time / 1000.0f;
+        Player target = null;
+        PlayersManager.Instance.PlayerDic.TryGetValue(skilltarget, out target);
+        if (0 == pMsg.state)
+        {
+           // HolyTech.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
+            Player entity = null;
+            PlayersManager.Instance.PlayerDic.TryGetValue(skilltarget, out entity);
+            EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid); 
+        }
+        else if (1 == pMsg.state)
+        {
+            HolyTech.Skill.BuffManager.Instance.RemoveBuff(pMsg.uniqueid);
+            HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+        }
+    }
+
+
+
+    public int OnNotifySkillModelHitTarget(HitTar pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+
+    public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(HitTar pMsg)
+    {
+        //创建特效
+        UInt64 ownerID = pMsg.guid;
+        UInt64 targetID = pMsg.targuid;
+        yield return 1;
+        EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
+    }
+
+    public int OnNotifyGameObjectReliveState(NotifyGameObjectReliveState pMsg)
+    {
+
+        UInt64 sGUID= pMsg.guid;
+        Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
+        Vector3 ford = this.ConvertDirToVector3(pMsg.dir);
+        Player entity;
+        if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
+        {
+            pos.y = entity.RealEntity.transform.position.y;
+            entity.GOSSI.sServerBeginPos = pos;
+            entity.GOSSI.sServerSyncPos = pos;
+            entity.GOSSI.sServerDir = ford;
+            entity.GOSSI.fBeginTime = Time.realtimeSinceStartup;
+            entity.GOSSI.fLastSyncSecond = Time.realtimeSinceStartup;
+            //在这里可以设置血条
+            entity.OnReliveState();
+        }
+
+        return (Int32)EErrorCode.eNormal;  
+    }
     public int OnNotifyGameObjectDeadState(DeadState pMsg)
     {
 
@@ -28,7 +94,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (Int32)EErrorCode.eNormal;  
     }
-
     public int OnNotifyHPChange(HPChange pMsg)
     {
         UInt64 sGUID= pMsg.guid;
@@ -45,7 +110,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         return (Int32)EErrorCode.eNormal;  
     
     }
-
     public int OnNotifyMPChange(MpChange pMsg)
     {
         UInt64 sGUID = pMsg.guid;
@@ -60,7 +124,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (Int32)EErrorCode.eNormal;
     }
-
     public int OnNotifyHPInfo(NotifyHPInfo pMsg)
     {
         foreach (GSToGC.NotifyHPInfo.HPInfo info in pMsg.hpinfo)
@@ -79,7 +142,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         //EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
-
     public int OnNotifyMPInfo(NotifyMPInfo pMsg)
     {
        foreach (GSToGC.NotifyMPInfo.MPInfo info in pMsg.mpinfo)
@@ -99,7 +161,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
-
     public int OnNotifySkillModelEmitDestroy(DestroyEmitEffect pMsg)
     {
         //从特效字典中取出特效，在创建特效时添加的
@@ -125,13 +186,11 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (int)EErrorCode.eNormal;
     }
-
     public int OnNotifySkillModelEmit(EmitSkill pMsg)
     {    
         StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(pMsg));     
         return (Int32)EErrorCode.eNormal;  
     }
-
     public IEnumerator OnNetMsg_NotifySkillModelEmitCoroutine(EmitSkill pMsg)
     {
         UInt64 skillPlayerID = pMsg.guid;
@@ -164,7 +223,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             //释放技能 
              entity.OnEntityReleaseSkill();  
         }   
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, pMsg);
+   
         return (int)EErrorCode.eNormal;
     }
 

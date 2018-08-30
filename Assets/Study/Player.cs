@@ -43,7 +43,6 @@ public class Player:MonoBehaviour{
     public uint mPlayerID { get; set; }
     public GameObject heroLife;
     public bool mHasLifeBar = false;
-
     private UISprite mpSprite = null;
     private UISprite hpSprite = null;
 
@@ -77,6 +76,17 @@ public class Player:MonoBehaviour{
         }
     }
 
+
+    public virtual void OnReliveState()
+    {
+        //
+        if (!mHasLifeBar)
+        {
+            this.heroLife.SetActive(true);
+            mHasLifeBar = true;
+        }
+
+    }
     public virtual void OnFreeState(){
         if (RealEntity == null) return;
         if (!mHasLifeBar)
@@ -84,17 +94,13 @@ public class Player:MonoBehaviour{
             this.heroLife.SetActive(true);
             mHasLifeBar = true;
         }
-
         Vector2 serverPos2D = new Vector2(m_pcGOSSI.sServerBeginPos.x, m_pcGOSSI.sServerBeginPos.z);
         Vector2 objPos2D = new Vector2(objTransform.position.x, objTransform.position.z);
-
         float fDistToServerPos = Vector2.Distance(serverPos2D, objPos2D);
-
         if (fDistToServerPos > 10)//因为服务器可能对玩家的位置会有调整，所以调整位置
         {
             objTransform.position = m_pcGOSSI.sServerBeginPos;//按服务器的位置设置      
-            objTransform.rotation = Quaternion.LookRotation(EntityFSMDirection);//方向调整。
-            //RealEntity.GetComponent<Animation>().Play("free");
+            objTransform.rotation = Quaternion.LookRotation(EntityFSMDirection);//方向调整。   
         }
         RealEntity.GetComponent<Animation>().Play("free");
     }

@@ -1161,7 +1161,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         return (Int32)EErrorCode.eNormal;
     }
 
-    Int32 OnNetMsg_NotifyHeroReborn(Stream stream)
+    Int32 OnNetMsg_NotifyHeroReborn(Stream stream)//隐藏死亡窗口
     {
         EventCenter.Broadcast(GameEventEnum.GameEvent_HeroReborn);
         return (Int32)EErrorCode.eNormal;
@@ -1956,7 +1956,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             HolyTech.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
             Ientity entity = null;
             EntityManager.AllEntitys.TryGetValue(skilltarget, out entity);
-            HolyTech.Effect.EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid);    //ToReview uniqueid是否就是instid
+          //  HolyTech.Effect.EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid);    //ToReview uniqueid是否就是instid
         }
         else if (1 == pMsg.state)
         {
@@ -2041,7 +2041,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         StartCoroutine(OnNetMsg_NotifySkillModelRangeCoroutine(stream));
         return (Int32)EErrorCode.eNormal;
     }
-
+    
     public IEnumerator OnNetMsg_NotifySkillModelRangeCoroutine(Stream stream)
     {
         //解析消息
@@ -2050,7 +2050,6 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             yield break;
         }
-
         if (pMsg != null)
         {
             UInt64 owner = pMsg.guid;

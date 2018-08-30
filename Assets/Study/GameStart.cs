@@ -63,7 +63,8 @@ public class GameStart : HolyTechGameBase {
 
     GameObject mCurHeroModel;
     float mStartTime;
-    float mPercent=0;
+    int mLocalPercent= 0;
+    int mTargetPercent = 0;
     bool mIsDownTime=false;
     bool mIsSelectHero = false;
     bool mIsLoading = false;
@@ -79,10 +80,10 @@ public class GameStart : HolyTechGameBase {
     {
         //DontDestroyOnLoad(this.gameObject);
 
-        mGateServer = LoginServerAdress;
-        mLoginServer = LoginServerAdress;
-        mBalanceServer = LoginServerAdress;
-        port = LoginServerPort;
+        //mGateServer = LoginServerAdress;
+        //mLoginServer = LoginServerAdress;
+        //mBalanceServer = LoginServerAdress;
+        //port = LoginServerPort;
         mCurHeroModel = null;
         //网络过来的消息处理
         EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
@@ -115,7 +116,7 @@ public class GameStart : HolyTechGameBase {
     void Start () {
         NetworkManager.Instance.Init(mLoginServer, port, NetworkManager.ServerType.LoginServer, true);
     }
-   
+
     void Update()
     {
         if (this.mHandleMsg)
@@ -123,33 +124,32 @@ public class GameStart : HolyTechGameBase {
             NetworkManager.Instance.Update(Time.deltaTime);
         }
         if (mIsDownTime)
-        {           
+        {
             mStartTime += Time.deltaTime;
             mTimeLabel.text = CTools.ShowCount((int)mStartTime);
         }
         if (mIsSelectHero)
-        {       
-            mStartTime -=Time.deltaTime;
-            if( mStartTime<=0) return;
+        {
+            mStartTime -= Time.deltaTime;
+            if (mStartTime <= 0) return;
             mSelectTime.text = CTools.ShowCount((int)mStartTime);
         }
         if (mIsLoading)
         {
-            mPercent += 1f;       
-            if (mPercent >= 101) return;
-            EnmyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString()+"%";
-            MyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString() + "%";
-        }
 
-        //if (async!=null)
-        //{
-        //  string name=  SceneManager.GetActiveScene().name;
-        //  if (name == "pvp_004")
-        //    {
-        //        string path = "Monsters" + "/" + ConfigReader.HeroSelectXmlInfoDict[(int)tryTopMsg.heroid].HeroSelectName;
-        //        LoadModel((int)tryTopMsg.heroid, path);
-        //    }   
-        //}
+            mLocalPercent += (int)UnityEngine.Random.Range(0.8f, 1.3f);
+            mTargetPercent += (int)UnityEngine.Random.Range(0.5f, 1.2f);
+            if (mLocalPercent >= 100)
+            {
+                mLocalPercent = 100;
+            }
+            if (mTargetPercent >= 100)
+            {
+                mTargetPercent = 100;
+            }
+            EnmyLoadintTime.GetComponent<UILabel>().text = mLocalPercent.ToString() + "%";
+            MyLoadintTime.GetComponent<UILabel>().text = mTargetPercent.ToString() + "%";
+        }
     }
     void OnApplicationQuit()
     {
@@ -225,8 +225,6 @@ public class GameStart : HolyTechGameBase {
         }
     }
    
-    
-    
     int heroSelectNum;
     TryToChooseHero tryTopMsg;
     AsyncOperation async;

@@ -154,7 +154,7 @@ namespace HolyTech.Effect
 
 
         //2.创建buff特效
-        public BuffEffect CreateBuffEffect(Ientity buffEntity, uint buffTypeID, uint instID)
+        public BuffEffect CreateBuffEffect(Player buffEntity, uint buffTypeID, uint instID)
         {
             BuffConfigInfo buffInfo = ConfigReader.GetBuffInfo(buffTypeID);
 
@@ -177,7 +177,7 @@ namespace HolyTech.Effect
                     float stayTime = skillFlycfg.stayTime;
                     int canbeRecover = skillFlycfg.bIsCanBeRecover;
                                            
-                    buffEntity.OnBeatFly(buffInfo.BuffID, beatFLyAction, raiseSpeed, raiseAccSpeed, fallSpeed, fallAccSpeed, stayTime, canbeRecover);
+                   // buffEntity.OnBeatFly(buffInfo.BuffID, beatFLyAction, raiseSpeed, raiseAccSpeed, fallSpeed, fallAccSpeed, stayTime, canbeRecover);
                 }
             }
 
@@ -377,32 +377,33 @@ namespace HolyTech.Effect
                 bool shakeFlag = false;
                 if (skillAccConfig.cameraTarget == 1)
                 {
-                    Ientity ownerEntity = null;
-                    EntityManager.AllEntitys.TryGetValue(owner, out ownerEntity);
+                    Player  ownerEntity = null;
+                    PlayersManager.Instance.PlayerDic.TryGetValue(owner, out ownerEntity);
 
-                    if (ownerEntity != null && ownerEntity is Iselfplayer)
-                    {
+                    //if (ownerEntity != null && ownerEntity is Iselfplayer)
+                    //{
                         shakeFlag = true;
-                    }                                    
+                    //}                                    
                 }
                 else if (skillAccConfig.cameraTarget == 2)
                 {
-                    Ientity targetEntity = null;
-                    EntityManager.AllEntitys.TryGetValue(target, out targetEntity);
+                    Player targetEntity = null;
+                    //EntityManager.AllEntitys.TryGetValue(target, out targetEntity);
+                    PlayersManager.Instance.PlayerDic.TryGetValue(target, out targetEntity);
 
-                    if (targetEntity != null && targetEntity is Iselfplayer)
-                    {
+                    //if (targetEntity != null && targetEntity is Iselfplayer)
+                    //{
                         shakeFlag = true;
-                    }                         
+                    //}                         
                 }
                 else if (skillAccConfig.cameraTarget == 3)
                 {
-                    Ientity ownerEntity = null;
-                    Ientity targetEntity = null;
-                    EntityManager.AllEntitys.TryGetValue(owner, out ownerEntity);
-                    EntityManager.AllEntitys.TryGetValue(target, out targetEntity);
+                    Player ownerEntity = null;
+                    Player targetEntity = null;
+                    PlayersManager.Instance.PlayerDic.TryGetValue(owner, out ownerEntity);
+                    PlayersManager.Instance.PlayerDic.TryGetValue(target, out targetEntity);
 
-                    if ((ownerEntity != null && ownerEntity is Iselfplayer) || targetEntity != null && targetEntity is Iselfplayer)
+                   // if ((ownerEntity != null && ownerEntity is Iselfplayer) || targetEntity != null && targetEntity is Iselfplayer)
                     {
                         shakeFlag = true;
                     }                                                                          

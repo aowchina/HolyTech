@@ -27,7 +27,7 @@ public class HolyTechGameBase : MonoBehaviour {
 
     public List<string> ipList = new List<string>();
 
-    public string LoginServerAdress = "127.0.0.1";
+    public string LoginServerAdress =null /*"127.0.0.1"*/;
 
     public int LoginServerPort = 49996;
 

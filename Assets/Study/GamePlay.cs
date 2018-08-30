@@ -23,12 +23,10 @@ public class GamePlay : UnitySingleton<GamePlay> {
         base.Awake();
         EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
         EventCenter.AddListener<BroadcastBattleHeroInfo>(GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
-        EventCenter.AddListener<GOAppear>(GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);
-        EventCenter.AddListener<NotifySkillModelStartForceMoveTeleport>(GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, onNotifySkillModelStartForceMoveTeleport);
+        EventCenter.AddListener<GOAppear>(GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);   
         EventCenter.AddListener<RunningState>(GameEventEnum.UserEvent_NotifyGameObjectRunState, OnNotifyGameObjectRunState);//移动状态
         EventCenter.AddListener<FreeState>(GameEventEnum.UserEvent_NotifyGameObjectFreeState, OnNotifyGameObjectFreeState);//自由状态
-       // EventCenter.AddListener<NotifySkillInfo>(GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息
-        EventCenter.AddListener<ReleasingSkillState>(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, OnNotifyGameObjectReleaseSkillState);//自由状态
+        // EventCenter.AddListener<NotifySkillInfo>(GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息     
         EventCenter.AddListener<NotifyHPInfo>(GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
         EventCenter.AddListener<NotifyMPInfo>(GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
     }
@@ -74,6 +72,12 @@ public class GamePlay : UnitySingleton<GamePlay> {
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmit:
                  MessageHandler.Instance.OnNotifySkillModelEmit(ProtobufMsg.MessageDecode<EmitSkill>(stream));//产生特效
                 break;
+            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelBufEffect://buff效果
+                MessageHandler.Instance.OnNotifySkillModelBufEffect(ProtobufMsg.MessageDecode<BuffEffect>(stream));
+                break;
+            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelHitTarget://新技能受击
+                MessageHandler.Instance.OnNotifySkillModelHitTarget(ProtobufMsg.MessageDecode<HitTar>(stream));
+                break;
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmitDestroy://新飞行物体销毁   
                 MessageHandler.Instance.OnNotifySkillModelEmitDestroy(ProtobufMsg.MessageDecode<DestroyEmitEffect>(stream));//销毁特效     
                 break;
@@ -92,9 +96,10 @@ public class GamePlay : UnitySingleton<GamePlay> {
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyGameObjectDeadState:
                 MessageHandler.Instance.OnNotifyGameObjectDeadState(ProtobufMsg.MessageDecode<DeadState>(stream));  //通知游戏对象进入死亡状态       
                 break;
-            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyHeroReborn:
-                //MessageHandler.Instance.OnNotifyHeroReborn(ProtobufMsg.MessageDecode<DeadState>(stream));
+            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyGameObjectReliveState:
+                 MessageHandler.Instance.OnNotifyGameObjectReliveState(ProtobufMsg.MessageDecode<NotifyGameObjectReliveState>(stream));//重生状态
                 break;
+
         }
     }
 
@@ -102,17 +107,10 @@ public class GamePlay : UnitySingleton<GamePlay> {
     {
         Debug.Log("OnNotifyHPInfo");
     }
-
     void OnNotifyMPInfo(NotifyMPInfo pMsg)
     {
         Debug.Log("OnNotifyMPInfo");
     }
-
-    void OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg)
-    {
-        Debug.Log("OnNotifyGameObjectReleaseSkillState");
-    }
-
     void OnNotifyGameObjectFreeState(FreeState pMsg)
     {
         UInt64 sGUID;
@@ -136,7 +134,6 @@ public class GamePlay : UnitySingleton<GamePlay> {
             entity.OnFreeState();
         }
     }
-
     void OnNotifyGameObjectRunState(RunningState pMsg )
     {
         UInt64 sGUID;
@@ -163,10 +160,6 @@ public class GamePlay : UnitySingleton<GamePlay> {
             //调用子类执行状态
             //entity.OnRuntate();
 	    }
-    }
-
-    void onNotifySkillModelStartForceMoveTeleport(NotifySkillModelStartForceMoveTeleport pMsg)
-    {
     }
 
     void onNotifyGameObjectAppear(GOAppear pMsg)
