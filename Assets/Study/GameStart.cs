@@ -71,9 +71,9 @@ public class GameStart : HolyTechGameBase {
 
     public static int heroid = 0; 
 
-    string mGateServer="192.168.1.27";
-    string mLoginServer="192.168.1.27";
-    string mBalanceServer="192.168.1.27";
+    string mGateServer="192.168.1.113";
+    string mLoginServer="192.168.1.113";
+    string mBalanceServer="192.168.1.113";
     int port = 49996;
 
     private void Awake()
