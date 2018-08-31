@@ -152,7 +152,7 @@ namespace HolyTech.GameEntity
 
                 //创建GameObject    
                 string resPath = path + entity.ModelName;//获取模型路径
-                entity.realObject = GameObjectPool.Instance.GetGO(resPath);//实例化对象
+                entity.realObject = ObjectPool.Instance.GetGO(resPath);//实例化对象
                 if (entity.realObject == null)
                 {
                     Debug.LogError("entity realObject is null");
@@ -232,7 +232,7 @@ namespace HolyTech.GameEntity
             }
             else {
                 //删除GameObject 
-                GameObjectPool.Instance.ReleaseGO(AllEntitys[sGUID].resPath, AllEntitys[sGUID].realObject, PoolObjectTypeEnum.POT_Entity);
+                ObjectPool.Instance.ReleaseGO(AllEntitys[sGUID].resPath, AllEntitys[sGUID].realObject, PoolObjectTypeEnum.Entity);
             }
             AllEntitys[sGUID].DestroyBloodBar();
             AllEntitys[sGUID] = null;

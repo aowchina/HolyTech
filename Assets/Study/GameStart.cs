@@ -88,18 +88,18 @@ public class GameStart : HolyTechGameBase {
         port = LoginServerPort;
         mCurHeroModel = null;
         //网络过来的消息处理
-        EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+        EventCenter.AddListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
 
-        EventCenter.AddListener<bool>(GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, onNotifyMatchTeamBaseInfo);
-        EventCenter.AddListener(GameEventEnum.UserEvent_NotifyServerAddr, onNotifyServerAddr);
-        EventCenter.AddListener<AskGateAddressRet>(GameEventEnum.UserEvent_NotifyGateServerInfo, onNotifyGateServerInfo);
-        EventCenter.AddListener<bool>(GameEventEnum.UserEvent_NotifyMatchTeamSwitch, onNotifyMatchTeamSwitch);
-        EventCenter.AddListener<BattleMatcherCount>(GameEventEnum.UserEvent_NotifyBattleMatherCount, onNotifyBattleMatherCount);
-        EventCenter.AddListener<BattleSeatPosInfo>(GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, onNotifyBattleSeatPosInfo);
-        EventCenter.AddListener<HeroList>(GameEventEnum.UserEvent_NotifyHeroList, onNotifyHeroList);
-        EventCenter.AddListener<TryToChooseHero>(GameEventEnum.UserEvent_NotifyTryChooseHero, onNotifyTryChooseHero);
-        EventCenter.AddListener<HeroInfo>(GameEventEnum.UserEvent_NotifyEnsureHero, onNotifyEnsureHero);
-        EventCenter.AddListener<BattleStateChange>(GameEventEnum.UserEvent_NotifyBattleStateChange, onNotifyBattleStateChange);
+        EventCenter.AddListener<bool>((Int32)GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, onNotifyMatchTeamBaseInfo);
+        EventCenter.AddListener((Int32)GameEventEnum.UserEvent_NotifyServerAddr, onNotifyServerAddr);
+        EventCenter.AddListener<AskGateAddressRet>((Int32)GameEventEnum.UserEvent_NotifyGateServerInfo, onNotifyGateServerInfo);
+        EventCenter.AddListener<bool>((Int32)GameEventEnum.UserEvent_NotifyMatchTeamSwitch, onNotifyMatchTeamSwitch);
+        EventCenter.AddListener<BattleMatcherCount>((Int32)GameEventEnum.UserEvent_NotifyBattleMatherCount, onNotifyBattleMatherCount);
+        EventCenter.AddListener<BattleSeatPosInfo>((Int32)GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, onNotifyBattleSeatPosInfo);
+        EventCenter.AddListener<HeroList>((Int32)GameEventEnum.UserEvent_NotifyHeroList, onNotifyHeroList);
+        EventCenter.AddListener<TryToChooseHero>((Int32)GameEventEnum.UserEvent_NotifyTryChooseHero, onNotifyTryChooseHero);
+        EventCenter.AddListener<HeroInfo>((Int32)GameEventEnum.UserEvent_NotifyEnsureHero, onNotifyEnsureHero);
+        EventCenter.AddListener<BattleStateChange>((Int32)GameEventEnum.UserEvent_NotifyBattleStateChange, onNotifyBattleStateChange);
        
         mServerDict = new Dictionary<string, List<SelectServerData.ServerInfo>>();
         var areaItemOld = mAreaItem;
@@ -117,8 +117,6 @@ public class GameStart : HolyTechGameBase {
 
     void Start () {
         NetworkManager.Instance.Init(mLoginServer, port, NetworkManager.ServerType.LoginServer, true);
-
-        //HolyGameLogic.Instance.EmsgToLs_AskLogin();
     }
    
     void Update()
@@ -248,7 +246,7 @@ public class GameStart : HolyTechGameBase {
         {
             mHandleMsg = false;
             HolyGameLogic.Instance.AskLoadComplete();
-            EventCenter.RemoveListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+            EventCenter.RemoveListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
             NetworkManager.Instance.Pause();
             Debug.Log("加载场景");
             async=  SceneManager.LoadSceneAsync("pvp_001");

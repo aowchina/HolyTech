@@ -47,7 +47,6 @@ public class HolyTechGameBase : MonoBehaviour {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         ////加载所有Mian类型的窗口并初始化   窗口初始化（添加监听器）     参数：front场景类型  EScenesType.EST_None
       //  WindowManager.Instance.ChangeScenseToMain(EScenesType.EST_None);
-
     }
 
 	void Start () {
@@ -97,7 +96,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //特效后删除机制 
         EffectManager.Instance.HandleDelete();
         //GameObjectPool更新
-        GameObjectPool.Instance.OnUpdate();
+        ObjectPool.Instance.OnUpdate();
         //游戏时间设置
         GameTimeData.Instance.OnUpdate();
     }
@@ -105,13 +104,13 @@ public class HolyTechGameBase : MonoBehaviour {
 	void OnEnable()
 	{
         //在NetWorkManager中连接成功后广播消息  ，连接成功后发送Ping值
-        EventCenter.AddListener(GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
+        //EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
         //打开链接UI
-        EventCenter.AddListener(GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
+        EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
         //打开链接UI
-        EventCenter.AddListener(GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
+        EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
         //连接等待事件  
-        EventCenter.AddListener(GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI); 
+        EventCenter.AddListener((Int32)GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI); 
 
         if (PlayerPrefs.HasKey(UIGameSetting.voiceKey))
         {
@@ -129,10 +128,10 @@ public class HolyTechGameBase : MonoBehaviour {
     //移除监听器   链接成功  连接失败 重新连接战斗  开始等待
     void OnDisable()
 	{
-        EventCenter.RemoveListener(GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
-        EventCenter.RemoveListener(GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
-        EventCenter.RemoveListener(GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
-        EventCenter.RemoveListener(GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI);   
+        //EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
+        EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
+        EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
+        EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI);   
 	}
     //游戏退出前执行（玩家强行关闭游戏）
     void OnApplicationQuit()
@@ -167,23 +166,23 @@ public class HolyTechGameBase : MonoBehaviour {
     /// <summary>
     /// 连接服务器成功，每30秒发送一个ping值
     /// </summary>
-    private void GameConnectServerSuccess()
-    {
-        StopCoroutine("PingToServer");
+    //private void GameConnectServerSuccess()
+    //{
+    //    StopCoroutine("PingToServer");
 
-        StartCoroutine("PingToServer");
-    }
+    //    StartCoroutine("PingToServer");
+    //}
 
-    //定时发送Ping值  只有链接的服务器是GateServer
-    private IEnumerator PingToServer()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(30);
+    ////定时发送Ping值  只有链接的服务器是GateServer
+    //private IEnumerator PingToServer()
+    //{
+    //    while (true)
+    //    {
+    //        yield return new WaitForSeconds(120);
           
-            HolyGameLogic.Instance.EmsgToss_AskPing();
-        }
-    }
+    //        HolyGameLogic.Instance.EmsgToss_AskPing();
+    //    }
+    //}
 
     //////////////////////////////////////////////////////游戏事件响应/////////////////////////////////////////
 
@@ -205,11 +204,10 @@ public class HolyTechGameBase : MonoBehaviour {
     //游戏开始  游戏Bulidings创建
 	public  void PlayStart()
     { 
-        Int32 state = 0;
-        if (PlayerManager.Instance.LocalAccount.ObjType == ObPlayerOrPlayer.PlayerObType)
-        {
-            state = 1;
-        }
+        //if (PlayerManager.Instance.LocalAccount.ObjType == ObPlayerOrPlayer.PlayerObType)
+        //{
+        //    state = 1;
+        //}
         //场景中的对象  箭塔 防御塔， 售货员 产生小兵的基地
         GameMapObjs GameBuilding = FindObjectOfType(typeof(GameMapObjs)) as GameMapObjs; //根据场景不同，个数不同     
         //清除基地

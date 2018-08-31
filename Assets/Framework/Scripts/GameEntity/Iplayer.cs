@@ -470,7 +470,7 @@ namespace HolyTech.GameEntity
 
         public static void AddOrDelEnemy(Iplayer entity,bool add)
         {
-            CEvent eve = new CEvent(GameEventEnum.GameEvent_AddOrDelEnemy);
+            FEvent eve = new FEvent((Int32)(Int32)GameEventEnum.GameEvent_AddOrDelEnemy);
             eve.AddParam("Add",add);
             eve.AddParam("Target", entity);
             EventCenter.SendEvent(eve);

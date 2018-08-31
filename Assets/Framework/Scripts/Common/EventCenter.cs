@@ -40,12 +40,12 @@ static internal class EventCenter {
 #pragma warning restore 0414
  
     //存储所有的事件（类型  ，委托事件）
-	static public  Dictionary<GameEventEnum, Delegate> mEventTable = new Dictionary<GameEventEnum, Delegate>();
+    static public  Dictionary<Int32, Delegate> mEventTable = new Dictionary<Int32, Delegate>();
 	//Message handlers that should never be removed, regardless of calling Cleanup
-	static public List< GameEventEnum > mPermanentMessages = new List< GameEventEnum > ();
+    static public List<Int32> mPermanentMessages = new List<Int32> ();
 	
 	//Marks a certain message as permanent.标记永久性消息
-	static public void MarkAsPermanent(GameEventEnum eventType) {
+    static public void MarkAsPermanent(Int32 eventType) {
 #if LOG_ALL_MESSAGES
 		Debug.Log("Messenger MarkAsPermanent \t\"" + eventType + "\"");
 #endif
@@ -60,12 +60,12 @@ static internal class EventCenter {
 		Debug.Log("MESSENGER Cleanup. Make sure that none of necessary listeners are removed.");
 #endif
  
-		List< GameEventEnum > messagesToRemove = new List<GameEventEnum>();
+        List< Int32 > messagesToRemove = new List<Int32>();
  
-		foreach (KeyValuePair<GameEventEnum, Delegate> pair in mEventTable) {
+        foreach (KeyValuePair<Int32, Delegate> pair in mEventTable) {
 			bool wasFound = false;
  
-			foreach (GameEventEnum message in mPermanentMessages) {
+            foreach (Int32 message in mPermanentMessages) {
 				if (pair.Key == message) {
 					wasFound = true;
 					break;
@@ -76,7 +76,7 @@ static internal class EventCenter {
 				messagesToRemove.Add( pair.Key );
 		}
  
-		foreach (GameEventEnum message in messagesToRemove) {
+        foreach (Int32 message in messagesToRemove) {
 			mEventTable.Remove( message );
 		}
 	}
@@ -85,7 +85,7 @@ static internal class EventCenter {
 	{
 		Debug.Log("\t\t\t=== MESSENGER PrGameEventEnumEventTable ===");
  
-		foreach (KeyValuePair<GameEventEnum, Delegate> pair in mEventTable) {
+        foreach (KeyValuePair<Int32, Delegate> pair in mEventTable) {
 			Debug.Log("\t\t\t" + pair.Key + "\t\t" + pair.Value);
 		}
  
@@ -93,7 +93,7 @@ static internal class EventCenter {
 	}
  
     //当有事件添加的的时候，检测这个事件有没有注册过这个方法。
-    static public void OnListenerAdding(GameEventEnum eventType, Delegate listenerBeingAdded) {
+    static public void OnListenerAdding(Int32 eventType, Delegate listenerBeingAdded) {
 
        // 如果这个表中不包含这个类型，那么就添加这个
         if (!mEventTable.ContainsKey(eventType)) {
@@ -107,7 +107,7 @@ static internal class EventCenter {
         }
     }
  
-    static public void OnListenerRemoving(GameEventEnum eventType, Delegate listenerBeingRemoved) {
+    static public void OnListenerRemoving(Int32 eventType, Delegate listenerBeingRemoved) {
 #if LOG_ALL_MESSAGES
 		Debug.Log("MESSENGER OnListenerRemoving \t\"" + eventType + "\"\t{" + listenerBeingRemoved.Target + " -> " + listenerBeingRemoved.Method + "}");
 #endif
@@ -131,21 +131,21 @@ static internal class EventCenter {
     }
 
     //移除了事件后，将事件的类型也移除掉
-    static public void OnListenerRemoved(GameEventEnum eventType) {
+    static public void OnListenerRemoved(Int32 eventType) {
        
         if (mEventTable[eventType] == null) {
             mEventTable.Remove(eventType);
         }
     }
  
-    static public void OnBroadcasting(GameEventEnum eventType) {
+    static public void OnBroadcasting(Int32 eventType) {
 #if REQUIRE_LISTENER
         if (!mEventTable.ContainsKey(eventType)) {
         }
 #endif
     }
  
-    static public BroadcastException CreateBroadcastSignatureException(GameEventEnum eventType) {
+    static public BroadcastException CreateBroadcastSignatureException(Int32 eventType) {
         return new BroadcastException(string.Format("Broadcasting message \"{0}\" but listeners have a different signature than the broadcaster.", eventType));
     }
  
@@ -162,83 +162,65 @@ static internal class EventCenter {
     }
 
     //No parameters  这个方法是重写的方法
-    static public void AddListener(GameEventEnum eventType, Callback handler) {
+    static public void AddListener(Int32 eventType, Callback handler) {
         OnListenerAdding(eventType, handler); // 当有事件添加的的时候，检测这个事件有没有注册过这个方法。
         mEventTable[eventType] = (Callback)mEventTable[eventType] + handler;
     }
  
 	//Single parameter
-	static public void AddListener<T>(GameEventEnum eventType, Callback<T> handler) {
+    static public void AddListener<T>(Int32 eventType, Callback<T> handler) {
         OnListenerAdding(eventType, handler);
         mEventTable[eventType] = (Callback<T>)mEventTable[eventType] + handler;
     }
  
 	//Two parameters
-	static public void AddListener<T, U>(GameEventEnum eventType, Callback<T, U> handler) {
+    static public void AddListener<T, U>(Int32 eventType, Callback<T, U> handler) {
         OnListenerAdding(eventType, handler);
         mEventTable[eventType] = (Callback<T, U>)mEventTable[eventType] + handler;
     }
  
 	//Three parameters
-	static public void AddListener<T, U, V>(GameEventEnum eventType, Callback<T, U, V> handler) {
+    static public void AddListener<T, U, V>(Int32 eventType, Callback<T, U, V> handler) {
         OnListenerAdding(eventType, handler);
         mEventTable[eventType] = (Callback<T, U, V>)mEventTable[eventType] + handler;
     }
 	
 	//Four parameters
-	static public void AddListener<T, U, V, X>(GameEventEnum eventType, Callback<T, U, V, X> handler) {
+    static public void AddListener<T, U, V, X>(Int32 eventType, Callback<T, U, V, X> handler) {
         OnListenerAdding(eventType, handler);
         mEventTable[eventType] = (Callback<T, U, V, X>)mEventTable[eventType] + handler;
     }
-	
-//	//four parameters
-//	static public void AddListener<T, U, V>(GameEventEnum eventType, Callback<T, U, V, X> handler) {
-//        OnListenerAdding(eventType, handler);
-//        mEventTable[eventType] = (Callback<T, U, V, X>)mEventTable[eventType] + handler;
-//    }
-//	
-//	//five parameters
-//	static public void AddListener<T, U, V>(GameEventEnum eventType, Callback<T, U, V, X, Y> handler) {
-//        OnListenerAdding(eventType, handler);
-//        mEventTable[eventType] = (Callback<T, U, V, X, Y>)mEventTable[eventType] + handler;
-//    }
-//	
-//	//six parameters
-//	static public void AddListener<T, U, V>(GameEventEnum eventType, Callback<T, U, V, X, Y, Z> handler) {
-//        OnListenerAdding(eventType, handler);
-//        mEventTable[eventType] = (Callback<T, U, V, X, X, Y, Z>)mEventTable[eventType] + handler;
-//    }
  
 	//No parameters
-    static public void RemoveListener(GameEventEnum eventType, Callback handler) {
+    static public void RemoveListener(Int32 eventType, Callback handler) {
         OnListenerRemoving(eventType, handler);   //检测此消息是否绑定了此事件
         mEventTable[eventType] = (Callback)mEventTable[eventType] - handler;//移除事件
         OnListenerRemoved(eventType);    //移除事件后，将消息也移除掉
     }
  
 	//Single parameter
-	static public void RemoveListener<T>(GameEventEnum eventType, Callback<T> handler) {
+    static public void RemoveListener<T>(Int32 eventType, Callback<T> handler) {
         OnListenerRemoving(eventType, handler);
         mEventTable[eventType] = (Callback<T>)mEventTable[eventType] - handler;
         OnListenerRemoved(eventType);
     }
  
 	//Two parameters
-	static public void RemoveListener<T, U>(GameEventEnum eventType, Callback<T, U> handler) {
+    static public void RemoveListener<T, U>(Int32 eventType, Callback<T, U> handler) {
         OnListenerRemoving(eventType, handler);
         mEventTable[eventType] = (Callback<T, U>)mEventTable[eventType] - handler;
         OnListenerRemoved(eventType);
     }
  
 	//Three parameters
-	static public void RemoveListener<T, U, V>(GameEventEnum eventType, Callback<T, U, V> handler) {
+    static public void RemoveListener<T, U, V>(Int32 eventType, Callback<T, U, V> handler) {
         OnListenerRemoving(eventType, handler);
         mEventTable[eventType] = (Callback<T, U, V>)mEventTable[eventType] - handler;
         OnListenerRemoved(eventType);
     }
 	
 	//Four parameters
-	static public void RemoveListener<T, U, V, X>(GameEventEnum eventType, Callback<T, U, V, X> handler) {
+    static public void RemoveListener<T, U, V, X>(Int32 eventType, Callback<T, U, V, X> handler) {
         OnListenerRemoving(eventType, handler);
         mEventTable[eventType] = (Callback<T, U, V, X>)mEventTable[eventType] - handler;
         OnListenerRemoved(eventType);
@@ -247,7 +229,7 @@ static internal class EventCenter {
   
     
    //广播事件
-    static public void Broadcast(GameEventEnum eventType) {
+    static public void Broadcast(Int32 eventType) {
 //#if LOG_ALL_MESSAGES || LOG_BROADCAST_MESSAGE
 //		Debug.Log("MESSENGER\t" + System.DateTime.Now.ToString("hh:mm:ss.fff") + "\t\t\tInvoking \t\"" + eventType + "\"");
 //#endif
@@ -265,13 +247,13 @@ static internal class EventCenter {
         }
     }
 
-    static public void SendEvent(CEvent evt)
+    static public void SendEvent(FEvent evt)
     {
-        Broadcast<CEvent>(evt.GetEventId(), evt);
+        Broadcast(evt.GetEventId(), evt);
     }
  
 	//Single parameter
-    static public void Broadcast<T>(GameEventEnum eventType, T arg1) {
+    static public void Broadcast<T>(Int32 eventType, T arg1) {
 #if LOG_ALL_MESSAGES || LOG_BROADCAST_MESSAGE
 		Debug.Log("MESSENGER\t" + System.DateTime.Now.ToString("hh:mm:ss.fff") + "\t\t\tInvoking \t\"" + eventType + "\"");
 #endif
@@ -290,7 +272,7 @@ static internal class EventCenter {
 	}
  
 	//Two parameters
-    static public void Broadcast<T, U>(GameEventEnum eventType, T arg1, U arg2) {
+    static public void Broadcast<T, U>(Int32 eventType, T arg1, U arg2) {
 #if LOG_ALL_MESSAGES || LOG_BROADCAST_MESSAGE
 		Debug.Log("MESSENGER\t" + System.DateTime.Now.ToString("hh:mm:ss.fff") + "\t\t\tInvoking \t\"" + eventType + "\"");
 #endif
@@ -309,7 +291,7 @@ static internal class EventCenter {
     }
  
 	//Three parameters
-    static public void Broadcast<T, U, V>(GameEventEnum eventType, T arg1, U arg2, V arg3) {
+    static public void Broadcast<T, U, V>(Int32 eventType, T arg1, U arg2, V arg3) {
 #if LOG_ALL_MESSAGES || LOG_BROADCAST_MESSAGE
 		Debug.Log("MESSENGER\t" + System.DateTime.Now.ToString("hh:mm:ss.fff") + "\t\t\tInvoking \t\"" + eventType + "\"");
 #endif
@@ -328,7 +310,7 @@ static internal class EventCenter {
     }
 	
 	//Four parameters
-    static public void Broadcast<T, U, V, X>(GameEventEnum eventType, T arg1, U arg2, V arg3, X arg4) {
+    static public void Broadcast<T, U, V, X>(Int32 eventType, T arg1, U arg2, V arg3, X arg4) {
 #if LOG_ALL_MESSAGES || LOG_BROADCAST_MESSAGE
 		Debug.Log("MESSENGER\t" + System.DateTime.Now.ToString("hh:mm:ss.fff") + "\t\t\tInvoking \t\"" + eventType + "\"");
 #endif

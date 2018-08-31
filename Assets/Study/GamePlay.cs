@@ -21,16 +21,16 @@ public class GamePlay : UnitySingleton<GamePlay> {
     public override void Awake()
     {
         base.Awake();
-        EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
-        EventCenter.AddListener<BroadcastBattleHeroInfo>(GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
-        EventCenter.AddListener<GOAppear>(GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);
-        EventCenter.AddListener<NotifySkillModelStartForceMoveTeleport>(GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, onNotifySkillModelStartForceMoveTeleport);
-        EventCenter.AddListener<RunningState>(GameEventEnum.UserEvent_NotifyGameObjectRunState, OnNotifyGameObjectRunState);//移动状态
-        EventCenter.AddListener<FreeState>(GameEventEnum.UserEvent_NotifyGameObjectFreeState, OnNotifyGameObjectFreeState);//自由状态
-       // EventCenter.AddListener<NotifySkillInfo>(GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息
-        EventCenter.AddListener<ReleasingSkillState>(GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, OnNotifyGameObjectReleaseSkillState);//自由状态
-        EventCenter.AddListener<NotifyHPInfo>(GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
-        EventCenter.AddListener<NotifyMPInfo>(GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
+        EventCenter.AddListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+        EventCenter.AddListener<BroadcastBattleHeroInfo>((Int32)GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
+        EventCenter.AddListener<GOAppear>((Int32)GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);
+        EventCenter.AddListener<NotifySkillModelStartForceMoveTeleport>((Int32)GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, onNotifySkillModelStartForceMoveTeleport);
+        EventCenter.AddListener<RunningState>((Int32)GameEventEnum.UserEvent_NotifyGameObjectRunState, OnNotifyGameObjectRunState);//移动状态
+        EventCenter.AddListener<FreeState>((Int32)GameEventEnum.UserEvent_NotifyGameObjectFreeState, OnNotifyGameObjectFreeState);//自由状态
+       // EventCenter.AddListener<NotifySkillInfo>((Int32)GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息
+        EventCenter.AddListener<ReleasingSkillState>((Int32)GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, OnNotifyGameObjectReleaseSkillState);//自由状态
+        EventCenter.AddListener<NotifyHPInfo>((Int32)GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
+        EventCenter.AddListener<NotifyMPInfo>((Int32)GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
     }
 
 	void Start () {

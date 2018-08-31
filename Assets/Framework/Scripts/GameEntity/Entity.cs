@@ -1,8 +1,6 @@
-﻿using GameDefine;
+﻿using System;
+using GameDefine;
 using UnityEngine;
-using Common.Tools;
-using Common.GameData;
-
 using HolyTech.GameEntity;
 using System.Collections.Generic;
 using HolyTech.Resource;
@@ -348,7 +346,7 @@ public class Entity : MonoBehaviour
 
         HolyTech.AudioManager.Instance.PlayEffectAudio(player.GetAltarClip());
         //广播事件，引导任务事件触发
-        EventCenter.Broadcast(GameEventEnum.GameEvent_PlayerEnterAltar);
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PlayerEnterAltar);
 
         if (UIAltarSelect.Instance == null)
         {

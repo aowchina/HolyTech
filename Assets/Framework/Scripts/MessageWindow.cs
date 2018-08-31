@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System;
+using UnityEngine;
 using GameDefine;
-using HolyTech.Ctrl;
 
 namespace HolyTech.View
 {
@@ -33,15 +31,15 @@ namespace HolyTech.View
         //类对象初始化
         public override void Init()
         {
-            EventCenter.AddListener<EMessageType>(GameEventEnum.GameEvent_ShowMessage, ShowMessage);
-            EventCenter.AddListener<EMessageType, string, Callback<bool>>(GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
+            EventCenter.AddListener<EMessageType>((Int32)GameEventEnum.GameEvent_ShowMessage, ShowMessage);
+            EventCenter.AddListener<EMessageType, string, Callback<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
         }
 
         //类对象释放
         public override void Realse()
         {
-            EventCenter.RemoveListener<EMessageType>(GameEventEnum.GameEvent_ShowMessage, ShowMessage);
-            EventCenter.RemoveListener<EMessageType, string, Callback<bool>>(GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
+            EventCenter.RemoveListener<EMessageType>((Int32)GameEventEnum.GameEvent_ShowMessage, ShowMessage);
+            EventCenter.RemoveListener<EMessageType, string, Callback<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
         }
 
         //窗口控件初始化
@@ -79,20 +77,20 @@ namespace HolyTech.View
         //游戏事件注册
         protected override void OnAddListener()
         {
-            EventCenter.AddListener(GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
-            EventCenter.AddListener(GameEventEnum.GameEvent_ReConnectSuccess, Hide);
-            EventCenter.AddListener(GameEventEnum.GameEvent_ReConnectFail, Hide);
-            EventCenter.AddListener(GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
+            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReConnectSuccess, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReConnectFail, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
             
         }
 
         //游戏事件注消
         protected override void OnRemoveListener()
         {
-            EventCenter.RemoveListener(GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
-            EventCenter.RemoveListener(GameEventEnum.GameEvent_ReConnectSuccess, Hide);
-            EventCenter.RemoveListener(GameEventEnum.GameEvent_ReConnectFail, Hide);
-            EventCenter.RemoveListener(GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
+            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReConnectSuccess, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReConnectFail, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
         }
 
         //显示
