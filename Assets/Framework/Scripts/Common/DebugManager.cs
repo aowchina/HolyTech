@@ -75,17 +75,6 @@ public class DebugManager : MonoBehaviour
     //保存错误信息列表
     static public List<string> errorInfoList = new List<string>();
 
-    //// Use this for initialization
-    //void Start ()
-    //{
-    //}
-
-    //// Update is called once per frame
-    //void Update () 
-    //{
-
-    //}
-
     public static void Switch()
     {
         DebugInfo = !DebugInfo;
@@ -218,6 +207,4 @@ public class DebugManager : MonoBehaviour
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
     }
-
-
 }
