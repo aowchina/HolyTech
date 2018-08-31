@@ -113,8 +113,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         if (PlayersManager.Instance.PlayerDic.TryGetValue(sGUID, out entity))
         {       
             entity.SetMp((float)pMsg.mp);//设置Mp值
-
-            BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
             //更新蓝条   
             entity.UpdateMp(entity);
         }
@@ -149,7 +147,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
                 entity.SetMp((float)info.curmp);        
                 entity.SetMpMax((float)info.maxmp);   
 
-                BloodBarPlayer playerXueTiao = (BloodBarPlayer)entity.BloodBar;
                 //更新实体的蓝条
                 //playerXueTiao.UpdateMp();
             }
