@@ -176,8 +176,7 @@ namespace HolyTech.Effect
                     float fallAccSpeed = skillFlycfg.fallAccSpeed;
                     float stayTime = skillFlycfg.stayTime;
                     int canbeRecover = skillFlycfg.bIsCanBeRecover;
-                                           
-                   // buffEntity.OnBeatFly(buffInfo.BuffID, beatFLyAction, raiseSpeed, raiseAccSpeed, fallSpeed, fallAccSpeed, stayTime, canbeRecover);
+           
                 }
             }
 
@@ -240,19 +239,14 @@ namespace HolyTech.Effect
 
             string resourcePath = GameConstDefine.LoadGameSkillEffectPath + "release/" + skillConfig.effect;//攻击特效路径
         
-            Player entityOwner, entityTarget;
-          
+            Player entityOwner, entityTarget;      
             PlayersManager.Instance.PlayerDic.TryGetValue(owner,out entityOwner);//源
-           
-             PlayersManager.Instance.PlayerDic.TryGetValue(target,out entityTarget);//源
-       
+            PlayersManager.Instance.PlayerDic.TryGetValue(target,out entityTarget);//目标
 
             //释放者不能为空
             if (entityOwner == null) return null;
-
             FlyEffect effect = new FlyEffect();
             effect.enOwnerKey = entityOwner.GameObjGUID;
-
             if (entityTarget != null)
                 effect.enTargetKey = entityTarget.GameObjGUID;
 

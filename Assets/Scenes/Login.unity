@@ -29591,7 +29591,7 @@ MonoBehaviour:
   IsInitialize: 0
   IsQuickBattle: 0
   ipList: []
-  LoginServerAdress: 127.0.0.1
+  LoginServerAdress: 192.168.1.83
   LoginServerPort: 49996
   SkipNewsGuide: 0
   mAreaGrid: {fileID: 1201408955}
@@ -29608,7 +29608,7 @@ MonoBehaviour:
   mBackLogin: {fileID: 356748248}
   mSelectHero: {fileID: 478588644}
   mLoadingUI: {fileID: 1918247823}
-  mCenterButtonWindow: {fileID: 945453501}
+  mCenterButtonWindow: {fileID: 0}
   mAgreement: {fileID: 1683654995}
   mServerItem: {fileID: 1360772926}
   mSelectServer: {fileID: 1817689664}

@@ -19,6 +19,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(pMsg));
         return (Int32)EErrorCode.eNormal;
     }
+    //位置已调
     IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
     {     
         yield return 1;
@@ -194,27 +195,8 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         //普通追踪特效
         yield return 1;
         FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
-        // EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
     }
 
-    //public Int32 OnNotifySkillModelHitTarget(HitTar pMsg)
-    //{
-    //    StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(pMsg));
-    //    return (Int32)EErrorCode.eNormal;
-    //}
-
-    //public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(HitTar pMsg)
-    //{
-    //    //创建特效
-    //    UInt64 ownerID;
-    //    ownerID = pMsg.guid;
-    //    UInt64 targetID;
-    //    targetID = pMsg.targuid;
-
-    //    EventCenter.Broadcast<UInt64, uint, UInt64>((Int32)GameEventEnum.GameEvent_BroadcastBeAtk, ownerID, pMsg.effectid, targetID);//添加警告  光圈
-    //    yield return 1;
-    //    HolyTech.Effect.EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
-    //}
 
     public Int32 OnNotifySkillModelRange(RangeEffect pMsg)
     {

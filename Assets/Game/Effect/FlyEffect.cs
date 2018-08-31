@@ -54,7 +54,7 @@ namespace HolyTech.Effect
             PlayersManager.Instance.PlayerDic.TryGetValue(enOwnerKey, out enOwner);
             PlayersManager.Instance.PlayerDic.TryGetValue(enTargetKey, out enTarget);
 
-            point = enOwner.RealEntity.transform;
+            point = enOwner.objPoint.transform;
                        
             //拖拽效果
             if (skillInfo.emitType == 8)

@@ -79,16 +79,9 @@ public class GamePlay : UnitySingleton<GamePlay> {
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelHitTarget://新技能受击
                 MessageHandler.Instance.OnNotifySkillModelHitTarget(ProtobufMsg.MessageDecode<HitTar>(stream));
                 break;
-            //case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelHitTarget://新技能受击
-                //MessageHandler.Instance.OnNotifySkillModelHitTarget(ProtobufMsg.MessageDecode<GSToGC.HitTar>(stream));//产生受击特效
-                //break;
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelRange://范围技能
                 MessageHandler.Instance.OnNotifySkillModelRange(ProtobufMsg.MessageDecode<RangeEffect>(stream));//范围技能
                 break;
-            //case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelBufEffect://buff效果
-                //MessageHandler.Instance.OnNotifySkillModelBuf(ProtobufMsg.MessageDecode<BuffEffect>(stream));//范围技能
-                //break;
-
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmitDestroy://新飞行物体销毁   
                 MessageHandler.Instance.OnNotifySkillModelEmitDestroy(ProtobufMsg.MessageDecode<DestroyEmitEffect>(stream));//销毁特效     
                 break;
