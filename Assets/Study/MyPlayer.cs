@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MyPlayer : Player {
+
+
+    
     public override void OnFreeState()
     {
         OnCameraUpdatePosition();

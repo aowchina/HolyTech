@@ -2793,7 +2793,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             if (PlayerManager.Instance.LocalAccount.ObjType == ObPlayerOrPlayer.PlayerType)
             {
-                entity.OnSkillInfoChange(pMsg.skillid, timeInSecond, timeMax, pMsg.skillslot);    //ToReview enum->another enum //0,空闲 1，准备 2施放 3冷却
+                entity.OnSkillInfoChange(pMsg.skillid, timeInSecond, timeMax, pMsg.skillslot); //0,空闲 1，准备 2施放 3冷却
             }
         }
         return (Int32)EErrorCode.eNormal;

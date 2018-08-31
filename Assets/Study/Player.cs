@@ -24,7 +24,6 @@ public class Player:MonoBehaviour{
     public UInt64 GameObjGUID { get; set; }
     public UInt64 ObjTypeID { get; set; }
     public GameObject LocalPlayer { get; set; }
-
     public Vector3 EntityFSMPosition{ get;set; }
     public Vector3 EntityFSMDirection { get; set; }
     public int EntitySkillID { get; set; }
@@ -43,9 +42,16 @@ public class Player:MonoBehaviour{
     public uint mPlayerID { get; set; }
     public GameObject heroLife;
     public bool mHasLifeBar = false;
+    public bool mIsSkillCD = false;
+    public bool mHasSkill1used = false;
+    public bool mHasSkill2used = false;
     private UISprite mpSprite = null;
     private UISprite hpSprite = null;
-
+    public Transform mSkill1Foreground = null;
+    public Transform mSkill2Foreground = null;
+    private float mSkill1CD = 10f;
+    private float mSkill2CD=18f;
+    
     //设置Mp   
     public virtual void SetMp(float curMp)
     {
@@ -66,6 +72,10 @@ public class Player:MonoBehaviour{
     {
         MpMax = curMpMax;
     }
+    public virtual void SetSkillCD(float curCDTime){
+        mSkill2CD = curCDTime;
+    }
+    
     //隐藏血条
     public void HideBloodBar()
     {
@@ -79,7 +89,7 @@ public class Player:MonoBehaviour{
 
     public virtual void OnReliveState()
     {
-        //
+        
         if (!mHasLifeBar)
         {
             this.heroLife.SetActive(true);
@@ -271,7 +281,7 @@ public class Player:MonoBehaviour{
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
         String path = null;
-        if (GameStart.heroid == info.obj_type_id)
+        if (PlayersManager.Instance.LocalPlayer.GameObjGUID== info.objguid)
         {
             path = "Prefab/HeroLifePlateGreen";
         }
@@ -303,7 +313,6 @@ public class Player:MonoBehaviour{
     {
         mpSprite.fillAmount = player.Mp / player.MpMax;
     }
-
     Vector3 WorldToUI(int heroId)
     {
         Vector3 ff= new Vector3 (0,0,0);
@@ -347,8 +356,17 @@ public class Player:MonoBehaviour{
         skillDic.Add(SkillTypeEnum.SKILL_TYPE4, heroInfo.HeroSkillType4);
         skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB1, 0);
         skillDic.Add(SkillTypeEnum.SKILL_TYPEABSORB2, 0);
+
+
+
     }
-  
+
+    public void InitSkillBG()
+    {
+        mSkill1Foreground.gameObject.SetActive(false);
+        mSkill2Foreground.gameObject.SetActive(false);
+    }
+
     public void UpdateHpChange(byte reason, float curHp)
     {
         float changeValue = Hp - curHp;
@@ -356,6 +374,15 @@ public class Player:MonoBehaviour{
        
     }
 
+    protected virtual void Start()
+    {
+        mSkill1Foreground = GameObject.Find("button_skill_1").transform.Find("Foreground");
+        mSkill2Foreground = GameObject.Find("button_skill_2").transform.Find("Foreground");
+        InitSkillBG();
+       
+    }
+    float timer1=0;
+    float timer2 = 0;
     protected virtual void Update()
     {
         if (isRuning)
@@ -370,9 +397,44 @@ public class Player:MonoBehaviour{
                 item.Value.transform.position = WorldToUI(item.Key);
             }
         }
+
+        if (mHasSkill1used)
+        {
+            timer1 += Time.deltaTime;
+            if (timer1 >= mSkill2CD)
+            {
+                timer1 = mSkill2CD;
+            }
+            mSkill1Foreground.gameObject.GetComponent<UISprite>().fillAmount = 1 - timer1 / mSkill1CD;            
+        }
+        if (mHasSkill2used)
+        {
+            timer2 += Time.deltaTime;
+            if (timer2 >= mSkill2CD)
+            {
+                timer2 = mSkill2CD;
+            }
+            mSkill2Foreground.gameObject.GetComponent<UISprite>().fillAmount =1- timer2/ mSkill2CD;
+        }
+
+        if (mSkill1Foreground.gameObject.GetComponent<UISprite>().fillAmount <= 0.05)
+        {
+            mHasSkill1used = false;
+            mSkill1Foreground.gameObject.SetActive(false);
+            timer1 = 0;
+        }
+
+        if (mSkill2Foreground.gameObject.GetComponent<UISprite>().fillAmount <= 0.05)
+        {
+            mHasSkill2used = false;
+            mSkill2Foreground.gameObject.SetActive(false);
+            timer2 = 0;
+        }
+
+
+
     }
 }
-
 public class CGameObjectSyncInfo
 {
     public float fServerSpeed;

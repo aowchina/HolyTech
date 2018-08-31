@@ -32,7 +32,8 @@ public class GamePlay : UnitySingleton<GamePlay> {
     }
 
 	void Start () {
-        NetworkManager.Instance.Resume();        
+        NetworkManager.Instance.Resume();
+        RenderSettings.fog = false;
     }
 
     void Update () {
@@ -71,7 +72,7 @@ public class GamePlay : UnitySingleton<GamePlay> {
                 break;
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmit:
                  MessageHandler.Instance.OnNotifySkillModelEmit(ProtobufMsg.MessageDecode<EmitSkill>(stream));//产生特效
-                break;
+                break;           
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelBufEffect://buff效果
                 MessageHandler.Instance.OnNotifySkillModelBufEffect(ProtobufMsg.MessageDecode<BuffEffect>(stream));
                 break;
@@ -191,7 +192,7 @@ public class GamePlay : UnitySingleton<GamePlay> {
             Player playerComponent = null;
             if (mMyGuid == sMasterGUID)
             {
-                playerComponent = model.AddComponent<MyPlayer>();
+                playerComponent = model.AddComponent<MyPlayer>();             
                 PlayersManager.Instance.LocalPlayer = playerComponent;
                 LocalPlayer = model;
                 OnLocalPlayerInit((int)sObjID);//设置技能图标
@@ -200,16 +201,17 @@ public class GamePlay : UnitySingleton<GamePlay> {
             {
                 playerComponent = model.AddComponent<Player>();
                 PlayersManager.Instance.targetPlayer = playerComponent;
+            
             }
-
+            PlayersManager.Instance.AddDic(info.objguid, playerComponent);
             playerComponent.GameObjGUID = sObjGUID;
-            playerComponent.ObjTypeID = sObjID;
+            playerComponent.ObjTypeID = sObjID;    
             playerComponent.InitSkillDic();//初始化技能列表
             playerComponent.showHeroLifePlate(info);      //显示血条    
             playerComponent.RealEntity = model;
             playerComponent.objTransform = model.transform;
             playerComponent.EntityFSMPosition = mvPos;
-            PlayersManager.Instance.AddDic(info.objguid, playerComponent);
+         
             model.transform.position = mvPos;
             model.transform.rotation = Quaternion.LookRotation(mvDir);
             model.SetActive(true);
@@ -248,8 +250,8 @@ public class GamePlay : UnitySingleton<GamePlay> {
 
     public void OnReleaseSkill1()
     {
-        Player target = PlayersManager.Instance.targetPlayer;
-        if (!target) return;
+        Player player = PlayersManager.Instance.LocalPlayer;
+        if (!player) return;
 
         SkillTypeEnum type = GetSkillType((int)ShortCutBarBtnEnum.BTN_SKILL_1);
 
@@ -262,13 +264,16 @@ public class GamePlay : UnitySingleton<GamePlay> {
             return;  
         }
         HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
+        player.mSkill1Foreground.gameObject.SetActive(true);
+        player.mHasSkill1used = true;
+
     }
 
     public void OnReleaseSkill2()
     {
 
-        Player target = PlayersManager.Instance.targetPlayer;
-        if (!target) return;
+        Player player = PlayersManager.Instance.LocalPlayer;
+        if (!player) return;
 
         SkillTypeEnum type = GetSkillType((int)ShortCutBarBtnEnum.BTN_SKILL_2);
 
@@ -281,11 +286,8 @@ public class GamePlay : UnitySingleton<GamePlay> {
             return;
         }
         HolyGameLogic.Instance.EmsgToss_AskUseSkill((uint)skillID);
-
-    }
-
-    public void OnLockTarget()
-    {
+        player.mSkill2Foreground.gameObject.SetActive(true);
+        player.mHasSkill2used = true;
     }
 
     public void OnLocalPlayerInit(int sObjID)

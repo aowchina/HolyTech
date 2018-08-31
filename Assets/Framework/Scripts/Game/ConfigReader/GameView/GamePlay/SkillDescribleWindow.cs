@@ -38,7 +38,7 @@ namespace HolyTech.View
         //窗口控件初始化
         protected override void InitWidget()
         {
-            mSkillCd = mRoot.Find("Skill_Cooldown").GetComponent<UILabel>();
+            mSkill2CD = mRoot.Find("Skill_Cooldown").GetComponent<UILabel>();
 
             mSkillDes = mRoot.Find("Skill_Describe").GetComponent<UILabel>();
 
@@ -98,7 +98,7 @@ namespace HolyTech.View
 
         private UILabel mSkillName = null;
         private UILabel mSkillDes = null;
-        private UILabel mSkillCd = null;
+        private UILabel mSkill2CD = null;
         private UILabel mSkillDis = null;
         private UILabel mSkillLv = null;
         private UILabel mSkillMpCost = null;
@@ -157,7 +157,7 @@ namespace HolyTech.View
             SkillManagerConfig skillconfig = ConfigReader.GetSkillManagerCfg(skillId);
             if (skillconfig == null) return;
             
-            mSkillCd.text = (skillconfig.coolDown / 1000f).ToString();//冷却时间
+            mSkill2CD.text = (skillconfig.coolDown / 1000f).ToString();//冷却时间
             mSkillDes.text = DestribeWithAttribue(skillconfig.info, player);//技能描述
 
             int bet = skillconfig.id % 10;

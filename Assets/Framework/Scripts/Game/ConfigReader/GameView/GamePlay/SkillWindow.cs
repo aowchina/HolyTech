@@ -140,7 +140,7 @@ namespace HolyTech.View
             mPressBtnEffectTime.Clear();
 
             mCdDownDic.Clear();
-            mSkillCdList.Clear();
+            mSkill2CDList.Clear();
         }
 
         //游戏事件注册
@@ -708,7 +708,7 @@ namespace HolyTech.View
                 ShowPressEffect(btnType);
                 cd.StartCdCountDown(totalTime, lastTime);
                 cd.CdCountDownEvent += SkillCdEnd;
-                mSkillCdList.Add(btnType);
+                mSkill2CDList.Add(btnType);
             }
             return true;
         }
@@ -734,9 +734,9 @@ namespace HolyTech.View
                 item.Value.EndCdCountDown();
                 ShowValideUseSkillBtn(item.Key, true);
             }
-            for (int i = mSkillCdList.Count - 1; i >= 0; i--)
+            for (int i = mSkill2CDList.Count - 1; i >= 0; i--)
             {
-                RemoveCdList(mSkillCdList.ElementAt(i));
+                RemoveCdList(mSkill2CDList.ElementAt(i));
             }
         }
 
@@ -768,7 +768,7 @@ namespace HolyTech.View
         //判断某个技能是否在CD中
         public bool IsSkillInCd(ShortCutBarBtn type)
         {
-            return mSkillCdList.Contains(type);
+            return mSkill2CDList.Contains(type);
         }
 
         private void RemoveCdList(ShortCutBarBtn type)
@@ -776,7 +776,7 @@ namespace HolyTech.View
             if (!IsSkillInCd(type))
                 return;
             ShowCdEndEffect(type, true);
-            mSkillCdList.Remove(type);
+            mSkill2CDList.Remove(type);
         }
 
         private void OnAbsorbResult(int slot, string spriteName, bool remove)
@@ -876,7 +876,7 @@ namespace HolyTech.View
         private Dictionary<ShortCutBarBtn, GameObject> mPressBtnEffect = new Dictionary<ShortCutBarBtn, GameObject>();
         private Dictionary<ShortCutBarBtn, float> mPressBtnEffectTime = new Dictionary<ShortCutBarBtn, float>();
         private Dictionary<ShortCutBarBtn, CdCountDown> mCdDownDic = new Dictionary<ShortCutBarBtn, CdCountDown>();
-        private List<ShortCutBarBtn> mSkillCdList = new List<ShortCutBarBtn>();
+        private List<ShortCutBarBtn> mSkill2CDList = new List<ShortCutBarBtn>();
 
         private GameObject mEffect3;
         private GameObject mEffect4;

@@ -227,10 +227,20 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         return (int)EErrorCode.eNormal;
     }
 
-    public int  OnNotifySkillInfo(NotifySkillInfo pMsg){
-
-                                   
-       EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillInfo, pMsg);
+    public int  OnNotifySkillInfo(NotifySkillInfo pMsg)
+    {
+        UInt64 targetID = pMsg.guid;
+        float timeInSecond = pMsg.time / 1000.0f;   //状态持续的时间毫秒数
+        float timeMax = pMsg.cooldown / 1000.0f;
+        Player entity;
+        PlayersManager.Instance.PlayerDic.TryGetValue(targetID, out entity);
+        if (entity == null) return (int)EErrorCode.eNormal;;
+        if (entity.GameObjGUID == pMsg.guid )
+        {    
+            entity.mIsSkillCD = true;
+            entity.SetSkillCD(timeInSecond);
+            
+        }          
 
        return (int)EErrorCode.eNormal;
    }
@@ -364,16 +374,16 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
 
     public int OnNotifyMatchTeamPlayerInfo(GSToGC.NotifyMatchTeamPlayerInfo pMsg)
     {
-        if (pMsg.isInsert)
-        {
-            //新增队友
-            TeamMatchCtrl.Instance.AddTeammate(pMsg.postion, pMsg.nickname, pMsg.headid.ToString(), pMsg.userlevel);
-        }
-        else
-        {
-            //删除队友
-            TeamMatchCtrl.Instance.DelTeammate(pMsg.nickname);
-        }
+        //if (pMsg.isInsert)
+        //{
+        //    //新增队友
+        //    TeamMatchCtrl.Instance.AddTeammate(pMsg.postion, pMsg.nickname, pMsg.headid.ToString(), pMsg.userlevel);
+        //}
+        //else
+        //{
+        //    //删除队友
+        //    TeamMatchCtrl.Instance.DelTeammate(pMsg.nickname);
+        //}
         return (int)EErrorCode.eNormal;
     }
 

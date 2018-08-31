@@ -45,14 +45,9 @@ public class GameStart : HolyTechGameBase {
     public GameObject MyHero;
     public GameObject EnmyHero;
     private bool mHandleMsg;
-
-    private Dictionary<string, List<SelectServerData.ServerInfo>> mServerDict;
- 
+    private Dictionary<string, List<SelectServerData.ServerInfo>> mServerDict; 
     List<HeroSelectConfigInfo> heroInfoList = new List<HeroSelectConfigInfo>();
-
     Dictionary<int, GameObject> heroModelTable = new Dictionary<int, GameObject>();
-
-
 
     public GameObject TeamMatch;
     public GameObject MatchSearching;
@@ -68,12 +63,11 @@ public class GameStart : HolyTechGameBase {
     bool mIsDownTime=false;
     bool mIsSelectHero = false;
     bool mIsLoading = false;
-
     public static int heroid = 0; 
 
-    string mGateServer="192.168.1.113";
-    string mLoginServer="192.168.1.113";
-    string mBalanceServer="192.168.1.113";
+    string mGateServer="192.168.1.27";
+    string mLoginServer="192.168.1.27";
+    string mBalanceServer="192.168.1.27";
     int port = 49996;
 
     private void Awake()
@@ -137,8 +131,8 @@ public class GameStart : HolyTechGameBase {
         if (mIsLoading)
         {
 
-            mLocalPercent += (int)UnityEngine.Random.Range(0.8f, 1.3f);
-            mTargetPercent += (int)UnityEngine.Random.Range(0.5f, 1.2f);
+            mLocalPercent += (int)UnityEngine.Random.Range(0.5f, 1.2f);
+            mTargetPercent += (int)UnityEngine.Random.Range(0.8f, 1.2f);
             if (mLocalPercent >= 100)
             {
                 mLocalPercent = 100;
