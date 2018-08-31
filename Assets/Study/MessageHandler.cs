@@ -197,7 +197,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
     }
 
-
     public Int32 OnNotifySkillModelRange(RangeEffect pMsg)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelRangeCoroutine(pMsg));
