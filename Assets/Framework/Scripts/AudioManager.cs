@@ -80,12 +80,12 @@ namespace HolyTech {
 			EffectAudioSourceQueue = new Queue<AudioSource> (Settings.MaxEffectAudioSource);
 			LongVoiceAudioSourceQueue = new Queue<AudioSource> (Settings.LongVoiceAudioSourceQueue);
             
-			for (int im = 0; im < Settings.MaxEffectAudioSource; im++) {
-                AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-                if (ad == null) return;
-				ad.volume = Settings.AudioVolume;
-				EffectAudioSourceQueue.Enqueue (ad);
-			}
+            //for (int im = 0; im < Settings.MaxEffectAudioSource; im++) {
+            //    AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
+            //    if (ad == null) return;
+            //    ad.volume = Settings.AudioVolume;
+            //    EffectAudioSourceQueue.Enqueue (ad);
+            //}
 
 			for (int im = 0; im < Settings.LongVoiceAudioSourceQueue; im++) {
                 AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();

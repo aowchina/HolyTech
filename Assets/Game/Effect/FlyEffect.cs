@@ -132,7 +132,7 @@ namespace HolyTech.Effect
             Vector3 flyDir = Vector3.zero;
             float speed = skillinfo.flySpeed;
             Vector3 Pos = GetTransform().position;
-            float distance;// = Vector3.Distance(root.transform.position, enTarget.RealEntity.objAttackPoint.position);
+            float distance;
            //if (enTarget == null || enTarget.RealEntity == null || enTarget.RealEntity.objAttackPoint == null)
             if (enTarget == null || enTarget.RealEntity == null || enTarget.objAttackPoint == null)
             {
