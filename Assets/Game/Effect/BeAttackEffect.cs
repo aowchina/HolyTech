@@ -23,8 +23,8 @@ namespace HolyTech.Effect
         public override void OnLoadComplete()
         {
             //判断enTarget
-            Ientity enTarget;
-            EntityManager.AllEntitys.TryGetValue(enTargetKey, out enTarget);
+            Player enTarget;
+             PlayersManager.Instance.PlayerDic.TryGetValue(enTargetKey, out enTarget);
 
             if (enTarget != null && obj != null)
             {

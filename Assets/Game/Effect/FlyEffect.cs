@@ -54,7 +54,7 @@ namespace HolyTech.Effect
             PlayersManager.Instance.PlayerDic.TryGetValue(enOwnerKey, out enOwner);
             PlayersManager.Instance.PlayerDic.TryGetValue(enTargetKey, out enTarget);
 
-            point = enOwner.RealEntity.transform;
+            point = enOwner.objPoint.transform;
                        
             //拖拽效果
             if (skillInfo.emitType == 8)
@@ -132,19 +132,19 @@ namespace HolyTech.Effect
             Vector3 flyDir = Vector3.zero;
             float speed = skillinfo.flySpeed;
             Vector3 Pos = GetTransform().position;
-            float distance;// = Vector3.Distance(root.transform.position, enTarget.RealEntity.objAttackPoint.position);
-           // if (enTarget == null || enTarget.RealEntity == null || enTarget.RealEntity.objAttackPoint == null)
-            if (enTarget == null || enTarget.RealEntity == null || enTarget.RealEntity.transform.position == null)
+            float distance;
+           //if (enTarget == null || enTarget.RealEntity == null || enTarget.RealEntity.objAttackPoint == null)
+            if (enTarget == null || enTarget.RealEntity == null || enTarget.objAttackPoint == null)
             {
                 flyDir = fixPosition - Pos;
                 distance = Vector3.Distance(Pos, fixPosition);
             }
             else
             {
-               // flyDir = enTarget.RealEntity.objAttackPoint.transform.position - Pos;
+                // flyDir = enTarget.RealEntity.objAttackPoint.transform.position - Pos;
                 // distance = Vector3.Distance(GetTransform().position, enTarget.RealEntity.objAttackPoint.position);
-                flyDir = enTarget.RealEntity.transform.position - Pos;
-                distance = Vector3.Distance(GetTransform().position, enTarget.RealEntity.transform.position);
+                flyDir = enTarget.objAttackPoint.position - Pos;
+                distance = Vector3.Distance(GetTransform().position, enTarget.objAttackPoint.position);
             }
             
             if (flyDir == Vector3.zero)
@@ -158,20 +158,15 @@ namespace HolyTech.Effect
             GetTransform().position = Pos;
             
             if (speed * Time.deltaTime > distance)
-            {
-                //Debug.LogError("fly effect endtime:" + Time.time);
+            {    
                 isDead = true;
             }
-            //else
-            //{
-            //    Pos += flyDir * Time.deltaTime * speed;
-            //    root.transform.position = Pos;
-            //}
+
         }
         private void UpdateTurnType()
         {
-            Ientity enOwner;
-            EntityManager.AllEntitys.TryGetValue(enOwnerKey, out enOwner);
+            Player enOwner;
+            PlayersManager.Instance.PlayerDic.TryGetValue(enOwnerKey, out enOwner);
 
             if (isTurn == false)
             {
@@ -195,15 +190,17 @@ namespace HolyTech.Effect
                 float speed = skillinfo.flySpeed;
                 Vector3 Pos = GetTransform().position;
                 float distance;// = Vector3.Distance(root.transform.position, enTarget.RealEntity.objAttackPoint.position);
-                if (enOwner == null || enOwner.RealEntity == null || enOwner.RealEntity.objAttackPoint == null)
+                //if (enOwner == null || enOwner.RealEntity == null || enOwner.RealEntity.objAttackPoint == null)
+
+                if (enOwner == null || enOwner.RealEntity == null || enOwner.objAttackPoint == null)
                 {
                     flyDir = fixPosition - Pos;
                     distance = Vector3.Distance(Pos, fixPosition);
                 }
                 else
                 {
-                    flyDir = enOwner.RealEntity.objAttackPoint.transform.position - Pos;
-                    distance = Vector3.Distance(GetTransform().position, enOwner.RealEntity.objAttackPoint.position);
+                    flyDir = enOwner.objAttackPoint.transform.position - Pos;
+                    distance = Vector3.Distance(GetTransform().position, enOwner.objAttackPoint.position);
                 }
 
                 if (flyDir == Vector3.zero)

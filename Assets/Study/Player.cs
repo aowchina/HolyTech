@@ -28,12 +28,16 @@ public class Player:MonoBehaviour{
     public Vector3 EntityFSMDirection { get; set; }
     public int EntitySkillID { get; set; }
     public  Player entitySkillTarget { get; set; }
-    public BloodBarUI BloodBar{ private set;get;}
-    public GameObject  RealEntity
+     public GameObject  RealEntity
     {
         set;
         get;
     }
+    public Transform objAttackPoint { private set; get; }//攻击点
+    public Transform objBuffPoint { private set; get; }//buff点
+    public Transform objPoint { private set; get; }//
+    
+    
     public float mPlayerSpeed { get; set; }
     public float Hp { get; set; }
     public float HpMax { private set; get; }
@@ -76,17 +80,7 @@ public class Player:MonoBehaviour{
         mSkill2CD = curCDTime;
     }
     
-    //隐藏血条
-    public void HideBloodBar()
-    {
-        if (BloodBar != null)
-        {
-            BloodBar.SetVisible(false);
-            mHasLifeBar = false;
-        }
-    }
-
-
+   
     public virtual void OnReliveState()
     {
         
@@ -252,7 +246,6 @@ public class Player:MonoBehaviour{
     {
         //目标死亡主角相关处理
         Player player = PlayersManager.Instance.LocalPlayer;
-        this.HideBloodBar();//隐藏血条
         Animation ani = this.gameObject.GetComponent<Animation>();//播放死亡动画
         ani.Play("death");    
     }
@@ -280,6 +273,7 @@ public class Player:MonoBehaviour{
 
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
+
         String path = "Prefab/HeroLifePlateRed";
         if (PlayersManager.Instance.LocalPlayer)
         {
@@ -288,19 +282,12 @@ public class Player:MonoBehaviour{
                 path = "Prefab/HeroLifePlateGreen";
             }
         }
-        if (mHasLifeBar)
-        {
-            BloodBar.SetVisible(true);
-            return;
-        }
         mHasLifeBar = true;
         GameObject heroLifeModel = Resources.Load(path) as GameObject;
         heroLife = GameObject.Instantiate(heroLifeModel) as GameObject;
         heroLifeDic.Add((int)info.obj_type_id,heroLife);
         hpSprite = heroLife.transform.Find("Control_Hp/Foreground").GetComponent<UISprite>();//绿
         mpSprite = heroLife.transform.Find("Control_Mp/Foreground").GetComponent<UISprite>();
-
-        //Debug.LogError("showHeroLifePlate" + info.obj_type_id);
     }
 
     public virtual void  UpdateHp(Player player)
@@ -375,6 +362,10 @@ public class Player:MonoBehaviour{
 
     protected virtual void Start()
     {
+        objAttackPoint = transform.Find("hitpoint");
+        objBuffPoint = transform.Find("buffpoint");
+        objPoint = transform.Find("point");
+
         mSkill1Foreground = GameObject.Find("button_skill_1").transform.Find("Foreground");
         mSkill2Foreground = GameObject.Find("button_skill_2").transform.Find("Foreground");
         InitSkillBG();
@@ -429,9 +420,6 @@ public class Player:MonoBehaviour{
             mSkill2Foreground.gameObject.SetActive(false);
             timer2 = 0;
         }
-
-
-
     }
 }
 public class CGameObjectSyncInfo
