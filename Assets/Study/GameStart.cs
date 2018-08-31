@@ -74,9 +74,9 @@ public class GameStart : HolyTechGameBase {
     {
         //DontDestroyOnLoad(this.gameObject);
 
-        //mGateServer = LoginServerAdress;
-        //mLoginServer = LoginServerAdress;
-        //mBalanceServer = LoginServerAdress;
+        mGateServer = LoginServerAdress;
+        mLoginServer = LoginServerAdress;
+        mBalanceServer = LoginServerAdress;
         //port = LoginServerPort;
         mCurHeroModel = null;
         //网络过来的消息处理

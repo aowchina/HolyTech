@@ -34,6 +34,11 @@ public class Player:MonoBehaviour{
         set;
         get;
     }
+    public Transform objAttackPoint { private set; get; }//攻击点
+    public Transform objBuffPoint { private set; get; }//buff点
+    public Transform objPoint { private set; get; }//
+    
+    
     public float mPlayerSpeed { get; set; }
     public float Hp { get; set; }
     public float HpMax { private set; get; }
@@ -281,7 +286,7 @@ public class Player:MonoBehaviour{
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
         String path = null;
-        if (PlayersManager.Instance.LocalPlayer.GameObjGUID== info.objguid)
+        if ( PlayersManager.Instance.LocalPlayer.GameObjGUID == info.objguid)
         {
             path = "Prefab/HeroLifePlateGreen";
         }
@@ -376,6 +381,10 @@ public class Player:MonoBehaviour{
 
     protected virtual void Start()
     {
+        objAttackPoint = transform.Find("hitpoint");
+        objBuffPoint = transform.Find("buffpoint");
+        objPoint = transform.Find("point");
+
         mSkill1Foreground = GameObject.Find("button_skill_1").transform.Find("Foreground");
         mSkill2Foreground = GameObject.Find("button_skill_2").transform.Find("Foreground");
         InitSkillBG();
@@ -430,9 +439,6 @@ public class Player:MonoBehaviour{
             mSkill2Foreground.gameObject.SetActive(false);
             timer2 = 0;
         }
-
-
-
     }
 }
 public class CGameObjectSyncInfo

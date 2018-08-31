@@ -18,7 +18,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(pMsg));
         return (Int32)EErrorCode.eNormal;
     }
-     IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
+    IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
     {     
         yield return 1;
         //创建特效
@@ -40,15 +40,11 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
         }
     }
-
-
-
     public int OnNotifySkillModelHitTarget(HitTar pMsg)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(pMsg));
         return (Int32)EErrorCode.eNormal;
     }
-
     public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(HitTar pMsg)
     {
         //创建特效
@@ -57,7 +53,6 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         yield return 1;
         EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
     }
-
     public int OnNotifyGameObjectReliveState(NotifyGameObjectReliveState pMsg)
     {
 
@@ -238,8 +233,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         if (entity.GameObjGUID == pMsg.guid )
         {    
             entity.mIsSkillCD = true;
-            entity.SetSkillCD(timeInSecond);
-            
+            entity.SetSkillCD(timeInSecond);           
         }          
 
        return (int)EErrorCode.eNormal;

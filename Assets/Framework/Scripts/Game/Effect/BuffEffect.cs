@@ -25,9 +25,9 @@ namespace HolyTech.Effect
                 return;
             }
             //GetTransform().parent = entity.RealEntity.objBuffPoint.transform;
-            //GetTransform().position = entity.RealEntity.objBuffPoint.transform.position;
+           // GetTransform().position = entity.RealEntity.objBuffPoint.transform.position;
             GetTransform().parent = entity.RealEntity.transform;
-            GetTransform().position = entity.RealEntity.transform.position;
+            GetTransform().position = entity.objBuffPoint.transform.position;
         }
 
         public override void Update()

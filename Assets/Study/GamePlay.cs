@@ -203,15 +203,18 @@ public class GamePlay : UnitySingleton<GamePlay> {
                 PlayersManager.Instance.targetPlayer = playerComponent;
             
             }
+
+          
+            playerComponent.RealEntity = model;
             PlayersManager.Instance.AddDic(info.objguid, playerComponent);
             playerComponent.GameObjGUID = sObjGUID;
             playerComponent.ObjTypeID = sObjID;    
-            playerComponent.InitSkillDic();//初始化技能列表
-            playerComponent.showHeroLifePlate(info);      //显示血条    
-            playerComponent.RealEntity = model;
+            playerComponent.InitSkillDic();//初始化技能列表    
+           
             playerComponent.objTransform = model.transform;
+            playerComponent.showHeroLifePlate(info);      //显示血条    
+
             playerComponent.EntityFSMPosition = mvPos;
-         
             model.transform.position = mvPos;
             model.transform.rotation = Quaternion.LookRotation(mvDir);
             model.SetActive(true);
@@ -271,7 +274,6 @@ public class GamePlay : UnitySingleton<GamePlay> {
 
     public void OnReleaseSkill2()
     {
-
         Player player = PlayersManager.Instance.LocalPlayer;
         if (!player) return;
 

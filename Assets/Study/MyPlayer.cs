@@ -8,7 +8,11 @@ using UnityEngine;
 public class MyPlayer : Player {
 
 
-    
+    protected override void Start()
+    {
+        base.Start();
+    }
+
     public override void OnFreeState()
     {
         OnCameraUpdatePosition();
