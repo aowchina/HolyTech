@@ -900,7 +900,7 @@ namespace HolyTech.GameEntity
                     }
                 }
                 //广播建筑销毁消息，移除警告等
-                EventCenter.Broadcast<Ientity>(GameEventEnum.GameEvent_NotifyBuildingDes, this);
+                EventCenter.Broadcast<Ientity>((Int32)GameEventEnum.GameEvent_NotifyBuildingDes, this);
                 return;
             }
 
@@ -1089,7 +1089,7 @@ namespace HolyTech.GameEntity
                 }
 
                 //MonoBehaviour.DestroyImmediate(BloodBar.gameObject);
-                GameObjectPool.Instance.ReleaseGO(BloodBar.mResName, xueTiaoObj, PoolObjectTypeEnum.POT_XueTiao);                
+                ObjectPool.Instance.ReleaseGO(BloodBar.mResName, xueTiaoObj, PoolObjectTypeEnum.BloodBar);                
                 BloodBar = null;
             }
         }

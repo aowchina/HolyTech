@@ -280,14 +280,13 @@ public class Player:MonoBehaviour{
 
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
-        String path = null;
-        if (PlayersManager.Instance.LocalPlayer.GameObjGUID== info.objguid)
+        String path = "Prefab/HeroLifePlateRed";
+        if (PlayersManager.Instance.LocalPlayer)
         {
-            path = "Prefab/HeroLifePlateGreen";
-        }
-        else
-        {
-            path = "Prefab/HeroLifePlateRed";
+            if (PlayersManager.Instance.LocalPlayer.GameObjGUID == info.objguid)
+            {
+                path = "Prefab/HeroLifePlateGreen";
+            }
         }
         if (mHasLifeBar)
         {

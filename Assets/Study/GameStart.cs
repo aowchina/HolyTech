@@ -1,19 +1,15 @@
-﻿using Common.GameData;
-using Common.Tools;
+﻿using Common.Tools;
 using HolyTech;
 using HolyTech.Ctrl;
 using HolyTech.GameData;
-using HolyTech.GameEntity;
-using HolyTech.Model;
 using HolyTech.Network;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using GSToGC;
 using BSToGC;
+using LSToGC;
 using System;
-using HolyTech.Resource;
-using GameDefine;
 using UnityEngine.SceneManagement;
 
 public class GameStart : HolyTechGameBase {
@@ -33,6 +29,7 @@ public class GameStart : HolyTechGameBase {
     public GameObject mBackLogin;
     public GameObject mSelectHero;
     public GameObject mLoadingUI;
+    public GameObject mCenterButtonWindow;
     public UIToggle mAgreement;
     public GameObject mServerItem;
     public UILabel mSelectServer;
@@ -45,7 +42,9 @@ public class GameStart : HolyTechGameBase {
     public GameObject MyHero;
     public GameObject EnmyHero;
     private bool mHandleMsg;
-    private Dictionary<string, List<SelectServerData.ServerInfo>> mServerDict; 
+    private Dictionary<string, List<SelectServerData.ServerInfo>> mServerDict;
+    private List<GameObject> mListServerItems = new List<GameObject>();
+ 
     List<HeroSelectConfigInfo> heroInfoList = new List<HeroSelectConfigInfo>();
     Dictionary<int, GameObject> heroModelTable = new Dictionary<int, GameObject>();
 
@@ -58,8 +57,8 @@ public class GameStart : HolyTechGameBase {
 
     GameObject mCurHeroModel;
     float mStartTime;
-    int mLocalPercent= 0;
-    int mTargetPercent = 0;
+    int mPercent = 0;
+    int mEnemyPercent = 0;
     bool mIsDownTime=false;
     bool mIsSelectHero = false;
     bool mIsLoading = false;
@@ -72,26 +71,24 @@ public class GameStart : HolyTechGameBase {
 
     private void Awake()
     {
-        //DontDestroyOnLoad(this.gameObject);
-
-        //mGateServer = LoginServerAdress;
-        //mLoginServer = LoginServerAdress;
-        //mBalanceServer = LoginServerAdress;
-        //port = LoginServerPort;
+        mGateServer = LoginServerAdress;
+        mLoginServer = LoginServerAdress;
+        mBalanceServer = LoginServerAdress;
+        port = LoginServerPort;
         mCurHeroModel = null;
         //网络过来的消息处理
-        EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+        EventCenter.AddListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
 
-        EventCenter.AddListener<bool>(GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, onNotifyMatchTeamBaseInfo);
-        EventCenter.AddListener(GameEventEnum.UserEvent_NotifyServerAddr, onNotifyServerAddr);
-        EventCenter.AddListener<AskGateAddressRet>(GameEventEnum.UserEvent_NotifyGateServerInfo, onNotifyGateServerInfo);
-        EventCenter.AddListener<bool>(GameEventEnum.UserEvent_NotifyMatchTeamSwitch, onNotifyMatchTeamSwitch);
-        EventCenter.AddListener<BattleMatcherCount>(GameEventEnum.UserEvent_NotifyBattleMatherCount, onNotifyBattleMatherCount);
-        EventCenter.AddListener<BattleSeatPosInfo>(GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, onNotifyBattleSeatPosInfo);
-        EventCenter.AddListener<HeroList>(GameEventEnum.UserEvent_NotifyHeroList, onNotifyHeroList);
-        EventCenter.AddListener<TryToChooseHero>(GameEventEnum.UserEvent_NotifyTryChooseHero, onNotifyTryChooseHero);
-        EventCenter.AddListener<HeroInfo>(GameEventEnum.UserEvent_NotifyEnsureHero, onNotifyEnsureHero);
-        EventCenter.AddListener<BattleStateChange>(GameEventEnum.UserEvent_NotifyBattleStateChange, onNotifyBattleStateChange);
+        EventCenter.AddListener<bool>((Int32)GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, onNotifyMatchTeamBaseInfo);
+        EventCenter.AddListener((Int32)GameEventEnum.UserEvent_NotifyServerAddr, onNotifyServerAddr);
+        EventCenter.AddListener<AskGateAddressRet>((Int32)GameEventEnum.UserEvent_NotifyGateServerInfo, onNotifyGateServerInfo);
+        EventCenter.AddListener<bool>((Int32)GameEventEnum.UserEvent_NotifyMatchTeamSwitch, onNotifyMatchTeamSwitch);
+        EventCenter.AddListener<BattleMatcherCount>((Int32)GameEventEnum.UserEvent_NotifyBattleMatherCount, onNotifyBattleMatherCount);
+        EventCenter.AddListener<BattleSeatPosInfo>((Int32)GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, onNotifyBattleSeatPosInfo);
+        EventCenter.AddListener<HeroList>((Int32)GameEventEnum.UserEvent_NotifyHeroList, onNotifyHeroList);
+        EventCenter.AddListener<TryToChooseHero>((Int32)GameEventEnum.UserEvent_NotifyTryChooseHero, onNotifyTryChooseHero);
+        EventCenter.AddListener<HeroInfo>((Int32)GameEventEnum.UserEvent_NotifyEnsureHero, onNotifyEnsureHero);
+        EventCenter.AddListener<BattleStateChange>((Int32)GameEventEnum.UserEvent_NotifyBattleStateChange, onNotifyBattleStateChange);
        
         mServerDict = new Dictionary<string, List<SelectServerData.ServerInfo>>();
         var areaItemOld = mAreaItem;
@@ -130,25 +127,39 @@ public class GameStart : HolyTechGameBase {
         }
         if (mIsLoading)
         {
+//<<<<<<< HEAD
 
-            mLocalPercent += (int)UnityEngine.Random.Range(0.5f, 1.2f);
-            mTargetPercent += (int)UnityEngine.Random.Range(0.8f, 1.2f);
-            if (mLocalPercent >= 100)
+//            mLocalPercent += (int)UnityEngine.Random.Range(0.5f, 1.2f);
+//            mTargetPercent += (int)UnityEngine.Random.Range(0.8f, 1.2f);
+//            if (mLocalPercent >= 100)
+//            {
+//                mLocalPercent = 100;
+//            }
+//            if (mTargetPercent >= 100)
+//            {
+//                mTargetPercent = 100;
+//            }
+//            EnmyLoadintTime.GetComponent<UILabel>().text = mLocalPercent.ToString() + "%";
+//            MyLoadintTime.GetComponent<UILabel>().text = mTargetPercent.ToString() + "%";
+//=======
+            if (mPercent < 100)
             {
-                mLocalPercent = 100;
+                var datatemp = new System.Random().Next(0, 2);
+                mPercent += datatemp;
+                MyLoadintTime.GetComponent<UILabel>().text = mPercent.ToString() + "%";
             }
-            if (mTargetPercent >= 100)
-            {
-                mTargetPercent = 100;
+            if (mEnemyPercent<100) {
+                var datatemp = new System.Random().Next(0, 2);
+                mEnemyPercent += datatemp;
+                EnmyLoadintTime.GetComponent<UILabel>().text = mEnemyPercent.ToString() + "%";
             }
-            EnmyLoadintTime.GetComponent<UILabel>().text = mLocalPercent.ToString() + "%";
-            MyLoadintTime.GetComponent<UILabel>().text = mTargetPercent.ToString() + "%";
+//>>>>>>> master
         }
     }
+
     void OnApplicationQuit()
     {
         NetworkManager.Instance.Close();
-
     }
    
     /////////////////////消息接收//////////////////////////
@@ -159,7 +170,7 @@ public class GameStart : HolyTechGameBase {
         switch (n32ProtocalID)
         {
             case (int)LSToGC.MsgID.eMsgToGCFromLS_NotifyServerBSAddr://513  选择服务器返回
-               // OnNotifyServerAddr(stream);
+                MessageHandler.Instance.OnNotifyServerAddr(ProtobufMsg.MessageDecode<ServerBSAddr>(stream));
                 break;
             case (int)BSToGC.MsgID.eMsgToGCFromBS_AskGateAddressRet://203 开始游戏后返回
                 MessageHandler.Instance.OnNotifyGateServerInfo(ProtobufMsg.MessageDecode<AskGateAddressRet>(stream));
@@ -238,7 +249,7 @@ public class GameStart : HolyTechGameBase {
         {
             mHandleMsg = false;
             HolyGameLogic.Instance.AskLoadComplete();
-            EventCenter.RemoveListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+            EventCenter.RemoveListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
             NetworkManager.Instance.Pause();
             Debug.Log("加载场景");
             async=  SceneManager.LoadSceneAsync("pvp_001");
@@ -320,8 +331,6 @@ public class GameStart : HolyTechGameBase {
             enmyName.GetComponent<UILabel>().text = ConfigReader.HeroSelectXmlInfoDict[(int)tryTopMsg.heroid].HeroSelectNameCh.ToString();
         }
         Thumbnail.GetComponent<UISprite>().spriteName = spriteName;
-
-
     }
 
     void onNotifyBattleSeatPosInfo(BattleSeatPosInfo pMsg) {
@@ -403,6 +412,12 @@ public class GameStart : HolyTechGameBase {
                 var svrList = new List<SelectServerData.ServerInfo>();
                 svrList.Add(item.Value);
                 mServerDict.Add(strName, svrList);
+            } else {
+                List<SelectServerData.ServerInfo> serverList;
+                bool hasList = mServerDict.TryGetValue(strName, out serverList);
+                if (hasList) {
+                    serverList.Add(item.Value);
+                }
             }
         }
         mAreaGrid.Reposition();        
@@ -417,18 +432,24 @@ public class GameStart : HolyTechGameBase {
     }
 
     public void onSelectArea(GameObject btnObject) {
-        foreach(var item in mServerGrid.GetChildList()) {
-            Destroy(item.gameObject);  
+        var text = btnObject.GetComponentInChildren<UILabel>().text;
+        if (mSelectArea.text==text) {
+            return;
         }
 
-        var text = btnObject.GetComponentInChildren<UILabel>().text;
         mSelectArea.text = text;
+
+        foreach (var item in mServerGrid.GetChildList())
+        {
+            Destroy(item.gameObject);
+            mServerGrid.Reposition();
+        }
         foreach(var item in this.mServerDict[text]) {
             GameObject obj = Instantiate(mServerItem);
             obj.gameObject.SetActive(true);
             obj.transform.SetParent(mServerGrid.transform);
             obj.transform.localScale = Vector3.one;
-            obj.GetComponentInChildren<UILabel>().text = item.area + " " + item.name;            
+            obj.GetComponentInChildren<UILabel>().text = item.area + " " + item.name;
         }
         mServerGrid.Reposition();
     }
@@ -478,13 +499,13 @@ public class GameStart : HolyTechGameBase {
     // 切换服务器选择窗口
     public void OnPlayServer(GameObject go)
     {
+        //mCenterButtonWindow.SetActive(false);
         //showSever  首先显示窗体，其次显示列表
         bool showLogin = false;
         bool showServer = true;
         mRootLogin.gameObject.SetActive(showLogin);
         mRootSever.gameObject.SetActive(showServer);
         ShowSeverItem();
-
     }
 
     //返回登录窗口
@@ -495,11 +516,27 @@ public class GameStart : HolyTechGameBase {
         bool showServer = false;
         mRootLogin.gameObject.SetActive(showLogin);
         mRootSever.gameObject.SetActive(showServer);
+
+        //mCenterButtonWindow.SetActive(true);
     }
 
     //显示服务器列表
     public void ShowSeverItem()
     {
+        foreach (var item in mServerGrid.GetChildList())
+        {
+            Destroy(item.gameObject);
+            mServerGrid.Reposition();
+        }
+        mSelectArea.text = "";
+
+        foreach (var transItem in this.mListServerItems)
+        {
+            Destroy(transItem.gameObject);
+            mAreaGrid.Reposition();
+        }
+        mListServerItems.Clear();
+
         Dictionary<int, SelectServerData.ServerInfo> serverInfoDic = SelectServerData.Instance.GetServerDicInfo();
         foreach (var item in mServerDict)
         {
@@ -509,6 +546,7 @@ public class GameStart : HolyTechGameBase {
             obj.transform.localScale = Vector3.one;
             obj.transform.localPosition = new Vector3(0, 0, 0);
             obj.GetComponentInChildren<UILabel>().text = item.Key;
+            mListServerItems.Add(obj);
         }
         mAreaGrid.Reposition();
     }

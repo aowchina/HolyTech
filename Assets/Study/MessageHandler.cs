@@ -9,6 +9,7 @@ using GSToGC;
 using System;
 using HolyTech.Effect;
 using System.Collections;
+using HolyTech.GameEntity;
 
 public partial class MessageHandler: UnitySingleton<MessageHandler> {
     /////////////////////消息处理///////////////////////
@@ -139,7 +140,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             }
         }
         //暂时不用
-        //EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHPInfo, pMsg);
+        //EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyHPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
     public int OnNotifyMPInfo(NotifyMPInfo pMsg)
@@ -158,7 +159,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
                 //playerXueTiao.UpdateMp();
             }
         }
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMPInfo, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyMPInfo, pMsg);
         return (Int32)EErrorCode.eNormal;  
     }
     public int OnNotifySkillModelEmitDestroy(DestroyEmitEffect pMsg)
@@ -186,6 +187,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         }
         return (int)EErrorCode.eNormal;
     }
+
     public int OnNotifySkillModelEmit(EmitSkill pMsg)
     {    
         StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(pMsg));     
@@ -198,11 +200,90 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         Vector3 pos = this.ConvertPosToVector3(pMsg.tarpos);
         Vector3 dir = this.ConvertDirToVector3(pMsg.dir);    
         //普通追踪特效
-         yield return 1;
-         FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
-        // EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
-    
+        yield return 1;
+        FlyEffect effect = EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint) pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
+        // EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifySkillModelEmit, pMsg);//暂时没用上
     }
+
+    //public Int32 OnNotifySkillModelHitTarget(HitTar pMsg)
+    //{
+    //    StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(pMsg));
+    //    return (Int32)EErrorCode.eNormal;
+    //}
+
+    //public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(HitTar pMsg)
+    //{
+    //    //创建特效
+    //    UInt64 ownerID;
+    //    ownerID = pMsg.guid;
+    //    UInt64 targetID;
+    //    targetID = pMsg.targuid;
+
+    //    EventCenter.Broadcast<UInt64, uint, UInt64>((Int32)GameEventEnum.GameEvent_BroadcastBeAtk, ownerID, pMsg.effectid, targetID);//添加警告  光圈
+    //    yield return 1;
+    //    HolyTech.Effect.EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
+    //}
+
+    public Int32 OnNotifySkillModelRange(RangeEffect pMsg)
+    {
+        StartCoroutine(OnNetMsg_NotifySkillModelRangeCoroutine(pMsg));
+        return (Int32)EErrorCode.eNormal;
+    }
+
+    public IEnumerator OnNetMsg_NotifySkillModelRangeCoroutine(RangeEffect pMsg)
+    {
+        if (pMsg != null)
+        {
+            UInt64 owner = pMsg.guid;
+            Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
+            Vector3 dir = this.ConvertDirToVector3(pMsg.dir);
+
+            //创建特效
+            yield return 1;
+            // 创建技能范围特效
+            HolyTech.Effect.EffectManager.Instance.CreateAreaEffect(owner, pMsg.effectid, pMsg.uniqueid, dir, pos);
+        }
+        else
+        {
+            Debug.LogError("msg is null in OnNetMsg_NotifySkillModelRangeCoroutine");
+        }
+    }
+
+    //public Int32 OnNotifySkillModelBuf(GSToGC.BuffEffect pMsg)
+    //{
+    //    StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(pMsg));
+    //    return (Int32)EErrorCode.eNormal;
+    //}
+
+    //public IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(GSToGC.BuffEffect pMsg)
+    //{
+    //    //解析消息
+    //    yield return 1;
+
+    //    //创建特效
+    //    UInt64 skillowner;
+    //    skillowner = pMsg.guid;
+    //    UInt64 skilltarget;
+    //    skilltarget = pMsg.targuid;
+    //    float rTime = pMsg.time / 1000.0f;
+    //    Ientity target = null;
+    //    EntityManager.AllEntitys.TryGetValue(skilltarget, out target);
+    //    if (0 == pMsg.state)
+    //    {
+    //        HolyTech.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
+    //        Ientity entity = null;
+    //        EntityManager.AllEntitys.TryGetValue(skilltarget, out entity);
+    //        HolyTech.Effect.EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid);    //ToReview uniqueid是否就是instid
+    //    }
+    //    else if (1 == pMsg.state)
+    //    {
+    //        HolyTech.Skill.BuffManager.Instance.RemoveBuff(pMsg.uniqueid);
+    //        HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+    //    }
+    //}
+
+    /*==========================================================================*/
+
 
     public int OnNotifyGameObjectReleaseSkillState(ReleasingSkillState pMsg )
     {
@@ -222,7 +303,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
              entity.EntityChangeDataOnPrepareSkill(pos, dir, pMsg.skillid, target);
             //释放技能 
              entity.OnEntityReleaseSkill();  
-        }   
+        }
    
         return (int)EErrorCode.eNormal;
     }
@@ -242,34 +323,37 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             
         }          
 
-       return (int)EErrorCode.eNormal;
-   }
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyGameObjectReleaseSkillState, pMsg);
+        return (int)EErrorCode.eNormal;
+    }
+
+   // public int  OnNotifySkillInfo(NotifySkillInfo pMsg){
+   //    EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifySkillInfo, pMsg);
+   //    return (int)EErrorCode.eNormal;
+   //}
+
     public int OnNotifySGameObjectFreeState(FreeState pMsg  )
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectFreeState, pMsg);
-
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyGameObjectFreeState, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifyGameObjectRunState(RunningState pMsg)
     {
-
         if (null == pMsg.dir || null == pMsg.pos)
             return 0;
-
         Player entity;
         PlayersManager.Instance.PlayerDic.TryGetValue(pMsg.objguid, out entity);
-
         entity.GOSSI.fBeginTime = Time.realtimeSinceStartup;
         entity.GOSSI.fLastSyncSecond = Time.realtimeSinceStartup;
         
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectRunState,pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyGameObjectRunState,pMsg);
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifySkillModelStartForceMoveTeleport(NotifySkillModelStartForceMoveTeleport pMsg)
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifySkillModelStartForceMoveTeleport, pMsg);
         return (int)EErrorCode.eNormal; 
     }
 
@@ -277,7 +361,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     {
         //玩家确定英雄 显示加载界面 
         //HeroCtrl.Instance.AddRealSelectHero((uint)pMsg.heroposinfo.pos, pMsg.heroposinfo.heroid);
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyEnsureHero, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyEnsureHero, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
@@ -289,20 +373,20 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
 
     public int OnNotifyGameObjectAppear(GSToGC.GOAppear pMsg)
     {    
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGameObjectAppear, pMsg);  
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyGameObjectAppear, pMsg);  
         return (int)EErrorCode.eNormal;
     }
 
     public int OnBroadcastBattleHeroInfo(GSToGC.BroadcastBattleHeroInfo pMsg)
     {
         //英雄Id
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleHeroInfo, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyBattleHeroInfo, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifyToChooseHero(GSToGC.TryToChooseHero pMsg)
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyTryChooseHero, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyTryChooseHero, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
@@ -316,7 +400,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         {
             GameUserModel.Instance.GameBattleID = pMsg.battleid;
             GameUserModel.Instance.GameMapID = (uint)pMsg.mapid;
-            EventCenter.Broadcast(GameEventEnum.GameEvent_ReconnectToBatttle);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ReconnectToBatttle);
         }
         else
         {
@@ -329,13 +413,13 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     {
 
 
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyBattleSeatPosInfo, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifyBattleMatherCount(GSToGC.BattleMatcherCount pMsg)
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleMatherCount, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyBattleMatherCount, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
@@ -360,7 +444,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
 
     public int OnNotifyMatchTeamSwitch(GSToGC.NotifyMatchTeamSwitch pMsg)
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyMatchTeamSwitch, pMsg.startflag);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyMatchTeamSwitch, pMsg.startflag);
         return (int)EErrorCode.eNormal;
     }
 
@@ -368,7 +452,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     {
         //初始化组队伍基本信息  设置队伍地图id 及匹配模式
         //TeamMatchCtrl.Instance.InitTeamBaseInfo(pMsg.mapid, pMsg.matchtype);
-        EventCenter.Broadcast<bool>(GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, pMsg.teamid!=0);
+        EventCenter.Broadcast<bool>((Int32)GameEventEnum.UserEvent_NotifyMatchTeamBaseInfo, pMsg.teamid!=0);
         return (int)EErrorCode.eNormal;
     }
 
@@ -404,7 +488,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             SelectServerData.Instance.SetServerList(i, name, (SelectServerData.ServerState)state, addr, port, area);
         }
 
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyServerAddr);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyServerAddr);
         return (int)EErrorCode.eNormal;
     }
 
@@ -415,7 +499,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
         SelectServerData.Instance.GateServerPort = pMsg.port;
         SelectServerData.Instance.GateServerToken = pMsg.token;
         SelectServerData.Instance.SetGateServerUin(pMsg.user_name);
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyGateServerInfo, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyGateServerInfo, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
@@ -433,7 +517,7 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
     public int OnNotifyBattleStateChange(Stream stream)
     {
         //这个消息用于显示选择选择英雄界面 所以在显示窗口的位置注册
-      //  EventCenter.Broadcast(GameEventEnum.GameEvent_IntoHero);
+      //  EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_IntoHero);
         return (int)EErrorCode.eNormal;
     }
 
@@ -445,13 +529,13 @@ public partial class MessageHandler: UnitySingleton<MessageHandler> {
             GameUserModel.Instance.CanChooseHeroList.Add(heroId);
         }
         GameUserModel.Instance.STCTimeDiff = pMsg.timeDiff;
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyHeroList, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyHeroList, pMsg);
         return (int)EErrorCode.eNormal;
     }
 
     public int OnNotifyBattleStateChange(BattleStateChange pMsg)
     {
-        EventCenter.Broadcast(GameEventEnum.UserEvent_NotifyBattleStateChange, pMsg);
+        EventCenter.Broadcast((Int32)GameEventEnum.UserEvent_NotifyBattleStateChange, pMsg);
         return (int)EErrorCode.eNormal;
     }
 

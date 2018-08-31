@@ -4402,7 +4402,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3006
+  startingRenderQueue: 3010
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -5484,7 +5484,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3010
+  startingRenderQueue: 3025
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
@@ -10867,7 +10867,7 @@ MonoBehaviour:
   keepAspectRatio: 0
   aspectRatio: 4.3
   keepCrispWhenShrunk: 1
-  mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
+  mTrueTypeFont: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
   mFont: {fileID: 0}
   mText: "\u5FAE\u4FE122\u533A   \u51B0\u5C01\u4E4B\u5FC3"
   mFontSize: 40
@@ -16368,8 +16368,8 @@ Camera:
   m_GameObject: {fileID: 823449709}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 4
-  m_BackGroundColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  m_ClearFlags: 3
+  m_BackGroundColor: {r: 0.23529413, g: 0.37647063, b: 0.6627451, a: 1}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -17102,7 +17102,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3000
+  startingRenderQueue: 3004
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -17197,7 +17197,7 @@ MonoBehaviour:
   bottomType: 1
   topType: 1
   mAtlas: {fileID: 11400000, guid: 4627edc0139c3254291e4e7dcba1c54a, type: 2}
-  mSpriteName: 129
+  mSpriteName: 92
   mFillCenter: 1
 --- !u!1 &945453501
 GameObject:
@@ -18568,7 +18568,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3006
+  startingRenderQueue: 3021
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 3
@@ -27978,7 +27978,7 @@ MonoBehaviour:
   anchorOffset: 0
   softBorderPadding: 1
   renderQueue: 0
-  startingRenderQueue: 3006
+  startingRenderQueue: 3021
   mClipTexture: {fileID: 0}
   mAlpha: 1
   mClipping: 0
@@ -29608,6 +29608,7 @@ MonoBehaviour:
   mBackLogin: {fileID: 356748248}
   mSelectHero: {fileID: 478588644}
   mLoadingUI: {fileID: 1918247823}
+  mCenterButtonWindow: {fileID: 945453501}
   mAgreement: {fileID: 1683654995}
   mServerItem: {fileID: 1360772926}
   mSelectServer: {fileID: 1817689664}

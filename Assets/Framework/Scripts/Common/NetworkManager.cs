@@ -344,7 +344,7 @@ namespace HolyTech.Network
                 //序列到stream
                 ProtoBuf.Serializer.Serialize(mSendStream, pMsg);
               
-                CMsg pcMsg = new CMsg((int)mSendStream.Length);
+                Message pcMsg = new Message((int)mSendStream.Length);
                 pcMsg.SetProtocalID(n32MsgID);
                 pcMsg.Add(mSendStream.ToArray(), 0, (int)mSendStream.Length);
 
@@ -423,7 +423,7 @@ namespace HolyTech.Network
 
                         }
                         //广播发送服务器成功，
-                        EventCenter.Broadcast(GameEventEnum.GameEvent_ConnectServerSuccess); //登录成功，发送Ping值
+                        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ConnectServerSuccess); //登录成功，发送Ping值
                     }
                     break;
                 case ServerType.LoginServer://1
@@ -454,13 +454,13 @@ namespace HolyTech.Network
             m_RecvOverCount = 0;
             m_ConnectOverCount = 0;
 
-            EventCenter.Broadcast(GameEventEnum.GameEvent_ConnectServerFail);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ConnectServerFail);
             Debugger.Log("OnConnectError end");
         }
 
         public void OnClosed(object sender, EventArgs e)
         {
-            EventCenter.Broadcast(GameEventEnum.GameEvent_ConnectServerFail);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ConnectServerFail);
             
             try
             {
@@ -521,7 +521,7 @@ namespace HolyTech.Network
     #endif
                     if (m_bCustomHandleMessage)
                     {
-                        EventCenter.Broadcast<System.IO.Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, iostream, type);
+                        EventCenter.Broadcast<System.IO.Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, iostream, type);
                     } else {                        
                         HolyGameLogic.Instance.HandleNetMsg(iostream, type);
                     }
