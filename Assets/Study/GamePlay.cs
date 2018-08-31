@@ -21,14 +21,13 @@ public class GamePlay : UnitySingleton<GamePlay> {
     public override void Awake()
     {
         base.Awake();
-        EventCenter.AddListener<Stream, int>(GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
-        EventCenter.AddListener<BroadcastBattleHeroInfo>(GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
-        EventCenter.AddListener<GOAppear>(GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);   
-        EventCenter.AddListener<RunningState>(GameEventEnum.UserEvent_NotifyGameObjectRunState, OnNotifyGameObjectRunState);//移动状态
-        EventCenter.AddListener<FreeState>(GameEventEnum.UserEvent_NotifyGameObjectFreeState, OnNotifyGameObjectFreeState);//自由状态
-        // EventCenter.AddListener<NotifySkillInfo>(GameEventEnum.UserEvent_NotifySkillInfo, OnNotifySkillInfo);//技能信息     
-        EventCenter.AddListener<NotifyHPInfo>(GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
-        EventCenter.AddListener<NotifyMPInfo>(GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
+        EventCenter.AddListener<Stream, int>((Int32)GameEventEnum.GameEvent_NotifyNetMessage, HandleNetMsg);
+        EventCenter.AddListener<BroadcastBattleHeroInfo>((Int32)GameEventEnum.UserEvent_NotifyBattleHeroInfo, onNotifyBattleHeroInfor); 
+        EventCenter.AddListener<GOAppear>((Int32)GameEventEnum.UserEvent_NotifyGameObjectAppear, onNotifyGameObjectAppear);
+        EventCenter.AddListener<RunningState>((Int32)GameEventEnum.UserEvent_NotifyGameObjectRunState, OnNotifyGameObjectRunState);//移动状态
+        EventCenter.AddListener<FreeState>((Int32)GameEventEnum.UserEvent_NotifyGameObjectFreeState, OnNotifyGameObjectFreeState);//自由状态
+        EventCenter.AddListener<NotifyHPInfo>((Int32)GameEventEnum.UserEvent_NotifyHPInfo, OnNotifyHPInfo);
+        EventCenter.AddListener<NotifyMPInfo>((Int32)GameEventEnum.UserEvent_NotifyMPInfo, OnNotifyMPInfo); 
     }
 
 	void Start () {
@@ -70,6 +69,7 @@ public class GamePlay : UnitySingleton<GamePlay> {
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifyGameObjectReleaseSkillState://通知客户端释放技能 
                  MessageHandler.Instance.OnNotifyGameObjectReleaseSkillState(ProtobufMsg.MessageDecode<ReleasingSkillState>(stream));//释放技能
                 break;
+
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmit:
                  MessageHandler.Instance.OnNotifySkillModelEmit(ProtobufMsg.MessageDecode<EmitSkill>(stream));//产生特效
                 break;           
@@ -79,6 +79,16 @@ public class GamePlay : UnitySingleton<GamePlay> {
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelHitTarget://新技能受击
                 MessageHandler.Instance.OnNotifySkillModelHitTarget(ProtobufMsg.MessageDecode<HitTar>(stream));
                 break;
+            //case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelHitTarget://新技能受击
+                //MessageHandler.Instance.OnNotifySkillModelHitTarget(ProtobufMsg.MessageDecode<GSToGC.HitTar>(stream));//产生受击特效
+                //break;
+            case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelRange://范围技能
+                MessageHandler.Instance.OnNotifySkillModelRange(ProtobufMsg.MessageDecode<RangeEffect>(stream));//范围技能
+                break;
+            //case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelBufEffect://buff效果
+                //MessageHandler.Instance.OnNotifySkillModelBuf(ProtobufMsg.MessageDecode<BuffEffect>(stream));//范围技能
+                //break;
+
             case (Int32)GSToGC.MsgID.eMsgToGCFromGS_NotifySkillModelEmitDestroy://新飞行物体销毁   
                 MessageHandler.Instance.OnNotifySkillModelEmitDestroy(ProtobufMsg.MessageDecode<DestroyEmitEffect>(stream));//销毁特效     
                 break;

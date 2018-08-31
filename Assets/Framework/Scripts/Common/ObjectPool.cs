@@ -8,53 +8,44 @@ using HolyTech.Effect;
 //缓存物体类型
 public enum PoolObjectTypeEnum
 {
-    POT_Effect,
-    POT_MiniMap,
-    POT_Entity,
-    POT_UITip,
-    POT_XueTiao,
-
+    Effect,
+    MiniMap,
+    Entity,
+    UITip,
+    BloodBar,
 }
 
 //缓存GameObject
-public class PoolGameObjectInfo
+public class ObjectItemInfo
 {
     public string name;
-
     //缓存时间
     public float mCacheTime = 0.0f;
-
     //缓存物体类型
     public PoolObjectTypeEnum type;
-
     //如果是特效，特效的显示等级
     public EffectLodLevel lodLevel;
 
     #region //拖尾处理
-
     //可以重用
     public bool mCanUse = true;
-
     //重置时间
     public float mResetTime = .0f;
-
     //拖尾原始时间
     public Dictionary<TrailRenderer, float> mTrailTimes = new Dictionary<TrailRenderer, float>();
-
     #endregion
 }
 
-//GameObject缓存池
-public class PoolInfo
+public class ObjectPool : Singleton<ObjectPool>
 {
-    //缓存队列
-    public Dictionary<GameObject, PoolGameObjectInfo> mQueue = new Dictionary<GameObject, PoolGameObjectInfo>();
-}
-
-public class GameObjectPool : Singleton<GameObjectPool>
-{
+    //GameObject缓存池
+    class ObjectInfo
+    {
+        //缓存队列
+        public Dictionary<GameObject, ObjectItemInfo> mQueue = new Dictionary<GameObject, ObjectItemInfo>();
+    }
     //缓存GameObject Map
-    private Dictionary<String, PoolInfo> mPoolDic = new Dictionary<String, PoolInfo>();
+    private Dictionary<String, ObjectInfo> mPoolDic = new Dictionary<String, ObjectInfo>();
     //缓存GameObject节点
     private GameObject objectsPool;
 
@@ -64,14 +55,14 @@ public class GameObjectPool : Singleton<GameObjectPool>
     private List<GameObject> mDestoryPoolGameObjects = new List<GameObject>();
 
     //取得可用对象
-    private bool TryGetObject(PoolInfo poolInfo, out KeyValuePair<GameObject, PoolGameObjectInfo> objPair)
+    private bool TryGetObject(ObjectInfo poolInfo, out KeyValuePair<GameObject, ObjectItemInfo> objPair)
     {
         if (poolInfo.mQueue.Count > 0)
         {
-            foreach (KeyValuePair<GameObject, PoolGameObjectInfo> pair in poolInfo.mQueue)
+            foreach (KeyValuePair<GameObject, ObjectItemInfo> pair in poolInfo.mQueue)
             {
                 GameObject go = pair.Key;
-                PoolGameObjectInfo info = pair.Value;
+                ObjectItemInfo info = pair.Value;
 
                 if (info.mCanUse)
                 {
@@ -81,7 +72,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
             }
         }
 
-        objPair = new KeyValuePair<GameObject, PoolGameObjectInfo>();
+        objPair = new KeyValuePair<GameObject, ObjectItemInfo>();
         return false;
     }
 
@@ -95,8 +86,8 @@ public class GameObjectPool : Singleton<GameObjectPool>
         }
 
         //查找对应pool，如果没有缓存
-        PoolInfo poolInfo = null;
-        KeyValuePair<GameObject, PoolGameObjectInfo> pair;
+        ObjectInfo poolInfo = null;
+        KeyValuePair<GameObject, ObjectItemInfo> pair;
         if (!mPoolDic.TryGetValue(res, out poolInfo) || !TryGetObject(poolInfo, out pair))
         {
             //新创建
@@ -111,7 +102,7 @@ public class GameObjectPool : Singleton<GameObjectPool>
 
         //出队列数据
         GameObject go = pair.Key;
-        PoolGameObjectInfo info = pair.Value;
+        ObjectItemInfo info = pair.Value;
 
         poolInfo.mQueue.Remove(go);
 
@@ -143,16 +134,16 @@ public class GameObjectPool : Singleton<GameObjectPool>
             return;
         }
 
-        PoolInfo poolInfo = null;
+        ObjectInfo poolInfo = null;
         //没有创建 
         if (!mPoolDic.TryGetValue(res, out poolInfo))
         {
-            poolInfo = new PoolInfo();
+            poolInfo = new ObjectInfo();
             mPoolDic.Add(res, poolInfo);
         }
 
 
-        PoolGameObjectInfo poolGameObjInfo = new PoolGameObjectInfo();
+        ObjectItemInfo poolGameObjInfo = new ObjectItemInfo();
         poolGameObjInfo.type = type;
         poolGameObjInfo.name = res;
 
@@ -165,10 +156,10 @@ public class GameObjectPool : Singleton<GameObjectPool>
     }
 
     //设置缓存物体无效
-    public void EnablePoolGameObject(GameObject go, PoolGameObjectInfo info)
+    public void EnablePoolGameObject(GameObject go, ObjectItemInfo info)
     {
         //特效Enable          
-        if (info.type == PoolObjectTypeEnum.POT_Effect)
+        if (info.type == PoolObjectTypeEnum.Effect)
         {
             go.SetActive(true);
 
@@ -180,9 +171,9 @@ public class GameObjectPool : Singleton<GameObjectPool>
                 ParticleSystem[] particles = go.GetComponentsInChildren<ParticleSystem>(true);
                 foreach (ParticleSystem part in particles)
                 {
-                    if (part.gameObject.tag == "prewarm" && part.loop)
+                    if (part.gameObject.tag == "prewarm" && part.main.loop)
                     {
-                        part.Simulate(part.duration);
+                        part.Simulate(part.main.duration);
                         part.Play();
                     }
                 }
@@ -220,22 +211,22 @@ public class GameObjectPool : Singleton<GameObjectPool>
 
             go.transform.parent = null;
         }
-        else if (info.type == PoolObjectTypeEnum.POT_MiniMap)
+        else if (info.type == PoolObjectTypeEnum.MiniMap)
         {
             go.SetActive(true);
             go.transform.parent = null;
         }
-        else if (info.type == PoolObjectTypeEnum.POT_Entity)
+        else if (info.type == PoolObjectTypeEnum.Entity)
         {
             go.SetActive(true);
             go.transform.parent = null;
         }
-        else if (info.type == PoolObjectTypeEnum.POT_UITip)
+        else if (info.type == PoolObjectTypeEnum.UITip)
         {
             go.SetActive(true);
             go.transform.parent = null;
         }
-        else if (info.type == PoolObjectTypeEnum.POT_XueTiao)
+        else if (info.type == PoolObjectTypeEnum.BloodBar)
         {
             //do nothing
         }
@@ -244,10 +235,10 @@ public class GameObjectPool : Singleton<GameObjectPool>
     }
 
     //设置缓存物体无效
-    public void DisablePoolGameObject(GameObject go, PoolGameObjectInfo info)
+    public void DisablePoolGameObject(GameObject go, ObjectItemInfo info)
     {
         //特效Disable
-        if (info.type == PoolObjectTypeEnum.POT_Effect)
+        if (info.type == PoolObjectTypeEnum.Effect)
         {
             ParticleSystem[] particles = go.GetComponentsInChildren<ParticleSystem>(true);
             foreach (ParticleSystem part in particles)
@@ -295,24 +286,24 @@ public class GameObjectPool : Singleton<GameObjectPool>
             }
 
         }
-        else if (info.type == PoolObjectTypeEnum.POT_MiniMap)
+        else if (info.type == PoolObjectTypeEnum.MiniMap)
         {
             //go.transform.parent = objectsPool.transform;   
             go.SetActive(false);
         }
-        else if (info.type == PoolObjectTypeEnum.POT_Entity)
+        else if (info.type == PoolObjectTypeEnum.Entity)
         {
             //解绑到poolGameobject节点
             go.transform.parent = objectsPool.transform;
             go.SetActive(false);
         }
-        else if (info.type == PoolObjectTypeEnum.POT_UITip)
+        else if (info.type == PoolObjectTypeEnum.UITip)
         {
             //解绑到poolGameobject节点
             go.transform.parent = objectsPool.transform;
             go.SetActive(false);
         }
-        else if (info.type == PoolObjectTypeEnum.POT_XueTiao)
+        else if (info.type == PoolObjectTypeEnum.BloodBar)
         {
             go.transform.parent = objectsPool.transform;
             BloodBarUI xt = go.GetComponent<BloodBarUI>();
@@ -348,22 +339,22 @@ public class GameObjectPool : Singleton<GameObjectPool>
         float deltaTime = Time.deltaTime;
 
         //遍历数据
-        foreach (PoolInfo poolInfo in mPoolDic.Values)
+        foreach (ObjectInfo poolInfo in mPoolDic.Values)
         {
             //死亡列表
             mDestoryPoolGameObjects.Clear();
 
-            foreach (KeyValuePair<GameObject, PoolGameObjectInfo> pair in poolInfo.mQueue)
+            foreach (KeyValuePair<GameObject, ObjectItemInfo> pair in poolInfo.mQueue)
             {
                 GameObject obj = pair.Key;
-                PoolGameObjectInfo info = pair.Value;
+                ObjectItemInfo info = pair.Value;
 
                 info.mCacheTime += deltaTime;
 
                 float mAllCachTime = mCachTime;
 
                 //POT_UITip,缓存3600秒
-                if (info.type == PoolObjectTypeEnum.POT_UITip)
+                if (info.type == PoolObjectTypeEnum.UITip)
                     mAllCachTime = 3600;
 
                 //缓存时间到

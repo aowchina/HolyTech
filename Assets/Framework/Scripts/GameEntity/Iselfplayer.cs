@@ -82,7 +82,7 @@ namespace HolyTech.GameEntity
             HolyTech.AudioManager.Instance.PlayEffectAudio(RebornClip);
             UInt64 myself_guid = PlayerManager.Instance.LocalPlayer.GameObjGUID;
             MsgInfoManager.Instance.SetAudioPlay(myself_guid, MsgInfoManager.AudioPlayType.FuhuoAudio);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_Reborn);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_Reborn);
         }
 
         enum SlotSkill
@@ -115,7 +115,7 @@ namespace HolyTech.GameEntity
             SetAbsorbEffect(slot, effect);//set absorb btn effect          
             AbsorbMonsterType[slot] = monsterID;        //set absorb    monster id
             //广播吸收结果   创建灵魂特效  设置吸附按钮
-            EventCenter.Broadcast<int,string,bool>(GameEventEnum.GameEvent_AbsorbResult,slot,spriteName,effect);
+            EventCenter.Broadcast<int,string,bool>((Int32)GameEventEnum.GameEvent_AbsorbResult,slot,spriteName,effect);
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace HolyTech.GameEntity
                 AddOrDelEnemy(null, true);
             }
             //广播锁定目标的消息，来更新定头像（非敌方玩家，而是小兵野怪等） GamePlayWindow   677
-            EventCenter.Broadcast<Ientity>(GameEventEnum.GameEvent_LockTarget, entity);
+            EventCenter.Broadcast<Ientity>((Int32)GameEventEnum.GameEvent_LockTarget, entity);
         }
 
         public override void OnEntityPrepareAttack()
@@ -266,7 +266,7 @@ namespace HolyTech.GameEntity
                 CircleArea = GameObject.Instantiate(obj) as GameObject;
                 CircleArea.transform.parent = RealEntity.GetTransform();
                 CircleArea.transform.position = RealEntity.GetTransform().position + new Vector3(0.0f, 0.2f, 0.0f);
-                EventCenter.AddListener(GameEventEnum.GameEvent_LocalPlayerRange,UpdataRange);
+                EventCenter.AddListener((Int32)GameEventEnum.GameEvent_LocalPlayerRange,UpdataRange);
                 CircleArea.transform.localRotation = Quaternion.Euler(new Vector3(0.0f, 0.0f, 0.0f));
             }
             CapsuleCollider capsule = RealEntity.GetComponent<CapsuleCollider>();
@@ -611,7 +611,7 @@ namespace HolyTech.GameEntity
         public override void SetHp(float curHp)
         {
             base.SetHp(curHp);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerHpChange);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerHpChange);
             //if(UIAvatarInfo.Instance != null){
             //    UIAvatarInfo.Instance.UpdateHpSlider();
             //}
@@ -621,7 +621,7 @@ namespace HolyTech.GameEntity
         public override void SetHpMax(float curHpMax)
         {
             base.SetHpMax(curHpMax);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerHpChange);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerHpChange);
             //if(UIAvatarInfo.Instance != null){
             //    UIAvatarInfo.Instance.UpdateHpSlider();
             //}
@@ -631,26 +631,26 @@ namespace HolyTech.GameEntity
         public override void SetMp(float curMp)
         {
             base.SetMp(curMp);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerMpChange);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerMpChange);
 
         }
 
         public override void SetMpMax(float curMpMax)
         {
             base.SetMpMax(curMpMax);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerMpChange);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerMpChange);
 
         }
 
         public override void SetLevel(int curLv)
         {
             base.SetLevel(curLv);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerLevelChange, curLv);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerLevelChange, curLv);
             if (curLv != 1)
             {
                 SetUpdateSkillId(curLv);
 
-                EventCenter.Broadcast(GameEventEnum.GameEvent_SkillDescribleUpdate);
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillDescribleUpdate);
             }
         }
 
@@ -776,7 +776,7 @@ namespace HolyTech.GameEntity
                 bPlaySkill = false;
             }
 
-            EventCenter.Broadcast<SkillTypeEnum, float, float>(GameEventEnum.GameEvent_LocalPlayerSkillCD, skillType, maxTime, time);
+            EventCenter.Broadcast<SkillTypeEnum, float, float>((Int32)GameEventEnum.GameEvent_LocalPlayerSkillCD, skillType, maxTime, time);
         }
         //获取对应技能的冷却时间
         public float getSkillCoolDownTime(int skillID)
@@ -791,7 +791,7 @@ namespace HolyTech.GameEntity
         public override void SetExp(float curExp)
         {
             base.SetExp(curExp);
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerExpChange);   
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerExpChange);   
         }
         
 
@@ -816,7 +816,7 @@ namespace HolyTech.GameEntity
             InitSkillDic(SkillIdDic);
             InitSkillDic(BaseSkillIdDic);
 
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerInit);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerInit);
 
             ResourceItem WalkAudioClipUnit = ResourcesManager.Instance.loadImmediate(AudioDefine.PATH_HERO_WALKSOUND + ConfigReader.GetHeroInfo(this.NpcGUIDType).un32WalkSound, ResourceType.ASSET);
             WalkAudioClip = WalkAudioClipUnit.Asset as AudioClip;
@@ -831,7 +831,7 @@ namespace HolyTech.GameEntity
             RebornClip = RebornClipUnit.Asset as AudioClip;
 
             base.InitWhenCreateModel();
-            EventCenter.AddListener<UInt64>(GameEventEnum.GameEvent_GameOver, OnGameOver);
+            EventCenter.AddListener<UInt64>((Int32)GameEventEnum.GameEvent_GameOver, OnGameOver);
 
             OnCameraUpdatePosition();
         }
@@ -839,8 +839,8 @@ namespace HolyTech.GameEntity
         private void OnGameOver(UInt64 BsGuid)
         {
             RemoveRuinWarning();
-            EventCenter.RemoveListener(GameEventEnum.GameEvent_LocalPlayerRange, UpdataRange);
-            EventCenter.RemoveListener<UInt64>(GameEventEnum.GameEvent_GameOver, OnGameOver);
+            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_LocalPlayerRange, UpdataRange);
+            EventCenter.RemoveListener<UInt64>((Int32)GameEventEnum.GameEvent_GameOver, OnGameOver);
         }
 
         private AudioClip DeadAudioClip;
@@ -855,13 +855,13 @@ namespace HolyTech.GameEntity
         protected override void UpdateFuryEffect()
         {
             base.UpdateFuryEffect();
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerUpdateFuryEffect);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerUpdateFuryEffect);
         }
 
         protected override void UpdateFuryValue()
         {
             base.UpdateFuryValue();
-            EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerUpdateFuryValue);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerUpdateFuryValue);
         }
 
         public override void SetFuryState(EFuryState state)
@@ -869,9 +869,9 @@ namespace HolyTech.GameEntity
             base.SetFuryState(state);
             if (state == EFuryState.eFuryNullState)
             {
-                EventCenter.Broadcast(GameEventEnum.GameEvent_LocalPlayerUpdateFuryValue);
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerUpdateFuryValue);
             }
-            EventCenter.Broadcast<EFuryState>(GameEventEnum.GameEvent_FuryStateInfo, state);
+            EventCenter.Broadcast<EFuryState>((Int32)GameEventEnum.GameEvent_FuryStateInfo, state);
         }
 
 
@@ -938,7 +938,7 @@ namespace HolyTech.GameEntity
 
         private void SendHpLessWarning(bool tag)
         {
-            CEvent eve = new CEvent(GameEventEnum.GameEvent_NotifyHpLessWarning);
+            FEvent eve = new FEvent((Int32)(Int32)GameEventEnum.GameEvent_NotifyHpLessWarning);
             eve.AddParam("Tag", tag);
             EventCenter.SendEvent(eve);
         }

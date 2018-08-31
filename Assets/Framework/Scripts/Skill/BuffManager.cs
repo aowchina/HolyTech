@@ -111,7 +111,7 @@ namespace HolyTech.Skill
 
             if (isSelfHaveBuffType(chenmoID) == true)
             {
-                EventCenter.Broadcast<bool>(GameEventEnum.GameEvent_LocalPlayerSilence, true);
+                EventCenter.Broadcast<bool>((Int32)GameEventEnum.GameEvent_LocalPlayerSilence, true);
             }
             //refresh ui
             if (UIBuffUnityInterface.Instance != null)
@@ -169,7 +169,7 @@ namespace HolyTech.Skill
 
                 if (isSelfHaveBuffType(chenmoID) == false)
                 {
-                    EventCenter.Broadcast<bool>(GameEventEnum.GameEvent_LocalPlayerSilence, false);
+                    EventCenter.Broadcast<bool>((Int32)GameEventEnum.GameEvent_LocalPlayerSilence, false);
                 }
             }
         }

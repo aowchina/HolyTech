@@ -28,8 +28,7 @@ public class Player:MonoBehaviour{
     public Vector3 EntityFSMDirection { get; set; }
     public int EntitySkillID { get; set; }
     public  Player entitySkillTarget { get; set; }
-    public BloodBarUI BloodBar{ private set;get;}
-    public GameObject  RealEntity
+     public GameObject  RealEntity
     {
         set;
         get;
@@ -81,17 +80,7 @@ public class Player:MonoBehaviour{
         mSkill2CD = curCDTime;
     }
     
-    //隐藏血条
-    public void HideBloodBar()
-    {
-        if (BloodBar != null)
-        {
-            BloodBar.SetVisible(false);
-            mHasLifeBar = false;
-        }
-    }
-
-
+   
     public virtual void OnReliveState()
     {
         
@@ -257,7 +246,6 @@ public class Player:MonoBehaviour{
     {
         //目标死亡主角相关处理
         Player player = PlayersManager.Instance.LocalPlayer;
-        this.HideBloodBar();//隐藏血条
         Animation ani = this.gameObject.GetComponent<Animation>();//播放死亡动画
         ani.Play("death");    
     }
@@ -285,19 +273,14 @@ public class Player:MonoBehaviour{
 
     public void showHeroLifePlate(GOAppear.AppearInfo info)
     {
-        String path = null;
-        if ( PlayersManager.Instance.LocalPlayer.GameObjGUID == info.objguid)
+
+        String path = "Prefab/HeroLifePlateRed";
+        if (PlayersManager.Instance.LocalPlayer)
         {
-            path = "Prefab/HeroLifePlateGreen";
-        }
-        else
-        {
-            path = "Prefab/HeroLifePlateRed";
-        }
-        if (mHasLifeBar)
-        {
-            BloodBar.SetVisible(true);
-            return;
+            if (PlayersManager.Instance.LocalPlayer.GameObjGUID == info.objguid)
+            {
+                path = "Prefab/HeroLifePlateGreen";
+            }
         }
         mHasLifeBar = true;
         GameObject heroLifeModel = Resources.Load(path) as GameObject;
@@ -305,8 +288,6 @@ public class Player:MonoBehaviour{
         heroLifeDic.Add((int)info.obj_type_id,heroLife);
         hpSprite = heroLife.transform.Find("Control_Hp/Foreground").GetComponent<UISprite>();//绿
         mpSprite = heroLife.transform.Find("Control_Mp/Foreground").GetComponent<UISprite>();
-
-        //Debug.LogError("showHeroLifePlate" + info.obj_type_id);
     }
 
     public virtual void  UpdateHp(Player player)
