@@ -490,7 +490,7 @@ public class GameStart : HolyTechGameBase {
             sdk = 10,//ToReview 平台写死为10?              
             platform = 0,
             equimentid = MacAddressIosAgent.GetMacAddressByDNet(),
-            name = "1",      /* SelectServerData.Instance.gateServerUin*/
+            name = Guid.NewGuid().ToString(),      /* SelectServerData.Instance.gateServerUin*/
             passwd = "1",    /* SelectServerData.Instance.GateServerToken*/
         };
         NetworkManager.Instance.SendMsg(pMsg, (int)pMsg.msgnum);

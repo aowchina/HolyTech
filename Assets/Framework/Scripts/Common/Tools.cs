@@ -136,5 +136,10 @@ namespace HolyTech
 
             return timeString;
         }
+
+        public static string GetUUID() {
+            var uuid = Guid.NewGuid().ToString();
+            return uuid;
+        }
     }
 }
