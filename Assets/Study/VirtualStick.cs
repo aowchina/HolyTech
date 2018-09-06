@@ -1,15 +1,6 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UICommon;
-using HolyTech.GameEntity;
-using HolyTech.GameData;
-using Common.GameData;
-using HolyTech.FSM;
-using HolyTech.GuideDate;
-using HolyTech.Model;
-using HolyTech.GameState;
 
 public class VirtualStick : MonoBehaviour
 {
