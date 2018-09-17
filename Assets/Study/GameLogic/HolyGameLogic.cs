@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
-using HolyTech.GameData;
-using HolyTech.Network;
+using Thanos.GameData;
+using Thanos.Network;
 using System.Text;
 using GCToCS;
 using GCToBS;
-using HolyTech;
-using HolyTech.Model;
+using Thanos;
+using Thanos.Model;
 
 //CGLCtrl_GameLogic游戏核心功能，本身没有逻辑，所有函数用来发送消息的，负责向服务器发送请求
 public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
@@ -31,7 +31,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
     public Int64 GetNowTime()
     {
-        return CTools.GetClientUTCMillisec();
+        return GameUtils.GetClientUTCMillisec();
     }
 
     public float GetDuration(Int64 n64StopTime, Int64 n64Start)

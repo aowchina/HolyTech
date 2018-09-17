@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using HolyTech.GameEntity;
+using Thanos;
+using Thanos.GameEntity;
 
-public class SceneSoundManager
+public class SceneSoundManager: Singleton<SceneSoundManager>
 {
-
     Dictionary<AudioSource, GameObject> sceneSound = new Dictionary<AudioSource, GameObject>();
-    public static readonly SceneSoundManager Instance = new SceneSoundManager();
-
-
 
     public void addSound(AudioSource audioSource, GameObject obj)
     {
         sceneSound[audioSource] = obj;
     }
+
     public void remove(AudioSource audiosource)
     {
         audiosource.volume = 0.0f;
@@ -55,6 +53,7 @@ public class SceneSoundManager
                  removeList.Add(p.Key);
             }
         }
+
         foreach (AudioSource a in removeList)
         {
             remove(a);

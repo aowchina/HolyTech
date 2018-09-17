@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using GameDefine;
-using HolyTech.GameData;
-using HolyTech.GameEntity;
-using HolyTech.GuideDate;
-using HolyTech.GameState;
-using HolyTech.Network;
-using HolyTech.Effect;
-using HolyTech;
-using HolyTech.Model;
+using Thanos.GameData;
+using Thanos.GameEntity;
+using Thanos.GuideDate;
+using Thanos.GameState;
+using Thanos.Network;
+using Thanos.Effect;
+using Thanos;
+using Thanos.Model;
 
 
 public class HolyTechGameBase : MonoBehaviour {
@@ -74,7 +73,7 @@ public class HolyTechGameBase : MonoBehaviour {
     void Update()
     {
         //更新buff
-        HolyTech.Skill.BuffManager.Instance.Update();
+        Thanos.Skill.BuffManager.Instance.Update();
         //更新特效
         EffectManager.Instance.UpdateSelf();
         //更新提示消失
@@ -82,7 +81,7 @@ public class HolyTechGameBase : MonoBehaviour {
         //场景声音更新
         SceneSoundManager.Instance.Update();
         //声音更新
-        HolyTech.AudioManager.Instance.OnUpdate();
+        Thanos.AudioManager.Instance.OnUpdate();
         //更新游戏状态机   
         GameStateManager.Instance.Update(Time.deltaTime);
         //更新网络模块
@@ -106,9 +105,9 @@ public class HolyTechGameBase : MonoBehaviour {
         //在NetWorkManager中连接成功后广播消息  ，连接成功后发送Ping值
         //EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
         //打开链接UI
-        EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
+        EventCenter.AddListener((Int32)GameEventEnum.ConnectServerFail, OpenConnectUI);
         //打开链接UI
-        EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
+        EventCenter.AddListener((Int32)GameEventEnum.ReconnectToBatttle, OpenConnectUI);
         //连接等待事件  
         EventCenter.AddListener((Int32)GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI); 
 
@@ -129,8 +128,8 @@ public class HolyTechGameBase : MonoBehaviour {
     void OnDisable()
 	{
         //EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, GameConnectServerSuccess);
-        EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerFail, OpenConnectUI);
-        EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReconnectToBatttle, OpenConnectUI);
+        EventCenter.RemoveListener((Int32)GameEventEnum.ConnectServerFail, OpenConnectUI);
+        EventCenter.RemoveListener((Int32)GameEventEnum.ReconnectToBatttle, OpenConnectUI);
         EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_BeginWaiting, OpenWaitingUI);   
 	}
     //游戏退出前执行（玩家强行关闭游戏）
@@ -198,7 +197,7 @@ public class HolyTechGameBase : MonoBehaviour {
             PlayerManager.Instance.LocalPlayer.AbsorbMonsterType = null;
         }
         
-        HolyTech.AudioManager.Instance.StopHeroAudio();
+        Thanos.AudioManager.Instance.StopHeroAudio();
     }
 
     //游戏开始  游戏Bulidings创建
@@ -243,14 +242,14 @@ public class HolyTechGameBase : MonoBehaviour {
 
                     //生成并初始化
                     EntityManager.HandleDelectEntity(sGUID);
-                    Ientity item = NpcManager.Instance.HandleCreateEntity(sGUID, (EntityCampType)camp);
+                    IEntity item = NpcManager.Instance.HandleCreateEntity(sGUID, (EntityCampTypeEnum)camp);
                     item.MapObgId = objId;
                     item.realObject = child.gameObject;
                     item.objTransform = child.gameObject.transform;
                     item.GameObjGUID = sGUID;
                     item.NpcGUIDType = type;
                     item.ObjTypeID = (uint)type;
-                    item.entityType = (EntityType)ConfigReader.GetNpcInfo(type).NpcType;
+                    item.entityType = (EntityTypeEnum)ConfigReader.GetNpcInfo(type).NpcType;
                     item.SetHp(1);
                     item.SetHpMax(1);
                     EntityManager.Instance.SetCommonProperty(item, type);

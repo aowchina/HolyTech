@@ -4,23 +4,23 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-using Common.Tools;
-using HolyTech.GameData;
-using Common.GameData;
+using Thanos.Tools;
+using Thanos.GameData;
+using Thanos.GameData;
 using GameDefine;
-using HolyTech.GameEntity;
-using HolyTech.FSM;
-using HolyTech.GuideDate;
-using HolyTech.Effect;
-using HolyTech;
-using HolyTech.GameState;
-using HolyTech.Ctrl;
+using Thanos.GameEntity;
+using Thanos.FSM;
+using Thanos.GuideDate;
+using Thanos.Effect;
+using Thanos;
+using Thanos.GameState;
+using Thanos.Ctrl;
 
 using System.IO;
-using HolyTech.Network;
-using HolyTech.Resource;
-using HolyTech.Model;
-using HolyTech.View;
+using Thanos.Network;
+using Thanos.Resource;
+using Thanos.Model;
+using Thanos.View;
 
 public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 {
@@ -504,7 +504,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         DailyBonusCtrl.Instance.mIsHadNewDailyTask = pMsg.IsHadNewDailyTask;
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotifyAllTaskUpdate);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_UpdateAllDailyTask(Stream stream)
@@ -532,7 +532,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         DailyBonusCtrl.Instance.mIsHadNewDailyTask = pMsg.IsHadNewDailyTask;
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotifyDailyTaskUpdate);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_AddOneTask(Stream stream)
@@ -562,7 +562,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             DailyBonusCtrl.Instance.mInfiniteTaskDic.Add(oneTask.mGuid, oneTask);
             EventCenter.Broadcast<CTask>((Int32)GameEventEnum.GameEvent_NotifyOneTaskAdd, oneTask);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_UpdateOneTask(Stream stream)
@@ -599,7 +599,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 }
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_DelOneTask(Stream stream)
@@ -615,7 +615,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             {
                 EventCenter.Broadcast<CTask>((Int32)GameEventEnum.GameEvent_NotifyOneTaskDel, oneTask.Value);
                 DailyBonusCtrl.Instance.mDailyTaskDic.Remove(pMsg.task_guid);
-                return (Int32)EErrorCode.eNormal;
+                return (Int32)ErrorCodeEnum.Normal;
             }
         }
         foreach (KeyValuePair<uint, CTask> oneTask in DailyBonusCtrl.Instance.mInfiniteTaskDic)
@@ -624,10 +624,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             {
                 EventCenter.Broadcast<CTask>((Int32)GameEventEnum.GameEvent_NotifyOneTaskDel, oneTask.Value);
                 DailyBonusCtrl.Instance.mInfiniteTaskDic.Remove(pMsg.task_guid);
-                return (Int32)EErrorCode.eNormal;
+                return (Int32)ErrorCodeEnum.Normal;
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_RewardsOneTask(Stream stream)
@@ -642,7 +642,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             if (oneTask.Value.mGuid == pMsg.task_guid)
             {
                 EventCenter.Broadcast<CTask>((Int32)GameEventEnum.GameEvent_NotifyOneTaskRewards, oneTask.Value);
-                return (Int32)EErrorCode.eNormal;
+                return (Int32)ErrorCodeEnum.Normal;
             }
         }
         foreach (KeyValuePair<uint, CTask> oneTask in DailyBonusCtrl.Instance.mInfiniteTaskDic)
@@ -650,10 +650,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             if (oneTask.Value.mGuid == pMsg.task_guid)
             {
                 EventCenter.Broadcast<CTask>((Int32)GameEventEnum.GameEvent_NotifyOneTaskRewards, oneTask.Value);
-                return (Int32)EErrorCode.eNormal;
+                return (Int32)ErrorCodeEnum.Normal;
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //
@@ -673,7 +673,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //删除该id邮件
         Debug.Log("-----error mailid--------" + mailId); 
         MailCtrl.Instance.DelOrSortMailList(mailId, true, true);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     /// <summary>
     /// 引导击杀信息
@@ -691,7 +691,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         Int32 npcType = pMsg.npctype;
         EventCenter.Broadcast<int>((Int32)GameEventEnum.GameEvent_GuideKillTask, npcType);
         Debug.Log("-----sGUID:" + sGUID + ";npcType:" + npcType); 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyOtherItemInfo(Stream stream)
@@ -702,7 +702,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         GoodsModel.Instance.AddOrChangeRuneBaptze(pMsg.item);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 NotifyUserLvInfo(Stream stream)
@@ -737,7 +737,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             UIGuideCtrl.Instance.GuideRespStep(pMsg);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyRemoveCommodity(Stream stream)
@@ -750,7 +750,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         Debug.Log("收到删除商品事件！");
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyBattleDelayTime(Stream stream)
@@ -763,7 +763,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         GamePlayCtrl.Instance.BattleDelayTimeBegin(pMsg.delayTime / 1000);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_UnloadRune(Stream stream)
@@ -776,7 +776,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         RuneEquipCtrl.Instance.UnloadRune(pMsg.page, pMsg.pos);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyRunesList(Stream stream)
@@ -799,7 +799,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             MarketRuneListCtrl.Instance.UpdateRuneBagInfo(sBagInfo.runeid, sBagInfo.num, sBagInfo.gottime);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyNewHeadID(Stream stream)
@@ -811,7 +811,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         PresonInfoCtrl.Instance.SetHeadID(pMsg.guid, pMsg.newheaderid);
         PresonInfoCtrl.Instance.ChangeHeadID();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyNewNickname(Stream stream)
@@ -823,7 +823,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         PresonInfoCtrl.Instance.SetNickName(pMsg.guid, pMsg.newnickname);
         PresonInfoCtrl.Instance.ChangeNickName();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNotifyOneMatchNeedOne(Stream stream)
@@ -836,7 +836,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         TeamMatchCtrl.Instance.ShowServerInvitation(pMsg.mapid, pMsg.fightid);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -856,7 +856,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //todo:
         Debug.Log("-----GSToGC.DelAndSortMail pMsg--------");
         MailCtrl.Instance.DelOrSortMailList(pMsg);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     /// 单封邮件内容：标题,内容，赠送
     Int32 OnNetMsg_NotifyMailInfo(Stream stream)
@@ -868,7 +868,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         //todo:
         MailCtrl.Instance.UpdateMailInfo(pMsg);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     //邮件列表//
     Int32 OnNetMsg_NotifyUserMail(Stream stream)
@@ -880,7 +880,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         //todo:
         MailCtrl.Instance.AddMail(pMsg);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyHerosInfo(Stream stream)
@@ -888,20 +888,20 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         GSToGC.NotifyHerosInfo pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         foreach (var item in pMsg.info)
         {
             UInt64 sGUID;
             sGUID = (ulong)item.guid;
-            BattleingData.Instance.AddInitPlayer(sGUID, item.nickname, item.killnum, item.deadtimes, item.asstimes, item.herolv, item.lasthit, (EntityCampType)item.camgpid, (int)item.heroid);
+            BattleingData.Instance.AddInitPlayer(sGUID, item.nickname, item.killnum, item.deadtimes, item.asstimes, item.herolv, item.lasthit, (EntityCampTypeEnum)item.camgpid, (int)item.heroid);
             foreach (var goods in item.goods)
             {
                 BattleingData.Instance.AddPlayer(sGUID, 0, BattleDataType.Goods, goods.grid, goods.goodid);
             }
         }
         BattleInfoCtrl.Instance.Enter();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyRoomList(Stream stream)
@@ -909,12 +909,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         GSToGC.AskRoomListRet pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
 
         BattleCtrl.Instance.UpdateRoomList(pMsg.roomlist);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换NetClash（未复查）
@@ -926,7 +926,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         NetworkManager.Instance.canReconnect = false;
         NetworkManager.Instance.Close();
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -935,13 +935,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         GSToGC.LastHitNum pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         UInt64 sguid;
         sguid = pMsg.guid;
         BattleingData.Instance.AddPlayer(sguid, pMsg.lhnum, BattleDataType.LastHit);
         //EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AllPlayerLastHit);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyCanInviteFriends(Stream stream)
@@ -949,19 +949,19 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         GSToGC.CanInviteFriends pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         if (pMsg.friends.Count == 0)
         {
             MsgInfoManager.Instance.ShowMsg(10033);
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         foreach (var item in pMsg.friends)
         {
             FriendManager.Instance.AddInvite(item.guididx, item.HeaderId, item.nickname);
         }
         RoomCtrl.Instance.OpenInviteList();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyHeroAttributes(Stream stream)
@@ -975,7 +975,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sguid = pMsg.guid;
         BattleingData.Instance.SetAttributes(pMsg.PlayerSpeed, pMsg.AttackInterval, pMsg.AttackRange, pMsg.ResurgenceTime, pMsg.PhysicAttack, pMsg.SpellsAttack, pMsg.PhysicDef, pMsg.SpellsDef);
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroAttributesInfo);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
    
 
@@ -989,7 +989,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         //广播消息  更新玩家匹配数量
         EventCenter.Broadcast<int, int>((Int32)GameEventEnum.GameEvent_MatchNumber, pMsg.count, pMsg.maxcount);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
 
     }
 
@@ -1002,7 +1002,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         GameTimeData.Instance.UpdatePlayTime(pMsg.spanTime);
         EventCenter.Broadcast<long>((Int32)GameEventEnum.GameEvent_GameStartTime, pMsg.spanTime);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     Int32 OnNetMsg_NotifyUserBaseUpLv(Stream stream)
     {
@@ -1012,11 +1012,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
 
-        HolyTech.FEvent eve = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_UpLv);
+        Thanos.FEvent eve = new Thanos.FEvent((Int32)(Int32)GameEventEnum.GameEvent_UpLv);
         eve.AddParam("lv", pMsg.lv);
         EventCenter.SendEvent(eve);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     Int32 OnNetMsg_NotifyGetRewardRune(Stream stream)
     {
@@ -1026,7 +1026,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_RemoveDailyBonus);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyGetRewardSkin(Stream stream)
@@ -1037,7 +1037,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_RemoveDailyBonus);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyGetRewardHero(Stream stream)
@@ -1048,7 +1048,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_RemoveDailyBonus);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1066,7 +1066,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //GameUserDataCtrl.Instance.
         GameUserCtrl.Instance.GameUserCurDiamond(pMsg.Diamond);
         Debug.Log("OnNet_NotifyCurDiamond  " + pMsg.Diamond);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1082,14 +1082,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         GameUserCtrl.Instance.GameUserCurGold(pMsg.gold);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNet_NotifyGateServerInfo(Stream stream)
     {
         LoginCtrl.Instance.RecvGateServerInfo(stream);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -1105,14 +1105,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             LoginCtrl.Instance.LoginFail(); //广播登录失败消息  显示失败界面，重新添加监听器
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyServerAddr(Stream stream)
     {
         LoginCtrl.Instance.UpdateServerAddr(stream);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifySdkLoginResult(Stream stream)
@@ -1123,7 +1123,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         LoginCtrl.Instance.LoginFail();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyCLdays(Stream stream)
@@ -1134,7 +1134,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         DailyBonusCtrl.Instance.SetDayAwards(pMsg.month, pMsg.today, pMsg.totalCldays, pMsg.cldays, pMsg.isTodayCan);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1146,25 +1146,25 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         if (pMsg.notice.Count == 0)
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         SystemNoticeData.Instance.Clear();
         foreach (var item in pMsg.notice)
         {
             if (string.IsNullOrEmpty(item.notice))
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
             SystemNoticeData.Instance.SetSystemNotList(item.title, (NoticeIdentify)item.flag, (NoticeState)item.status, (int)item.priority, item.notice);
         }
         if (UIGuideModel.Instance.mIsGuideComp)
         {
             SystemNoticeCtrl.Instance.Enter();
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyHeroReborn(Stream stream)//隐藏死亡窗口
     {
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroReborn);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1179,7 +1179,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         if (pMsg.info.Count == 0)
         {
             MsgInfoManager.Instance.ShowMsg(40029);
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         foreach (GSToGC.NotifyQueryNickNameRet.QueryInfo info in pMsg.info)
         {
@@ -1191,7 +1191,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             }
             EventCenter.Broadcast<string, string>((Int32)GameEventEnum.GameEvent_FindFriendInfo, info.nickname, headID);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1206,7 +1206,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         LobbyCtrl.Instance.InviteInfo(pMsg.sdnder_guididx, pMsg.sendnickname);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_UserBeInvitedToBattle(Stream stream)
@@ -1220,7 +1220,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         InviteOtherPlayer.Instance.SetInviteion((ulong)pMsg.battleid, pMsg.pwd.ToString(), pMsg.pwd.Length, pMsg.Invitor);
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NewInviteRoom);
         EventCenter.Broadcast<string>((Int32)GameEventEnum.GameEvent_InviteAddRoom, pMsg.Invitor);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     /// <summary>
     /// 聊天消息
@@ -1239,10 +1239,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //{
         //    return (Int32)EErrorCode.eNormal;
         //}
-        IChat chat = null;
+        Chat chat = null;
         if (!FriendManager.Instance.AllTalkDic.ContainsKey(pMsg.guididx))
         {
-            chat = new IChat();
+            chat = new Chat();
             chat.SetMsgInfo(pMsg.guididx, pMsg.nickname, pMsg.chatstr, MsgTalkEnum.UnReadMsg, pMsg.headid, false);
             FriendManager.Instance.AllTalkDic.Add(pMsg.guididx, chat);
         }
@@ -1253,7 +1253,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         EventCenter.Broadcast<bool>((Int32)GameEventEnum.GameEvent_ReceiveLobbyMsg, true);
         EventCenter.Broadcast<UInt64>((Int32)GameEventEnum.GameEvent_ReceiveNewMsg, pMsg.guididx);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1278,7 +1278,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             FriendManager.Instance.DelBlackList(pMsg.guididx);
         }
         EventCenter.Broadcast<UInt64>((Int32)GameEventEnum.GameEvent_RemoveFriendEnd, pMsg.guididx);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1330,17 +1330,17 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 //}
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换（不需要参数）
     Int32 OnNetMsg_NotifyOBReturnBattleRoom()
     {
-        HolyTech.FEvent evt = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-        evt.AddParam("NextState", GameStateTypeEnum.GS_Room);
+        Thanos.FEvent evt = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+        evt.AddParam("NextState", GameStateTypeEnum.Room);
         EventCenter.SendEvent(evt);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //祭坛头像是否成功
@@ -1354,7 +1354,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //if (UIAltarSelect.Instance != null)
         //    UIAltarSelect.Instance.Destoys();
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //GS通知OB 对象技能升级
@@ -1368,14 +1368,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sGuid;
         sGuid = pMsg.guid;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGuid, out entity))
-            if (entity is Iplayer)
+            if (entity is IPlayer)
             {
-                PlayerSkillData.Instance.SetPlayerSkillInfo((Iplayer)entity, (int)pMsg.skillpos, (int)pMsg.skillid); //ToReview uint->int
-                EventCenter.Broadcast<Iplayer>((Int32)GameEventEnum.GameEvent_SkillUpLvChange, (Iplayer)entity);
+                PlayerSkillData.Instance.SetPlayerSkillInfo((IPlayer)entity, (int)pMsg.skillpos, (int)pMsg.skillid); //ToReview uint->int
+                EventCenter.Broadcast<IPlayer>((Int32)GameEventEnum.GameEvent_SkillUpLvChange, (IPlayer)entity);
             }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //补兵
@@ -1399,12 +1399,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sMasterGUID;
         sMasterGUID = pMsg.guid;
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
         if (UIViewerBattleInfo.Instance != null)
         {
             UIViewerBattleInfo.Instance.SetFarmInfo(sMasterGUID, (int)pMsg.killnum);    //ToReview uint->int
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1418,11 +1418,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 id;
         id = pMsg.guid;
-        Ientity entity;
+        IEntity entity;
         Vector3 posInWorld = Vector3.zero;
         if (EntityManager.AllEntitys.TryGetValue(id, out entity))
             CrticalStrikeManager.Instance.CreateCrticalStrike(pMsg.blasthp, entity);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1438,7 +1438,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         GameUserCtrl.Instance.GameUserGetNewCommodity((int)pMsg.Commodityid);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1468,7 +1468,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 MarketRuneListModel.Instance.AddRuneCfgListInfo(cfgInfo);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1483,7 +1483,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sGUID = pMsg.guid;
         Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
         Vector3 ford = this.ConvertDirToVector3(pMsg.dir);
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             pos.y = entity.RealEntity.transform.position.y;
@@ -1496,7 +1496,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.EntityFSMChangedata(pos, ford, entity.EntityFSMMoveSpeed);
             entity.OnFSMStateChange(EntityReliveFSM.Instance);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1515,11 +1515,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             UInt32 m_un32Lv = pcMsg.GetUInt32();
             UInt32 m_un32HP = pcMsg.GetUInt32();
             UInt32 m_un32MP = pcMsg.GetUInt32();
-            Ientity entity;
+            IEntity entity;
             EntityManager.AllEntitys.TryGetValue(sGUID, out entity);
-            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroInfoChange, (Iplayer)entity);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroInfoChange, (IPlayer)entity);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1548,7 +1548,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             UIDragObCamera.Instance.SetUsable(true);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -1577,7 +1577,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 fEffect.isTurn = true;
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1592,13 +1592,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         masterKey = pMsg.guid;
         uint skillid = (uint)pMsg.skillid;  //ToReview int->uint
         SkillPassiveConfigInfo skillInfo = ConfigReader.GetSkillPassiveConfig(skillid);
-        Ientity entity = null;
+        IEntity entity = null;
         EntityManager.AllEntitys.TryGetValue(masterKey, out entity);
         if (skillInfo != null && entity != null)
         {
             EffectManager.Instance.CreatePassitiveEffect(entity, skillid, (uint)pMsg.uniqueid); //ToReview int->uint
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1613,7 +1613,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         masterKey = pMsg.guid;
         //ToReview 原协议skillid没用上，原协议projectId在新协议中叫skillid?
         EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1628,10 +1628,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 masterKey;
         masterKey = pMsg.guid;
         SkillPassiveConfigInfo skillInfo = ConfigReader.GetSkillPassiveConfig((uint)pMsg.skillid);      //ToReview int->uint
-        Ientity entity = null;
+        IEntity entity = null;
         EntityManager.AllEntitys.TryGetValue(masterKey, out entity);
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
-        if (player != null && entity is Iplayer && player == entity)
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
+        if (player != null && entity is IPlayer && player == entity)
         {
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerPassiveSkillsUpLv, pMsg.skillid, pMsg.timeLeft);
         }
@@ -1653,7 +1653,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 }
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1669,7 +1669,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         Vector3 beginPos = this.ConvertPosToVector3(pMsg.beginpos);//此时实体的位置
         Vector3 beginDir = this.ConvertDirToVector3(pMsg.begindir);//此时实体的方向
         Vector3 targetPos = this.ConvertPosToVector3(pMsg.tarpos);//目标位置
-        Ientity entity = null;
+        IEntity entity = null;
         EntityManager.AllEntitys.TryGetValue(masterKey, out entity);//获取实体
         SkillMoveConfig skillInfo = ConfigReader.GetSkillMoveConfig(pMsg.effectid);//获取技能配置文件
         if (entity != null)
@@ -1692,14 +1692,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         if (UIViewerPersonInfo.Instance != null)
         {
-            Iplayer player = UIViewerPersonInfo.Instance.SetCurrClickPlayer;
+            IPlayer player = UIViewerPersonInfo.Instance.SetCurrClickPlayer;
             if (player == entity)
             {
                 UIViewerPersonInfo.Instance.SetCurrCamearLockHead();
             }
         }
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroBackTown, (Iplayer)entity);//回城后重置祭坛
-        return (Int32)EErrorCode.eNormal;
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroBackTown, (IPlayer)entity);//回城后重置祭坛
+        return (Int32)ErrorCodeEnum.Normal;
     }
     /// <summary>
     /// 强制位移
@@ -1717,7 +1717,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sGUID;
         sGUID = pMsg.guid;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             Vector3 pos = this.ConvertPosToVector3(pMsg.pos);//服务器传过来的位置（已到达目标位置）
@@ -1739,7 +1739,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 EffectManager.Instance.CreateNormalEffect(GameConstDefine.LoadGameSkillEffectPath + "release/" + skillInfo.effectEnd, entity.RealEntity.objPoint.gameObject);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -1760,7 +1760,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sGUID;
         sGUID = pMsg.guid;
         float speed = (float)pMsg.speed / 100;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             Vector3 pos = this.ConvertPosToVector3(pMsg.pod);
@@ -1784,7 +1784,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 EffectManager.Instance.CreateNormalEffect(GameConstDefine.LoadGameSkillEffectPath + "release/" + skillInfo.effectStart, entity.RealEntity.objPoint.gameObject);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -1812,18 +1812,18 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             AudioClip clip = unit.Asset as AudioClip;
             AudioManager.Instance.PlayLongVoiceAudio(clip);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
     Int32 OnNetMsg__NotifyBattleManagerChange()
     {
-        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.GS_Room)
+        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.Room)
         {
-            MsgInfoManager.Instance.ShowMsg((int)ERROR_TYPE.eT_ManagerChange);
+            MsgInfoManager.Instance.ShowMsg((int)ErrorTypeEnum.ManagerChange);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换LeaveBattleSuccess
@@ -1832,9 +1832,9 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     {
         PlayerManager.Instance.CleanAccount();
 
-        EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_RoomBack));
+        EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.RoomBack));
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换NotifySummonLifeTime
@@ -1852,7 +1852,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         float remainTime = pMsg.resttime / 1000.0f;
         Vector3 pos = this.ConvertPosToVector3(pMsg.pos);
         Vector3 dir = this.ConvertDirToVector3(pMsg.dir);
-        Ientity entity;
+        IEntity entity;
         EntityManager.AllEntitys.TryGetValue(objGuid, out entity);
         if (entity != null)
         {
@@ -1863,7 +1863,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         //设置进度条
         //原本为空
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /************************************************************************/
@@ -1873,7 +1873,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     {
         StartCoroutine(OnNetMsg_NotifySkillModelSummonEffectCoroutine(stream));
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     public IEnumerator OnNetMsg_NotifySkillModelSummonEffectCoroutine(Stream stream)
@@ -1892,12 +1892,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         skillowner = pMsg.guid;
         UInt64 npcid;
         npcid = pMsg.guid;
-        Ientity entitynpc = null;
+        IEntity entitynpc = null;
         EntityManager.AllEntitys.TryGetValue(npcid, out entitynpc);
         SkillSummonConfig skillconfig = ConfigReader.GetSkillSummonConfig((int)pMsg.effectid);  //ToReview uint->int
         if (entitynpc != null && skillconfig != null)
         {
-            HolyTech.Effect.IEffect effect = HolyTech.Effect.EffectManager.Instance.CreateNormalEffect(GameConstDefine.LoadGameSkillEffectPath + "release/" + skillconfig.effect, entitynpc.RealEntity.objPoint.gameObject);
+            Thanos.Effect.IEffect effect = Thanos.Effect.EffectManager.Instance.CreateNormalEffect(GameConstDefine.LoadGameSkillEffectPath + "release/" + skillconfig.effect, entitynpc.RealEntity.objPoint.gameObject);
 
 
             //创建声音
@@ -1929,7 +1929,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillModelBuf(Stream stream)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelBufCoroutine(stream));
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     public IEnumerator OnNetMsg_NotifySkillModelBufCoroutine(Stream stream)
@@ -1949,19 +1949,19 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 skilltarget;
         skilltarget = pMsg.targuid;
         float rTime = pMsg.time / 1000.0f;
-        Ientity target = null;
+        IEntity target = null;
         EntityManager.AllEntitys.TryGetValue(skilltarget, out target);
         if (0 == pMsg.state)
         {
-            HolyTech.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
-            Ientity entity = null;
+            Thanos.Skill.BuffManager.Instance.AddBuff(pMsg.uniqueid, pMsg.effectid, rTime, target);
+            IEntity entity = null;
             EntityManager.AllEntitys.TryGetValue(skilltarget, out entity);
           //  HolyTech.Effect.EffectManager.Instance.CreateBuffEffect(entity, pMsg.effectid, pMsg.uniqueid);    //ToReview uniqueid是否就是instid
         }
         else if (1 == pMsg.state)
         {
-            HolyTech.Skill.BuffManager.Instance.RemoveBuff(pMsg.uniqueid);
-            HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+            Thanos.Skill.BuffManager.Instance.RemoveBuff(pMsg.uniqueid);
+            Thanos.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
         }
     }
 
@@ -1972,7 +1972,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     public Int32 OnNetMsg_NotifySkillModelLeading(Stream stream)
     {
         StartCoroutine(SkillModelLeadingCoroutine(stream));
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     public IEnumerator SkillModelLeadingCoroutine(Stream stream)
@@ -1989,17 +1989,17 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         UInt64 owner = pMsg.guid;
         UInt64 target = pMsg.targuid;
-        Ientity ownerEntity;
+        IEntity ownerEntity;
         EntityManager.AllEntitys.TryGetValue(owner, out ownerEntity);
         SkillLeadingonfig skillconfig = ConfigReader.GetSkillLeadingConfig(pMsg.effectid);
         if (skillconfig != null && ownerEntity != null)
         {
-            Iplayer player = PlayerManager.Instance.LocalPlayer;
+            IPlayer player = PlayerManager.Instance.LocalPlayer;
             if (0 == pMsg.state)    //0:开始，1：结束，2：失败
             {
-                if (false == HolyTech.Effect.EffectManager.Instance.IsValid(pMsg.uniqueid))
+                if (false == Thanos.Effect.EffectManager.Instance.IsValid(pMsg.uniqueid))
                 {
-                    HolyTech.Effect.EffectManager.Instance.CreateLeadingEffect(owner, (uint)pMsg.effectid, (uint)pMsg.uniqueid);
+                    Thanos.Effect.EffectManager.Instance.CreateLeadingEffect(owner, (uint)pMsg.effectid, (uint)pMsg.uniqueid);
                 }
                 if (player != null && owner == player.GameObjGUID)
                 {
@@ -2009,7 +2009,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             }
             else
             {
-                HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+                Thanos.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
                 if (player != null && owner == player.GameObjGUID)
                 {
                     ProgressBarInterface.hideProgressBar();
@@ -2029,8 +2029,8 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         //ToReview guid没用上
-        HolyTech.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
-        return (Int32)EErrorCode.eNormal;
+        Thanos.Effect.EffectManager.Instance.DestroyEffect(pMsg.uniqueid);
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /************************************************************************/
@@ -2039,7 +2039,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillModelRange(Stream stream)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelRangeCoroutine(stream));
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     
     public IEnumerator OnNetMsg_NotifySkillModelRangeCoroutine(Stream stream)
@@ -2059,7 +2059,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             //创建特效
             yield return 1;
            // 创建技能范围特效
-            HolyTech.Effect.EffectManager.Instance.CreateAreaEffect(owner, pMsg.effectid, pMsg.uniqueid, dir, pos);
+            Thanos.Effect.EffectManager.Instance.CreateAreaEffect(owner, pMsg.effectid, pMsg.uniqueid, dir, pos);
         }
         else
         {
@@ -2074,7 +2074,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillModelEmit(Stream stream)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelEmitCoroutine(stream));       
-        return (Int32)EErrorCode.eNormal;  
+        return (Int32)ErrorCodeEnum.Normal;  
     }
 
     public IEnumerator OnNetMsg_NotifySkillModelEmitCoroutine(Stream stream)
@@ -2093,7 +2093,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         //普通追踪特效
         yield return 1;
-        FlyEffect effect = HolyTech.Effect.EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint)pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
+        FlyEffect effect = Thanos.Effect.EffectManager.Instance.CreateFlyEffect(skillPlayerID, skillTargetID, pMsg.effectid, (uint)pMsg.uniqueid, pos, dir, pMsg.ifAbsorbSkill);
     }
 
     //特效销毁
@@ -2125,7 +2125,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 EffectManager.Instance.DestroyEffect(effect);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /************************************************************************/
@@ -2134,7 +2134,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillModelHitTarget(Stream stream)
     {
         StartCoroutine(OnNetMsg_NotifySkillModelHitTargetCoroutine(stream));
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     public IEnumerator OnNetMsg_NotifySkillModelHitTargetCoroutine(Stream stream)
@@ -2154,7 +2154,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         EventCenter.Broadcast<UInt64, uint, UInt64>((Int32)GameEventEnum.GameEvent_BroadcastBeAtk, ownerID, pMsg.effectid, targetID);//添加警告  光圈
         yield return 1;
-        HolyTech.Effect.EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
+        Thanos.Effect.EffectManager.Instance.CreateBeAttackEffect(ownerID, targetID, pMsg.effectid);//创建受击特效
     }
 
     //广播祭坛头像
@@ -2186,7 +2186,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             if (AltarManager.Instance != null)
                 AltarManager.Instance.DelAltarHead(altrId, soderType);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     Int32 OnNotifyHeroDisplacementInfo(Message pcMsg)
     {
@@ -2197,7 +2197,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         float posX = pcMsg.GetFloat() / 100;
         float posY = pcMsg.GetFloat() / 100;
         float posZ = pcMsg.GetFloat() / 100;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             if (entity.realObject != null)
@@ -2206,7 +2206,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 entity.realObject.transform.rotation = Quaternion.LookRotation(new Vector3(dirX, dirY, dirZ));
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     #region Skill
@@ -2214,10 +2214,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     //已换
     Int32 OnNetMsg_BroadCurBattleResult(Stream stream)
     {
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
         if (player == null)
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         GSToGC.BroadcastBatteleRes pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
@@ -2230,7 +2230,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             UInt64 objGUID;
             objGUID = info.objguid;
             ScoreCtrl.Instance.SetSettlementInfo(objGUID, info.heroid, info.nickname, info.killtimes,
-                info.deadtimes, info.asstimes, info.curlevel, info.totalcp / 1000, info.lasthit, (EntityCampType)info.camgpid);
+                info.deadtimes, info.asstimes, info.curlevel, info.totalcp / 1000, info.lasthit, (EntityCampTypeEnum)info.camgpid);
         }
         bool isWinCamp = pMsg.ifwin;
         if (isWinCamp)
@@ -2241,15 +2241,15 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             PlayerManager.Instance.LocalPlayer.StateSituation = SITUATION.LOSE;
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_BroadCurBattlePersonalResult(Stream stream)
     {
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
         if (player == null)
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         GSToGC.BroadcastBattelePersonalRes pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
@@ -2257,7 +2257,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
         ScoreCtrl.Instance.SetScoreInfo(pMsg.got_gold, pMsg.old_exp, pMsg.got_exp, (short)pMsg.old_lv, (short)pMsg.cur_lv, pMsg.cur_exp);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //战斗英雄信息
@@ -2280,16 +2280,16 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             Int32 headID = info.headid;
             Int32 hp = info.hp;
             Int32 mp = info.mp;
-            EntityCampType Type = GameMethod.GetEntityCamp(campID);
+            EntityCampTypeEnum Type = GameMethod.GetEntityCamp(campID);
             BattleingData.Instance.AddInitPlayer(sGUID, nickName, heroKills, deadTimes, info.assist, level, 0, Type, info.heroid);
             foreach (GSToGC.BroadcastBattleHeroInfo.BaseGoodsInfo goods in pMsg.goodsinfo)
             {
                 BattleingData.Instance.AddPlayer(sGUID, 0, BattleDataType.Goods, goods.index, goods.id);
             }
-            Iplayer player;
+            IPlayer player;
             if (!PlayerManager.Instance.AccountDic.TryGetValue(MsGUID, out player))
             {
-                player = (Iplayer)PlayerManager.Instance.HandleCreateEntity(MsGUID, EntityCampType.CampTypeNull);
+                player = (IPlayer)PlayerManager.Instance.HandleCreateEntity(MsGUID, EntityCampTypeEnum.Null);
                 player.BattleData.Level = (uint)level;
                 player.BattleData.HeadId = (uint)headID;
                 player.BattleData.Hp = (uint)hp;
@@ -2307,7 +2307,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 }
 
             }
-            PlayerPersonData.Instance.SetPersonInfo(player, campID);
+            PlayerDataManager.Instance.SetPersonInfo(player, campID);
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PersonInitInfo, player);//广播初始化任务基本信息
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillInfo, player);
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerCp);//广播设置金币
@@ -2317,7 +2317,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         if (UIViewerPersonInfo.Instance != null)
             UIViewerPersonInfo.Instance.SetInitCamearHead();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换AbsorbBegin
@@ -2333,20 +2333,20 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sceneGuid = pMsg.guid;
         UInt64 targetGuid;
         targetGuid = pMsg.monsterguid;
-        Ientity entity;
-        Ientity target;
+        IEntity entity;
+        IEntity target;
         EntityManager.AllEntitys.TryGetValue(sceneGuid, out entity);
         EntityManager.AllEntitys.TryGetValue(targetGuid, out target);
-        Iplayer player = entity as Iplayer;
+        IPlayer player = entity as IPlayer;
         if (player != null && target != null)
         {
             //创建吸附特效
             AbsorbEffect.createAbsorbEffect(player, target.RealEntity.objAttackPoint.gameObject, player.RealEntity.objAttackPoint.gameObject);
             //吸附音频设置
-            if (player.absorbSound != null)
+            if (player.mAbsorbSound != null)
             {
-                player.absorbSound.Stop();
-                player.absorbSound = null;
+                player.mAbsorbSound.Stop();
+                player.mAbsorbSound = null;
             }
             string soundPath = "";
             soundPath = GameConstDefine.LoadGameSoundPath + "Txifu";
@@ -2358,7 +2358,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 {
                     AudioSource Audio = AudioManager.Instance.PlayLongVoiceAudio(clip);
                     SceneSoundManager.Instance.addSound(Audio, player.RealEntity.gameObject);
-                    player.absorbSound = Audio;
+                    player.mAbsorbSound = Audio;
                     AudioManager.Instance.ChangeAudioVolume(Audio, 1.0f);
                 }
             }
@@ -2369,7 +2369,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 PlayerManager.Instance.LocalPlayer.IsAbsobing = true;
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     enum EAbsorbResult
@@ -2391,25 +2391,25 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sceneGuid = pMsg.guid;
         UInt32 newMonsterID1 = (UInt32)pMsg.absorb1; //吸收的野怪1
         UInt32 newMonsterID2 = (UInt32)pMsg.absorb2; //吸收的野怪2
-        Ientity abosorbPlayer; //主动吸收的玩家
+        IEntity abosorbPlayer; //主动吸收的玩家
         EntityManager.AllEntitys.TryGetValue(sceneGuid, out abosorbPlayer);
         if (null == abosorbPlayer) return 0;
         //停止播放声音
-        if (null != abosorbPlayer.absorbSound)
+        if (null != abosorbPlayer.mAbsorbSound)
         {
-            abosorbPlayer.absorbSound.Stop();
-            SceneSoundManager.Instance.remove(abosorbPlayer.absorbSound);
-            abosorbPlayer.absorbSound = null;
+            abosorbPlayer.mAbsorbSound.Stop();
+            SceneSoundManager.Instance.remove(abosorbPlayer.mAbsorbSound);
+            abosorbPlayer.mAbsorbSound = null;
         }
 
         //设置玩家吸收技能信息
-        PlayerSkillData.Instance.SetPlayerAbsSkillInfo((Iplayer)abosorbPlayer, 4, (int)newMonsterID1, 5, (int)newMonsterID2);
+        PlayerSkillData.Instance.SetPlayerAbsSkillInfo((IPlayer)abosorbPlayer, 4, (int)newMonsterID1, 5, (int)newMonsterID2);
 
-        Iselfplayer curPlayer = PlayerManager.Instance.LocalPlayer;//是不是本地玩家
+        ISelfPlayer curPlayer = PlayerManager.Instance.LocalPlayer;//是不是本地玩家
 
         if (null == curPlayer)//本地玩家不为空
         {
-            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AbsSkillInfo, (Iplayer)abosorbPlayer);//广播添加英雄吸附技能
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AbsSkillInfo, (IPlayer)abosorbPlayer);//广播添加英雄吸附技能
             return 0;
         }
         if (curPlayer.GameObjGUID == sceneGuid)//如果主动吸收的玩家是本地玩家
@@ -2446,7 +2446,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         else //其他玩家吸附结果   
         {
-            Iplayer otherplayer = abosorbPlayer as Iplayer;
+            IPlayer otherplayer = abosorbPlayer as IPlayer;
             if (otherplayer != null)
             {
                 if (otherplayer.AbsorbProgressEffect != null)
@@ -2464,7 +2464,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 }
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -2478,11 +2478,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sguid;
         sguid = pMsg.guid;
         DeathCtrl.Instance.Exit();
-        Ientity entity = null;
+        IEntity entity = null;
         EntityManager.AllEntitys.TryGetValue(sguid, out entity);
-        PlayerPersonData.Instance.SetDeathTime((Iplayer)entity, 0);
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroDeathTime, (Iplayer)entity);
-        return (Int32)EErrorCode.eNormal;
+        PlayerDataManager.Instance.SetDeathTime((IPlayer)entity, 0);
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroDeathTime, (IPlayer)entity);
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     /// <summary>
@@ -2502,20 +2502,20 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sguid = pMsg.masterguid;
         UInt64 BeforTime = (ulong)pMsg.sendtimes;   //ToReview sendTimes是否就是Beforetime，强制类型转换long->ulong             
         Int32 RebornTime = pMsg.reborn_time;
-        Ientity entity = null;
+        IEntity entity = null;
         if (EntityManager.AllEntitys.TryGetValue(sguid, out entity))
         {
 
         }
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
         if (player != null)
         {
-            DeathCtrl.Instance.SetTime((float)CTools.GetClientUTCMillisec() - BeforTime, (float)pMsg.remain_times / 1000f, pMsg.gold, RebornTime, true);//Num是否就是剩余次数remain_times    
+            DeathCtrl.Instance.SetTime((float)GameUtils.GetClientUTCMillisec() - BeforTime, (float)pMsg.remain_times / 1000f, pMsg.gold, RebornTime, true);//Num是否就是剩余次数remain_times    
             DeathCtrl.Instance.Enter();
         }
-        PlayerPersonData.Instance.SetDeathTime((Iplayer)entity, (int)(pMsg.remain_times / 1000f));
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroDeathTime, (Iplayer)entity);
-        return (Int32)EErrorCode.eNormal;
+        PlayerDataManager.Instance.SetDeathTime((IPlayer)entity, (int)(pMsg.remain_times / 1000f));
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroDeathTime, (IPlayer)entity);
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //击杀数
@@ -2542,7 +2542,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotifyChangeKills);
       
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //死亡数 
@@ -2556,8 +2556,8 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
 
-        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.GS_Play)
-            return (Int32)EErrorCode.eNormal;
+        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.Play)
+            return (Int32)ErrorCodeEnum.Normal;
 
         UInt64 targetID;
         targetID = pMsg.objguid;
@@ -2569,7 +2569,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotifyChangeDeaths);//广播设置死亡数 本地玩家
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AllPlayerDeaths);//广播设置死亡数   游戏战绩
   
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //设置助攻数据
@@ -2584,7 +2584,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sguid = pMsg.guid;
         BattleingData.Instance.AddPlayer(sguid, pMsg.assist, BattleDataType.Assist);
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerAssist);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
 
     }
 
@@ -2602,7 +2602,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         targetID = pMsg.targetguid;
         if (PlayerManager.Instance.LocalPlayer != null && PlayerManager.Instance.LocalAccount.ObjType == ObPlayerOrPlayer.PlayerType)
         {
-            HolyTech.FEvent eve = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_NotifyChangeCp);
+            Thanos.FEvent eve = new Thanos.FEvent((Int32)(Int32)GameEventEnum.GameEvent_NotifyChangeCp);
             eve.AddParam("Cp", pMsg.person_cp / 1000);
             eve.AddParam("TeamCp", pMsg.team_cp / 1000);
             EventCenter.SendEvent(eve);
@@ -2620,7 +2620,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         BattleingData.Instance.AddPlayer(targetID, pMsg.person_cp / 1000, BattleDataType.Cp);
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerCp);//广播设置金币
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //通知金币改变
@@ -2639,7 +2639,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PlayerGetCp);
         }
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_LocalPlayerCp);//广播设置金币
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMst_BroadBuildingDestroyByWho(Stream stream)
@@ -2650,8 +2650,8 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
 
-        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.GS_Play)
-            return (Int32)EErrorCode.eNormal;
+        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.Play)
+            return (Int32)ErrorCodeEnum.Normal;
 
         UInt64 targetID = pMsg.buildingguid;
         if (!EntityManager.AllEntitys.ContainsKey(targetID))
@@ -2660,7 +2660,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return 0;
         }
 
-        Ientity targetEntity = EntityManager.AllEntitys[targetID];
+        IEntity targetEntity = EntityManager.AllEntitys[targetID];
 
         UInt64 ps_kill = pMsg.killer_guid;
         if (!EntityManager.AllEntitys.ContainsKey(ps_kill))
@@ -2669,10 +2669,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return 0;
         }
 
-        Ientity psKillEntity = EntityManager.AllEntitys[ps_kill];
+        IEntity psKillEntity = EntityManager.AllEntitys[ps_kill];
 
         Int32 killID = pMsg.killer_camp;
-        EntityCampType Type = (EntityCampType)killID;
+        EntityCampTypeEnum Type = (EntityCampTypeEnum)killID;
         string npcname = "";
         string readXml = "";
         string killname = "";
@@ -2680,14 +2680,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             if (killID % 2 == 0)
             {
-                Type = EntityCampType.CampTypeB;
+                Type = EntityCampTypeEnum.B;
             }
             else
             {
-                Type = EntityCampType.CampTypeA;
+                Type = EntityCampTypeEnum.A;
             }
         }
-        Iplayer player = PlayerManager.Instance.LocalPlayer;
+        IPlayer player = PlayerManager.Instance.LocalPlayer;
         killname = MsgInfoManager.Instance.GetNameGame(ps_kill);
         if (killname == null)
         {
@@ -2702,7 +2702,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 NpcConfigInfo npcinfo = ConfigReader.GetNpcInfo((int)psKillEntity.ObjTypeID);
                 if (null != npcinfo && killname == null)
                 {
-                    if (Type == EntityCampType.CampTypeA)
+                    if (Type == EntityCampTypeEnum.A)
                         killname = "精灵势力";
                     else
                         killname = "亡灵势力";
@@ -2715,13 +2715,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             NpcConfigInfo npcinfo = ConfigReader.GetNpcInfo(id);
             if (null == npcinfo)
             {
-                return (Int32)EErrorCode.eEC_NullPointer;
+                return (Int32)ErrorCodeEnum.NullPointer;
             }
-            if (npcinfo.ENPCCateChild == (int)ENPCCateChild.eNPCChild_BUILD_Tower)
+            if (npcinfo.ENPCCateChild == (int)NPCCateChildEnum.BUILD_Tower)
                 npcname = "箭塔";
-            else if (npcinfo.ENPCCateChild == (int)ENPCCateChild.eNPCChild_BUILD_Altar)
+            else if (npcinfo.ENPCCateChild == (int)NPCCateChildEnum.BUILD_Altar)
                 npcname = "祭坛";
-            else if (npcinfo.ENPCCateChild == (int)ENPCCateChild.eNPCChild_BUILD_Base)
+            else if (npcinfo.ENPCCateChild == (int)NPCCateChildEnum.BUILD_Base)
                 npcname = "主基地";
             if (player != null && Type == player.EntityCamp)
             {
@@ -2738,7 +2738,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             MsgInfoManager.Instance.SetKills(MsgInfoManager.eKillMsgType.eKillBuild, false, killname, npcname, readXml);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMst_NotifyUserGameInfo(Stream stream)
@@ -2754,7 +2754,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 pMsg.destorybuildings, pMsg.deadtimes, pMsg.total_achnum, pMsg.achnum, pMsg.assistnum, pMsg.vipscore, (ulong)pMsg.exp_adtime, (ulong)pMsg.gold_addtime);
         PresonInfoCtrl.Instance.Enter();
         //EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PersonInitInfo);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //NotifyBuffRemove已取消
@@ -2762,16 +2762,16 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     {
         UInt64 targetID = pcMsg.GetGUID();
         UInt32 buffID = pcMsg.GetUInt32();
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(targetID, out entity))
         {
-            HolyTech.Effect.EffectManager.Instance.DestroyEffect(buffID);
+            Thanos.Effect.EffectManager.Instance.DestroyEffect(buffID);
             if (entity.GameObjGUID == PlayerManager.Instance.LocalPlayer.GameObjGUID)
             {
-                HolyTech.Skill.BuffManager.Instance.RemoveBuff(buffID);
+                Thanos.Skill.BuffManager.Instance.RemoveBuff(buffID);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -2788,7 +2788,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         targetID = pMsg.guid;
         float timeInSecond = pMsg.time / 1000.0f;   //状态持续的时间毫秒数
         float timeMax = pMsg.cooldown / 1000.0f;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(targetID, out entity))
         {
             if (PlayerManager.Instance.LocalAccount.ObjType == ObPlayerOrPlayer.PlayerType)
@@ -2796,7 +2796,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 entity.OnSkillInfoChange(pMsg.skillid, timeInSecond, timeMax, pMsg.skillslot); //0,空闲 1，准备 2施放 3冷却
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换GOSkillCD
@@ -2810,13 +2810,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sguid;
         sguid = pMsg.guid;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sguid, out entity))
         {
-            PlayerSkillData.Instance.SetPlayerCdTime((Iplayer)entity, pMsg.skillid, pMsg.time / 1000.0f);
+            PlayerSkillData.Instance.SetPlayerCdTime((IPlayer)entity, pMsg.skillid, pMsg.time / 1000.0f);
         }
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillCDInfo, (Iplayer)entity);
-        return (Int32)EErrorCode.eNormal;
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillCDInfo, (IPlayer)entity);
+        return (Int32)ErrorCodeEnum.Normal;
     }
     /// <summary>
     /// Notify 物品信息
@@ -2853,11 +2853,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             {
                 PlayerManager.Instance.LocalPlayer.AddUserGameItems(info.pos, info.tyepid, info.num, second);
             }
-            Ientity entity;
+            IEntity entity;
             if (EntityManager.AllEntitys.TryGetValue(targetID, out entity))
             {
-                PackageData.Instance.SetPackageData((Iplayer)entity, info.pos, info.tyepid, info.num, totTime, second);
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PackageBuyInfo, (Iplayer)entity);
+                PackageDataManager.Instance.SetPackageData((IPlayer)entity, info.pos, info.tyepid, info.num, totTime, second);
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_PackageBuyInfo, (IPlayer)entity);
             }
             EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_UpdateUserGameItems);
             if (info.ifComposed)
@@ -2881,7 +2881,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
               */
         }
       
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyGameObjectDeadState(Stream stream)
@@ -2896,7 +2896,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         deadID = pMsg.objguid;
         Vector3 pos = this.ConvertPosToVector3(pMsg.pos);//位置
         Vector3 dir = this.ConvertDirToVector3(pMsg.dir);//方向
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(deadID, out entity))
         {
             pos.y = entity.realObject.transform.position.y;//
@@ -2904,12 +2904,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.EntityFSMChangeDataOnDead(pos, dir);
 
             //主基地延时处理
-            if (entity.NPCCateChild != ENPCCateChild.eNPCChild_BUILD_Base)
+            if (entity.NPCCateChild != NPCCateChildEnum.BUILD_Base)
             {
                 entity.OnFSMStateChange(EntityDeadFSM.Instance);//切换到死亡状态
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换SkillEntityInfo
@@ -2917,7 +2917,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillUnitInfo(Stream stream)
     {
         //ToReview 函数体是空的?
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换SkillHitTar
@@ -2925,7 +2925,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifySkillHitTarget(Stream Stream)
     {
         //ToReview 函数体是空的？
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换HPChange
@@ -2941,7 +2941,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sGUID = pMsg.guid;
         int crticalHp = pMsg.hp;//当前血量
 
-        Ientity entity;
+        IEntity entity;
         Vector3 posInWorld = Vector3.zero;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
@@ -2954,13 +2954,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             //先计算伤血数值再更新  更新实体的血条
             entity.UpdateHpChange((byte)pMsg.reason, (float)crticalHp);
 
-            if (entity is Iplayer) 
+            if (entity is IPlayer) 
             {
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroHpChange, (Iplayer)entity);//涉及到UIViewerPersonInfo
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroHpChange, (IPlayer)entity);//涉及到UIViewerPersonInfo
             }
             GamePlayCtrl.Instance.HpChange(entity);//更新头像血条
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyMPChange(Stream stream)
@@ -2972,7 +2972,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 id;
         id = pMsg.guid;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(id, out entity))
         {
             if (pMsg.reason != 0)           //ToReview enum->byte
@@ -2983,15 +2983,15 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             }
             entity.SetMp((float)pMsg.mp);//设置Mp值
 
-            if (entity is Iplayer)
+            if (entity is IPlayer)
             {
                 BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
                 BloodBarPlayer.UpdateMp();//更新蓝条 指的是模型头顶上的
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroMpChange, (Iplayer)entity);// 此事件更新的是叫Player+i对象的MP？？？
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroMpChange, (IPlayer)entity);// 此事件更新的是叫Player+i对象的MP？？？
             }
             GamePlayCtrl.Instance.MpChange(entity); //更新实体Mp(被锁定的的头像)
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyPrepareSkill(Stream stream)
@@ -3008,9 +3008,9 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sGUID = pMsg.objguid;       
         UInt64 targetID = pMsg.targuid;
 
-        Ientity targetEntity;
+        IEntity targetEntity;
         EntityManager.AllEntitys.TryGetValue(targetID, out targetEntity);
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             pos.y = entity.realObject.transform.position.y;
@@ -3018,7 +3018,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.OnFSMStateChange(EntitySingFSM.Instance);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyReleaseSkill(Stream stream)
@@ -3036,16 +3036,16 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sGUID = pMsg.objguid;//主动方id
 
 
-        Ientity target;
+        IEntity target;
         EntityManager.AllEntitys.TryGetValue(targetID, out target);//获取目标对象
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))//获取主动对象
         {
             pos.y = entity.realObject.transform.position.y;
             entity.EntityFSMChangeDataOnPrepareSkill(pos, dir, pMsg.skillid, target); //实体状态机改变（当准备技能时）
             entity.OnFSMStateChange(EntityReleaseSkillFSM.Instance);//进入释放技能状态
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyLastingSkill(Stream stream)
@@ -3062,16 +3062,16 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         targetID = pMsg.targuid;
         UInt64 sGUID;
         sGUID = pMsg.objguid;
-        Ientity target;
+        IEntity target;
         EntityManager.AllEntitys.TryGetValue(targetID, out target);
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             pos.y = entity.realObject.transform.position.y;
             entity.EntityFSMChangeDataOnPrepareSkill(pos, dir, pMsg.skillid, target);
             entity.OnFSMStateChange(EntityLastingFSM.Instance);//进入EntityLastingFSM
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -3089,9 +3089,9 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         targetID = pMsg.targuid;
         UInt64 sGUID;
         sGUID = pMsg.objguid;
-        Ientity target;
+        IEntity target;
         EntityManager.AllEntitys.TryGetValue(targetID, out target);
-        Ientity entity;
+        IEntity entity;
 
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
@@ -3099,7 +3099,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.EntityFSMChangeDataOnPrepareSkill(pos, dir, pMsg.skillid, target);
             entity.OnFSMStateChange(EntityLeadingFSM.Instance);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     #endregion
 
@@ -3113,7 +3113,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifyBattleStart(Stream stream)
     {
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     //通知客户端销毁游戏对象
     //已换DisappearInfo
@@ -3133,9 +3133,9 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 continue;
             }
 
-            Ientity sEntity = EntityManager.AllEntitys[sGUID];
+            IEntity sEntity = EntityManager.AllEntitys[sGUID];
             EventCenter.Broadcast<UInt64>((Int32)GameEventEnum.GameEvent_RemoveMiniMap, sGUID);
-            if (EntityManager.AllEntitys.ContainsKey(sGUID) && CTools.IfTypeHero((EObjectType)sEntity.ObjTypeID))
+            if (EntityManager.AllEntitys.ContainsKey(sGUID) && GameUtils.IfTypeHero((ObjectTypeEnum)sEntity.ObjTypeID))
             {
                 PlayerManager.Instance.HideEntity(sGUID);
                 continue;
@@ -3143,7 +3143,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
             EntityManager.HandleDelectEntity(sGUID);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //通知客户端显示游戏对象
@@ -3151,14 +3151,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifyGameObjectAppear(System.IO.Stream stream)
     {
         OnNetMsg_NotifyGameObjectAppearCoroutine(stream);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //加载游戏对象
     public void OnNetMsg_NotifyGameObjectAppearCoroutine(System.IO.Stream stream)
     {
         //如果现在的状态是游戏状态
-        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.GS_Play)
+        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.Play)
         {
             //反序列化 
             GSToGC.GOAppear pMsg;
@@ -3183,7 +3183,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 Vector3 mvDir = this.ConvertDirToVector3(info.dir);
                 mvDir.y = 0.0f;
                 // 如果是对战的阵营  确定到底是A还是B 如果都不是。这句话仅仅是类型转换的作用 
-                EntityCampType Type = GameMethod.GetEntityCamp(IntCamp);//大于0的情况 不是A就是B  
+                EntityCampTypeEnum Type = GameMethod.GetEntityCamp(IntCamp);//大于0的情况 不是A就是B  
 
                 //实体类型  
                 GSToGC.ObjType objType = info.obj_type;
@@ -3196,25 +3196,25 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     {
                         PlayerManager.Instance.ShowEntity(sObjGUID, mvPos, mvDir);
 
-                        EventCenter.Broadcast<Ientity>((Int32)GameEventEnum.GameEvent_AddMiniMap, EntityManager.AllEntitys[sObjGUID]);
+                        EventCenter.Broadcast<IEntity>((Int32)GameEventEnum.GameEvent_AddMiniMap, EntityManager.AllEntitys[sObjGUID]);
                     }
                     continue;
                 }
                 //创建实体
-                Ientity entity = null;
-                if (CTools.IfTypeNPC((EObjectType)info.obj_type_id))
+                IEntity entity = null;
+                if (GameUtils.IfTypeNPC((ObjectTypeEnum)info.obj_type_id))
                 {
                     entity = NpcManager.Instance.HandleCreateEntity(sObjGUID, Type); //创建实体类
                     entity.EntityCamp = Type;
                     entity.ObjTypeID = info.obj_type_id; 
                     NpcManager.Instance.CreateEntityModel(entity, sObjGUID, mvDir, mvPos);//创建实体模型
                 }
-                else if (CTools.IfTypeHero((EObjectType)info.obj_type_id))
+                else if (GameUtils.IfTypeHero((ObjectTypeEnum)info.obj_type_id))
                 {
-                    Iplayer player = null;
+                    IPlayer player = null;
                     if (!PlayerManager.Instance.AccountDic.TryGetValue(sMasterGUID, out player))
                     {
-                        player = (Iplayer)PlayerManager.Instance.HandleCreateEntity(sMasterGUID, Type);//创建玩家类
+                        player = (IPlayer)PlayerManager.Instance.HandleCreateEntity(sMasterGUID, Type);//创建玩家类
                         player.ObjTypeID = info.obj_type_id;
                         PlayerManager.Instance.AddAccount(sMasterGUID, player); //将Player添加到AccountDic中
                     }
@@ -3236,7 +3236,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     if (GameUserModel.Instance.IsLocalPlayer(sMasterGUID))
                     {
                         Debug.Log("Set local player guid!" + sMasterGUID);
-                        PlayerManager.Instance.LocalPlayer = (Iselfplayer)entity;//给本地玩家赋值
+                        PlayerManager.Instance.LocalPlayer = (ISelfPlayer)entity;//给本地玩家赋值
                         GameMethod.GetMainCamera.target = entity.realObject.transform;//摄像机指定对象
                         GamePlayCtrl.Instance.UpdateSkillPriv((int)info.obj_type_id);
 
@@ -3252,7 +3252,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     entity.EntityFSMChangedata(mvPos, mvDir);//实体状态机数据改变（位置和方向）
                     entity.OnFSMStateChange(EntityFreeFSM.Instance);//实体状态进入自由状态 Enter（）调用。
 
-                    EventCenter.Broadcast<Ientity>((Int32)GameEventEnum.GameEvent_AddMiniMap, entity);//添加地图元素  
+                    EventCenter.Broadcast<IEntity>((Int32)GameEventEnum.GameEvent_AddMiniMap, entity);//添加地图元素  
                 }
             }
         }
@@ -3272,7 +3272,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         sGUID = pMsg.objguid;
         Vector3 mvPos = this.ConvertPosToVector3(pMsg.pos);
         Vector3 mvDir = this.ConvertDirToVector3(pMsg.dir);
-        Ientity entity = null;
+        IEntity entity = null;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
 
@@ -3288,7 +3288,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.OnFSMStateChange(EntityFreeFSM.Instance);
            
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换RunningState
@@ -3307,7 +3307,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         Vector3 mvPos = this.ConvertPosToVector3(pMsg.pos);
         Vector3 mvDir = this.ConvertDirToVector3(pMsg.dir);
         float mvSp = pMsg.movespeed / 100.0f;
-        Ientity entity = null;
+        IEntity entity = null;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             mvPos.y = entity.RealEntity.transform.position.y;
@@ -3321,7 +3321,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             entity.EntityFSMChangedata(mvPos, mvDir, mvSp);
             entity.OnFSMStateChange(EntityRunFSM.Instance);//进入Run状态
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     #endregion
@@ -3343,7 +3343,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     //确定英雄选择状态    InitSelect   EnterSelect   RandomSelect   OutSeclect
                     HeroCtrl.Instance.SetSelectState(HeroCtrl.HeroSelectState.EnterSelect);
 
-                    EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_IntoHero));  //进入GC_Hero状态，Enter()方法立即调用
+                    EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.IntoHero));  //进入GC_Hero状态，Enter()方法立即调用
                     
                     EventCenter.Broadcast<int>((Int32)GameEventEnum.GameEvent_HeroFirstTime, pMsg.statetimeleft);
 
@@ -3352,7 +3352,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
                     HeroCtrl.Instance.SetSelectState(HeroCtrl.HeroSelectState.EnterSelect); //清除临时选择的英雄列表
 
-                    EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_IntoHero)); // 进入GC_Hero状态，Enter()方法立即调用
+                    EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.IntoHero)); // 进入GC_Hero状态，Enter()方法立即调用
 
                     EventCenter.Broadcast<int>((Int32)GameEventEnum.GameEvent_HeroSecondTime, pMsg.statetimeleft);
 
@@ -3360,23 +3360,23 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
                     break;
                 case BattleStateEnum.eBS_Loading://加载
-                    if (curState < GameStateTypeEnum.GS_Loading)
+                    if (curState < GameStateTypeEnum.Loading)
                     {
-                        HolyTech.FEvent evt = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-                        evt.AddParam("NextState", GameStateTypeEnum.GS_Play);
+                        Thanos.FEvent evt = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+                        evt.AddParam("NextState", GameStateTypeEnum.Play);
                         EventCenter.SendEvent(evt);
                     }
-                    else if (curState > GameStateTypeEnum.GS_Loading)
+                    else if (curState > GameStateTypeEnum.Loading)
                     {
                         HolyGameLogic.Instance.AskLoadComplete();//向服务端发送消息
                     }
 
                     break;
                 case BattleStateEnum.eBS_Playing://游戏
-                    if (curState < GameStateTypeEnum.GS_Loading)
+                    if (curState < GameStateTypeEnum.Loading)
                     {
-                        HolyTech.FEvent evt2 = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-                        evt2.AddParam("NextState", GameStateTypeEnum.GS_Play);
+                        Thanos.FEvent evt2 = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+                        evt2.AddParam("NextState", GameStateTypeEnum.Play);
                         EventCenter.SendEvent(evt2);
                         Debug.LogWarning("battle play ");
                     }
@@ -3388,7 +3388,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     break;
                 case BattleStateEnum.eBS_Finished://游戏结束
                     {
-                        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_BatttleFinished);
+                        EventCenter.Broadcast((Int32)GameEventEnum.BatttleFinished);
                     }
                     break;
             }
@@ -3404,12 +3404,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                         if (HolyTechGameBase.Instance.IsQuickBattle)//如果是快速战斗模式  显示英雄选择界面
                         {
                             //有LobbyState进入HeroState状态，显示英雄选择界面
-                            EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_IntoHero));
+                            EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.IntoHero));
                             HolyTechGameBase.Instance.IsQuickBattle = false;
                         }
                         else  //否则
                         {
-                            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_RoomEnd);//进入房间
+                            EventCenter.Broadcast((Int32)GameEventEnum.RoomEnd);//进入房间
                         }
 
                         EventCenter.Broadcast<int>((Int32)GameEventEnum.GameEvent_HeroFirstTime, pMsg.statetimeleft);
@@ -3426,18 +3426,18 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 case BattleStateEnum.eBS_Loading://加载状态
                     {
                         //状态要转换了  进入GS_Play
-                        HolyTech.FEvent evt = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-                        evt.AddParam("NextState", GameStateTypeEnum.GS_Play);
+                        Thanos.FEvent evt = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+                        evt.AddParam("NextState", GameStateTypeEnum.Play);
                         EventCenter.SendEvent(evt);
                     }
                     break;
                 case BattleStateEnum.eBS_Playing://战斗状态
                     {
                         //判断此时的状态是否是play。如果不是，那么就要转换状态了
-                            if (curState < GameStateTypeEnum.GS_Play)
+                            if (curState < GameStateTypeEnum.Play)
                         {
-                            HolyTech.FEvent evt = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-                            evt.AddParam("NextState", GameStateTypeEnum.GS_Play);
+                            Thanos.FEvent evt = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+                            evt.AddParam("NextState", GameStateTypeEnum.Play);
                             EventCenter.SendEvent(evt);
                         }
                         else
@@ -3454,7 +3454,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     break;
                 case BattleStateEnum.eBS_Finished://完成状态
                     {
-                        if (curState < GameStateTypeEnum.GS_Play)
+                        if (curState < GameStateTypeEnum.Play)
                         {
                             if (LoadScene.Instance != null)
                             {
@@ -3466,7 +3466,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     break;
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换CurBattleChange（未复查） 
@@ -3482,7 +3482,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             GameUserModel.Instance.GameBattleID = pMsg.battleid;
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
      //战斗基本信息
     Int32 OnNetMsg_NotifyBattleBaseInfo(System.IO.Stream stream)
@@ -3501,14 +3501,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             GameUserModel.Instance.GameBattleID = pMsg.battleid;
             GameUserModel.Instance.GameMapID = (UInt32)pMsg.mapid;
-            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ReconnectToBatttle);
+            EventCenter.Broadcast((Int32)GameEventEnum.ReconnectToBatttle);
         }
         else
         {
             //向服务器发送消息请求战斗
             HolyGameLogic.Instance.EmsgToss_AskEnterBattle(pMsg.battleid);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -3522,7 +3522,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         RoomCtrl.Instance.UpdateRoomBaseInfo(pMsg.roomid, pMsg.mapid);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换BattleSeatPosInfo（未复查）
@@ -3538,7 +3538,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         foreach (GSToGC.BattleSeatPosInfo.PosInfo posinfo in pMsg.posinfo)
         {
             UInt64 sGUID = posinfo.guid;
-            Iplayer entity = null;
+            IPlayer entity = null;
             UInt64 id = sGUID;
             if (id == 0)
             {
@@ -3548,7 +3548,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             {
                 if (!PlayerManager.Instance.AccountDic.TryGetValue(sGUID, out entity))
                 {
-                    entity = (Iplayer)PlayerManager.Instance.HandleCreateEntity(sGUID, EntityCampType.CampTypeNull);
+                    entity = (IPlayer)PlayerManager.Instance.HandleCreateEntity(sGUID, EntityCampTypeEnum.Null);
                     PlayerManager.Instance.AddAccount(sGUID, entity);
                     if (GameUserModel.Instance.IsLocalPlayer(sGUID))
                     {
@@ -3566,7 +3566,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //由匹配模式进入英雄昂选择状态时广播没用，因为此时在在RoomState注册。
 
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SeatPosUpdate); 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换NetClash（未复查）
@@ -3578,7 +3578,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         NetworkManager.Instance.canReconnect = false;
         NetworkManager.Instance.Close();
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换PingRet
@@ -3600,11 +3600,11 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         else
         {
             // ShowFPS.Instance.sSPing = ping;///////////////////////////////////////////////////////////////////////////////
-            HolyTech.FEvent eve = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_SSPingInfo);
+            Thanos.FEvent eve = new Thanos.FEvent((Int32)(Int32)GameEventEnum.GameEvent_SSPingInfo);
             eve.AddParam("ping", ping);
             EventCenter.SendEvent(eve);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyReturn(Stream stream)
@@ -3639,67 +3639,67 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         Int32 m_n32ErrorId = pMsg.errorcode;
 
-        switch ((EErrorCode)m_n32ErrorId)
+        switch ((ErrorCodeEnum)m_n32ErrorId)
         {
            
-            case EErrorCode.eEC_TheBattleUserFull:
-            case EErrorCode.eEC_BattlePDWNotMatch:
-            case EErrorCode.eEC_InvalidMapID:
-            case EErrorCode.eEC_JustInBattle:
-            case EErrorCode.eEC_AddBattleFailForLackOfGold:
-            case EErrorCode.eEC_BattleIsPlaying:
-            case EErrorCode.eEC_UserInBlackList:
-            case EErrorCode.eEC_AddBattleFailForUserFull:
-            case EErrorCode.eEC_AddBattleFailForAllFull:
-            case EErrorCode.eEC_CounterpartFriendListFull:
-            case EErrorCode.eEC_BlackListFull:
-                EventCenter.Broadcast<EErrorCode>((Int32)GameEventEnum.GameEvent_AskFriendEorr, (EErrorCode)m_n32ErrorId);
+            case ErrorCodeEnum.TheBattleUserFull:
+            case ErrorCodeEnum.BattlePDWNotMatch:
+            case ErrorCodeEnum.InvalidMapID:
+            case ErrorCodeEnum.JustInBattle:
+            case ErrorCodeEnum.AddBattleFailForLackOfGold:
+            case ErrorCodeEnum.BattleIsPlaying:
+            case ErrorCodeEnum.UserInBlackList:
+            case ErrorCodeEnum.AddBattleFailForUserFull:
+            case ErrorCodeEnum.AddBattleFailForAllFull:
+            case ErrorCodeEnum.CounterpartFriendListFull:
+            case ErrorCodeEnum.BlackListFull:
+                EventCenter.Broadcast<ErrorCodeEnum>((Int32)GameEventEnum.GameEvent_AskFriendEorr, (ErrorCodeEnum)m_n32ErrorId);
                 break;
-            case EErrorCode.eEC_JustNotInBattle:
-            case EErrorCode.eEC_YouAreNotBattleManager:
-            case EErrorCode.eEC_NotAllUserReady:
-            case EErrorCode.eEC_CampNotBalance:
-            case EErrorCode.eEC_InvalidBattlePos:
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AskBeginBattleError, (EErrorCode)m_n32ErrorId);
+            case ErrorCodeEnum.JustNotInBattle:
+            case ErrorCodeEnum.YouAreNotBattleManager:
+            case ErrorCodeEnum.NotAllUserReady:
+            case ErrorCodeEnum.CampNotBalance:
+            case ErrorCodeEnum.InvalidBattlePos:
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AskBeginBattleError, (ErrorCodeEnum)m_n32ErrorId);
                 break;
-            case EErrorCode.eEC_NullGateServer:
-            case EErrorCode.eEC_InvalidUserName:
-            case EErrorCode.eEC_InvalidUserPwd:
-            case EErrorCode.eEC_UserInfoUnComplete:
+            case ErrorCodeEnum.NullGateServer:
+            case ErrorCodeEnum.InvalidUserName:
+            case ErrorCodeEnum.InvalidUserPwd:
+            case ErrorCodeEnum.UserInfoUnComplete:
                 LoginCtrl.Instance.LoginError(m_n32ErrorId);
                 break;
-            case EErrorCode.eEC_NullUser:
+            case ErrorCodeEnum.NullUser:
                 LoginCtrl.Instance.LoginError(m_n32ErrorId);
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AskAddInBattle, (EErrorCode)m_n32ErrorId);
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (EErrorCode)m_n32ErrorId);
+                EventCenter.Broadcast((Int32)GameEventEnum.AskAddInBattle, (ErrorCodeEnum)m_n32ErrorId);
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (ErrorCodeEnum)m_n32ErrorId);
                 break;
 
-            case EErrorCode.eEC_HeroNotDead:
-            case EErrorCode.eEC_NoRebornTimes:
-            case EErrorCode.eEC_NotEnoughGold:
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (EErrorCode)m_n32ErrorId);
+            case ErrorCodeEnum.HeroNotDead:
+            case ErrorCodeEnum.NoRebornTimes:
+            case ErrorCodeEnum.NotEnoughGold:
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (ErrorCodeEnum)m_n32ErrorId);
                 break;
-            case EErrorCode.eEC_NullBattle:
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AskAddInBattle, (EErrorCode)m_n32ErrorId);
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (EErrorCode)m_n32ErrorId);
+            case ErrorCodeEnum.NullBattle:
+                EventCenter.Broadcast((Int32)GameEventEnum.AskAddInBattle, (ErrorCodeEnum)m_n32ErrorId);
+                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_NotEnoughGold, (ErrorCodeEnum)m_n32ErrorId);
                 EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_BattleUpdateRoomList);
                 break;
-            case EErrorCode.eNormal:
+            case ErrorCodeEnum.Normal:
                 break;
-            case EErrorCode.eEC_BattleClosing:
-                EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ReConnectFail);
+            case ErrorCodeEnum.BattleClosing:
+                EventCenter.Broadcast((Int32)GameEventEnum.ReConnectFail);
                 EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_BeginWaiting);
                 MsgInfoManager.Instance.ShowMsg(m_n32ErrorId);
                 break;
-            case EErrorCode.eEC_InvalidBattleID:
+            case ErrorCodeEnum.InvalidBattleID:
                 PlayerManager.Instance.CleanAccount();
 
-                HolyTech.FEvent evt = new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_Loading);
-                evt.AddParam("NextState", GameStateTypeEnum.GS_Lobby);
+                Thanos.FEvent evt = new Thanos.FEvent((Int32)(Int32)GameEventEnum.Loading);
+                evt.AddParam("NextState", GameStateTypeEnum.Lobby);
                 EventCenter.SendEvent(evt);
                 break;
-            case EErrorCode.eEC_ReEnterRoomFail:
-                EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_IntoLobby));
+            case ErrorCodeEnum.ReEnterRoomFail:
+                EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.IntoLobby));
                 break;
                 break;            
             default:
@@ -3707,7 +3707,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 break;
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyUserBaseInfo(System.IO.Stream stream)
@@ -3725,14 +3725,14 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             //设置游戏基本信息
             GameUserModel.Instance.SetGameBaseInfo(pMsg);
             //广播消息  进入游戏大厅
-            EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_IntoLobby));
+            EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.IntoLobby));
         }
         else if (sGUID > 0)
         {
             //没有昵称，进入补充玩家信息界面 此事件在LoginState中注册
-            EventCenter.SendEvent(new HolyTech.FEvent((Int32)(Int32)GameEventEnum.GameEvent_InputUserData));
+            EventCenter.SendEvent(new Thanos.FEvent((Int32)(Int32)GameEventEnum.InputUserData));
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换HeroList
@@ -3752,7 +3752,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         GameUserModel.Instance.STCTimeDiff = pMsg.timeDiff;  //ss 和 client 时差
         
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyCSHeroList(Stream stream)
@@ -3775,7 +3775,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 GameUserCtrl.Instance.DeltGetHeroInfoData(info);
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyRoomChat(Stream stream)
@@ -3790,7 +3790,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         RoomCtrl.Instance.RecvTalkMessage((uint)m_un8Seat, str);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换NotifyChooseHeroTimeEnd
@@ -3806,7 +3806,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         uint m_un8Seat = (uint)pMsg.pos;//
         int heroId = pMsg.heroid;//英雄id
         HeroCtrl.Instance.AddPreSelectHero(m_un8Seat, heroId);  
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
 
     }
 
@@ -3823,7 +3823,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         //玩家确定英雄
         HeroCtrl.Instance.AddRealSelectHero((uint)pMsg.heroposinfo.pos, pMsg.heroposinfo.heroid);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换FPInfo
@@ -3836,7 +3836,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             return PROTO_DESERIALIZE_ERROR;
         }
-        Ientity entity;
+        IEntity entity;
         UInt64 sGUID;
         sGUID = pMsg.guid;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
@@ -3929,7 +3929,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                     }
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
 
     }
 
@@ -3946,7 +3946,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             UInt64 sGUID;
             sGUID = info.guid;
-            Ientity entity;
+            IEntity entity;
             if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
             {
                 entity.SetHp((float)info.curhp);
@@ -3956,7 +3956,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
                 entity.OnUpdateHp();
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换NotifyMPInfo
@@ -3972,19 +3972,19 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             UInt64 sGUID;
             sGUID = info.guid;
-            Ientity entity;
+            IEntity entity;
             if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
             {
                 entity.SetMp((float)info.curmp);        //ToReview int->float（是否本身就是float，有没有丢失小数部分）
                 entity.SetMpMax((float)info.maxmp);     //ToReview int->float
-                if (entity is Iplayer)
+                if (entity is IPlayer)
                 {
                     BloodBarPlayer playerXueTiao = (BloodBarPlayer)entity.BloodBar;
                     playerXueTiao.UpdateMp();//实体头顶的蓝条
                 }
             }
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyHeroInfo(Stream stream)
@@ -3996,20 +3996,20 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sGUID;
         sGUID = pMsg.guid;     //Review long->ulong
-        Ientity entity = null;
+        IEntity entity = null;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             entity.SetLevel(pMsg.level);
             entity.SetExp((float)pMsg.exp);
-            Iplayer player = (Iplayer)entity;
+            IPlayer player = (IPlayer)entity;
             player.SetFuryState((EFuryState)pMsg.fury);
             BloodBarPlayer BloodBarPlayer = (BloodBarPlayer)entity.BloodBar;
             BloodBarPlayer.UpdateLevel();
             BloodBarPlayer.SetXueTiaoInfo();
-            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroInfoChange, (Iplayer)entity);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroInfoChange, (IPlayer)entity);
             //ToReview absorb1和absorb2没用上
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //战斗结束
@@ -4023,8 +4023,8 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
 
-        EventCenter.Broadcast<UInt64>((Int32)GameEventEnum.GameEvent_GameOver, pMsg.bulidguid);
-        return (Int32)EErrorCode.eNormal;
+        EventCenter.Broadcast<UInt64>((Int32)GameEventEnum.GameOver, pMsg.bulidguid);
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //主角经验
@@ -4034,7 +4034,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     {
         if (PlayerManager.Instance.LocalPlayer == null)
         {
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         GSToGC.Exp pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
@@ -4044,7 +4044,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sGUID;
         sGUID = pMsg.guid;
         PlayerManager.Instance.LocalPlayer.SetExp((float)pMsg.exp);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //主角等级
@@ -4054,7 +4054,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     Int32 OnNetMsg_NotifyLvInfo(Stream stream)
     {
         StartCoroutine(LvInfoCoroutine(stream));
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
 
@@ -4072,12 +4072,12 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         UInt64 sGUID;
         sGUID = pMsg.guid;
         Int32 level = pMsg.level;
-        Ientity entity;
+        IEntity entity;
         if (EntityManager.AllEntitys.TryGetValue(sGUID, out entity))
         {
             if (entity.Level != level)
             {
-                HolyTech.Effect.EffectManager.Instance.CreateTimeBasedEffect("effect/other/shengji", 10.0f, entity);
+                Thanos.Effect.EffectManager.Instance.CreateTimeBasedEffect("effect/other/shengji", 10.0f, entity);
 
                 yield return 1;
                 Vector3 pos = PlayerManager.Instance.LocalPlayer.RealEntity.transform.position;
@@ -4109,7 +4109,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         BattleingData.Instance.AddPlayer(sGUID, level, BattleDataType.Level);
         EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_AllPlayerLevel);
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroLvChange, (Iplayer)entity);
+        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_HeroLvChange, (IPlayer)entity);
 
     }
 
@@ -4127,7 +4127,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         {
             PlayerManager.Instance.LocalPlayer.SetFuryValue(pMsg.fury);//设置狂暴值
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换FuryState
@@ -4141,28 +4141,28 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         UInt64 sGUID;
         sGUID = (ulong)pMsg.guid;
-        Ientity entity = PlayerManager.Instance.GetEntity(sGUID);
+        IEntity entity = PlayerManager.Instance.GetEntity(sGUID);
         if (entity != null)
         {
-            Iplayer player = (Iplayer)entity;
+            IPlayer player = (IPlayer)entity;
             player.SetFuryState((EFuryState)pMsg.state);
             PlayerSkillData.Instance.SetPlayerFuryState(player, (EFuryState)pMsg.state);
-            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillCDInfo, (Iplayer)entity);
+            EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_SkillCDInfo, (IPlayer)entity);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyVoipRoomId(Message pcMsg)
     {
         long roomId = pcMsg.GetInt64();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换（见OnNotifyBornSoldierCoroutine函数）
     Int32 OnNotifyBornSoldier(Stream stream)
     {
       //  OnNotifyBornSoldierCoroutine(stream);
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     public Int32 OnNotifyBornSoldierCoroutine(Stream stream)
@@ -4193,9 +4193,9 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
     //已换
     void OnNetMsg_WarningToSelectHero()
     {
-        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.GS_Hero)
+        if (GameStateManager.Instance.GetCurState().GetStateType() == GameStateTypeEnum.Hero)
         {
-            MsgInfoManager.Instance.ShowMsg((int)ERROR_TYPE.eT_WarnningToSelectHero);
+            MsgInfoManager.Instance.ShowMsg((int)ErrorTypeEnum.WarnningToSelectHero);
         }
     }
 
@@ -4212,13 +4212,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         if (pMsg.ifComp || lastId == 0)//finish all or first 
         {
             SceneGuideTaskManager.Instance().StartAsignedStep(1001);
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
         else if (lastId != 0)
         {//这个是新手引导接着上面一步            
             SceneGuideTaskManager.Instance().ReConnectTask(lastId);
         }
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //ToReviw 未换（消息参数不对应）
@@ -4277,7 +4277,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             return PROTO_DESERIALIZE_ERROR;
         }
 
-        EventCenter.Broadcast((Int32)GameEventEnum.GameEvent_ReConnectSuccess);
+        EventCenter.Broadcast((Int32)GameEventEnum.ReConnectSuccess);
         BattleStateEnum battleState = (BattleStateEnum)pMsg.battlestate;
         Dictionary<uint, int> heroSelectDic = new Dictionary<uint, int>();
         Dictionary<uint, bool> heroIsSelectDic = new Dictionary<uint, bool>();
@@ -4287,10 +4287,10 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             UInt64 guid;
             guid = info.guid;
             int heroId = (int)info.heroid;      //ToReview uint->int
-            Iplayer player = null;
+            IPlayer player = null;
             if (!PlayerManager.Instance.AccountDic.TryGetValue(guid, out player))
             {
-                player = (Iplayer)PlayerManager.Instance.HandleCreateEntity(guid, EntityCampType.CampTypeNull);
+                player = (IPlayer)PlayerManager.Instance.HandleCreateEntity(guid, EntityCampTypeEnum.Null);
             }
             player.SetReconnectPlayerInfo((uint)seat, info.nickname);
             if (!PlayerManager.Instance.AccountDic.ContainsKey(guid))
@@ -4339,7 +4339,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             }
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //已换
@@ -4348,7 +4348,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         if (HolyTechGameBase.Instance.SkipNewsGuide)
         {
             IGuideTaskManager.Instance().SetTaskIsFinish(true, true);
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         }
 
         GSToGC.GuideSteps pMsg;
@@ -4387,7 +4387,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
 
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifySendSoldierTip(Stream stream)
@@ -4399,7 +4399,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
 
         if (SceneGuideTaskManager.Instance().IsNewsGuide() != SceneGuideTaskManager.SceneGuideType.NoGuide)
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         int type = pMsg.errocode;
         int camp = pMsg.campid;
         string campTip = null;
@@ -4422,7 +4422,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             MsgInfoManager.Instance.ShowMsg(type); //“战斗开始”
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifySecondaryGuide(Stream stream)
@@ -4434,7 +4434,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
 
         if (SceneGuideTaskManager.Instance().IsNewsGuide() != SceneGuideTaskManager.SceneGuideType.NoGuide)
-            return (Int32)EErrorCode.eNormal;
+            return (Int32)ErrorCodeEnum.Normal;
         SecondaryGuideManager.Instance.CleanAll();
         foreach (GSToGC.SecondGuideTask.task_info info in pMsg.taskinfo)
         {
@@ -4444,7 +4444,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
         }
         SecondaryGuideManager.Instance.InitTask();
         SecondaryGuideManager.Instance.StartAllTask();
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
     //通知匹配队伍基本信息
     Int32 OnNetMsg_NotifyMatchTeamBaseInfo(Stream stream)
@@ -4467,7 +4467,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             TeamMatchCtrl.Instance.Exit();//隐藏界面
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //匹配队伍玩家信息
@@ -4489,7 +4489,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             TeamMatchCtrl.Instance.DelTeammate(pMsg.nickname);
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //匹配界面显示
@@ -4512,13 +4512,13 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
             TeamMatchCtrl.Instance.StopMatchSearching();//广播消息，隐藏匹配界面
         }
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     Int32 OnNetMsg_NotifyMatchInviteJoin(Stream stream)
     {
-        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.GS_Lobby)
-            return (Int32)EErrorCode.eNormal;
+        if (GameStateManager.Instance.GetCurState().GetStateType() != GameStateTypeEnum.Lobby)
+            return (Int32)ErrorCodeEnum.Normal;
 
         GSToGC.NotifyMatchInviteJoin pMsg;
         if (!ProtobufMsg.MessageDecode(out pMsg, stream))
@@ -4528,7 +4528,7 @@ public partial class HolyGameLogic : UnitySingleton<HolyGameLogic>
 
         TeamMatchCtrl.Instance.ShowInvitation(pMsg.nickname);
 
-        return (Int32)EErrorCode.eNormal;
+        return (Int32)ErrorCodeEnum.Normal;
     }
 
     //工具函数GSToGC.Pos转Vector3（会将厘米转成米）

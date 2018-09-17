@@ -2,7 +2,7 @@
 using UnityEngine;
 using GameDefine;
 
-namespace HolyTech.View
+namespace Thanos.View
 {
     public enum EMessageType
     {
@@ -26,20 +26,20 @@ namespace HolyTech.View
             mResident = false;
         }
 
-        public Callback<bool> m_Callback = null;
+        public Action<bool> m_Callback = null;
         ////////////////////////////继承接口/////////////////////////
         //类对象初始化
         public override void Init()
         {
             EventCenter.AddListener<EMessageType>((Int32)GameEventEnum.GameEvent_ShowMessage, ShowMessage);
-            EventCenter.AddListener<EMessageType, string, Callback<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
+            EventCenter.AddListener<EMessageType, string, Action<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
         }
 
         //类对象释放
         public override void Realse()
         {
             EventCenter.RemoveListener<EMessageType>((Int32)GameEventEnum.GameEvent_ShowMessage, ShowMessage);
-            EventCenter.RemoveListener<EMessageType, string, Callback<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
+            EventCenter.RemoveListener<EMessageType, string, Action<bool>>((Int32)GameEventEnum.GameEvent_ShowLogicMessage, ShowMessage);
         }
 
         //窗口控件初始化
@@ -77,20 +77,20 @@ namespace HolyTech.View
         //游戏事件注册
         protected override void OnAddListener()
         {
-            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
-            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReConnectSuccess, Hide);
-            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_ReConnectFail, Hide);
-            EventCenter.AddListener((Int32)GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
+            EventCenter.AddListener((Int32)GameEventEnum.ConnectServerSuccess, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.ReConnectSuccess, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.ReConnectFail, Hide);
+            EventCenter.AddListener((Int32)GameEventEnum.BatttleFinished, BatttleFinished);
             
         }
 
         //游戏事件注消
         protected override void OnRemoveListener()
         {
-            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ConnectServerSuccess, Hide);
-            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReConnectSuccess, Hide);
-            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_ReConnectFail, Hide);
-            EventCenter.RemoveListener((Int32)GameEventEnum.GameEvent_BatttleFinished, BatttleFinished);
+            EventCenter.RemoveListener((Int32)GameEventEnum.ConnectServerSuccess, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.ReConnectSuccess, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.ReConnectFail, Hide);
+            EventCenter.RemoveListener((Int32)GameEventEnum.BatttleFinished, BatttleFinished);
         }
 
         //显示
@@ -121,7 +121,7 @@ namespace HolyTech.View
                 }
             }
         }
-        public void ShowMessage(EMessageType st, string str, Callback<bool> callback)
+        public void ShowMessage(EMessageType st, string str, Action<bool> callback)
         {
             if (mVisible)
                 return;

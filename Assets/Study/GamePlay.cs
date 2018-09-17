@@ -1,7 +1,7 @@
-﻿using Common.Tools;
+﻿using Thanos.Tools;
 using GSToGC;
-using HolyTech;
-using HolyTech.Network;
+using Thanos;
+using Thanos.Network;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -358,6 +358,7 @@ public enum SkillTypeEnum
     SKILL_TYPE5,
     SKILL_TYPEABSORB1,
     SKILL_TYPEABSORB2,
+    FixDistanceArea,
 }
 
 public enum ShortCutBarBtnEnum

@@ -1,8 +1,8 @@
-﻿using Common.Tools;
-using HolyTech;
-using HolyTech.Ctrl;
-using HolyTech.GameData;
-using HolyTech.Network;
+﻿using Thanos.Tools;
+using Thanos;
+using Thanos.Ctrl;
+using Thanos.GameData;
+using Thanos.Network;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -117,13 +117,13 @@ public class GameStart : HolyTechGameBase {
         if (mIsDownTime)
         {
             mStartTime += Time.deltaTime;
-            mTimeLabel.text = CTools.ShowCount((int)mStartTime);
+            mTimeLabel.text = GameUtils.ShowCount((int)mStartTime);
         }
         if (mIsSelectHero)
         {
             mStartTime -= Time.deltaTime;
             if (mStartTime <= 0) return;
-            mSelectTime.text = CTools.ShowCount((int)mStartTime);
+            mSelectTime.text = GameUtils.ShowCount((int)mStartTime);
         }
         if (mIsLoading)
         {

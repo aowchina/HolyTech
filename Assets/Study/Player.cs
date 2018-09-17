@@ -1,6 +1,6 @@
 ﻿using GSToGC;
-using HolyTech;
-using HolyTech.GameEntity;
+using Thanos;
+using Thanos.GameEntity;
 using System;
 using System.Collections;
 using System.Collections.Generic;

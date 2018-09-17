@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
-using HolyTech.GameState;
-using HolyTech.Resource;
-using HolyTech.View;
+using Thanos.GameState;
+using Thanos.Resource;
+using Thanos.View;
 
 public class HolyTechUI : MonoBehaviour
 {
@@ -146,7 +146,7 @@ public class HolyTechUI : MonoBehaviour
 	{
 		switch (GameStateManager.Instance.GetCurState().GetStateType())
 		{
-		case GameStateTypeEnum.GS_Login:
+		case GameStateTypeEnum.Login:
 		{
 			BaseWindow pWindow = WindowManager.Instance.GetWindow(EWindowType.EWT_LoginWindow);
 			if (pWindow != null && pWindow.GetRoot()!=null)
@@ -156,7 +156,7 @@ public class HolyTechUI : MonoBehaviour
 			}
 			return null;
 		}
-		case GameStateTypeEnum.GS_Play:
+		case GameStateTypeEnum.Play:
         {
             BaseWindow pWindow = WindowManager.Instance.GetWindow(EWindowType.EWT_GamePlayWindow);
             if (pWindow != null && pWindow.GetRoot() != null)
@@ -165,7 +165,7 @@ public class HolyTechUI : MonoBehaviour
             }
             return null;
         }
-		case GameStateTypeEnum.GS_Over:
+		case GameStateTypeEnum.Over:
 		{
 			BaseWindow pWindow = WindowManager.Instance.GetWindow(EWindowType.EWT_ScoreWindow);
 			if (pWindow != null && pWindow.GetRoot() != null)

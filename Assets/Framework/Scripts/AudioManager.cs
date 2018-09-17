@@ -3,21 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using GameDefine;
-using HolyTech.Resource;
-using HolyTech.Model;
+using Thanos.Resource;
+using Thanos.Model;
 
-namespace HolyTech {
-	public class AudioManager {
-		private static AudioManager instance = null;
+namespace Thanos {
+    public class AudioManager : Singleton<AudioManager>{
+        public AudioManager()
+        {
+            InitAudio();
+        }
 
-		public static AudioManager Instance {
-			get {
-				if (instance == null) {
-					instance = new AudioManager ();
-				}
-				return instance;
-			}
-		}
+        private void InitAudio()
+        {
+            HeroLinesAudioDict = new Dictionary<UInt64, AudioSource>();
+            GameKillClipList = new List<AudioClip>();
+            EffectAudioSourceQueue = new Queue<AudioSource>(Settings.MaxEffectAudioSource);
+            LongVoiceAudioSourceQueue = new Queue<AudioSource>(Settings.LongVoiceAudioSourceQueue);
+
+            for (int im = 0; im < Settings.LongVoiceAudioSourceQueue; im++)
+            {
+                AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+                ad.volume = Settings.AudioVolume;
+                LongVoiceAudioSourceQueue.Enqueue(ad);
+            }
+            HeroMoveAudio = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+            HeroMoveAudio.volume = Settings.AudioVolume;
+            HeroMoveAudio.loop = true;
+            HeroMoveAudio.playOnAwake = false;
+
+            LoopAudioSource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+            LoopAudioSource.loop = true;
+            LoopAudioSource.playOnAwake = false;
+            LoopAudioSource.volume = Settings.AudioVolume;
+
+            GameKillAudioSource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+            GameKillAudioSource.volume = Settings.AudioVolume;
+
+            HeroGetMoneySource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+            HeroGetMoneySource.volume = Settings.AudioVolume;
+
+
+            GuideVoice = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource>();
+            GuideVoice.volume = Settings.AudioVolume;
+        }
 
 		public AudioSource LoopAudioSource {
 			private set;
@@ -68,49 +96,6 @@ namespace HolyTech {
 		public AudioSource HeroGetMoneySource {
 			private set;
 			get;
-		}
-
-		private AudioManager () { 
-			InitAudio ();
-		}
-
-		private void InitAudio () {
-			HeroLinesAudioDict = new Dictionary<UInt64, AudioSource> ();
-			GameKillClipList = new List<AudioClip> ();
-			EffectAudioSourceQueue = new Queue<AudioSource> (Settings.MaxEffectAudioSource);
-			LongVoiceAudioSourceQueue = new Queue<AudioSource> (Settings.LongVoiceAudioSourceQueue);
-            
-            //for (int im = 0; im < Settings.MaxEffectAudioSource; im++) {
-            //    AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-            //    if (ad == null) return;
-            //    ad.volume = Settings.AudioVolume;
-            //    EffectAudioSourceQueue.Enqueue (ad);
-            //}
-
-			for (int im = 0; im < Settings.LongVoiceAudioSourceQueue; im++) {
-                AudioSource ad = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-				ad.volume = Settings.AudioVolume;
-				LongVoiceAudioSourceQueue.Enqueue (ad);
-			}
-            HeroMoveAudio = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-			HeroMoveAudio.volume = Settings.AudioVolume;
-			HeroMoveAudio.loop = true;
-			HeroMoveAudio.playOnAwake = false;
-
-            LoopAudioSource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-			LoopAudioSource.loop = true;
-			LoopAudioSource.playOnAwake = false;
-			LoopAudioSource.volume = Settings.AudioVolume;
-
-            GameKillAudioSource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-			GameKillAudioSource.volume = Settings.AudioVolume;
-
-            HeroGetMoneySource = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-			HeroGetMoneySource.volume = Settings.AudioVolume;
-
-
-            GuideVoice = HolyTechGameBase.Instance.gameObject.AddComponent<AudioSource> ();
-			GuideVoice.volume = Settings.AudioVolume;
 		}
 
 		public void OnUpdate () {

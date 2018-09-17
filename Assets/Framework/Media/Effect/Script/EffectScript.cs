@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using HolyTech.Effect;
+using Thanos.Effect;
 
 public class EffectScript : MonoBehaviour
 {

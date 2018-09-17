@@ -25,12 +25,12 @@ public class heroLifeBar : MonoBehaviour {
         return ff;
     }
 
-    public virtual void UpdateHp(int value)
+    void UpdateHp(int value)
     {
         hpGreenSprite.fillAmount = value / 100.0f;
     }
 
-    public virtual void UpdateMp(int value)
+    void UpdateMp(int value)
     {
         mpGreenSprite.fillAmount = value / 100.0f;
     }

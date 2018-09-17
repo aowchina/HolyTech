@@ -1,5 +1,5 @@
 ﻿using GameDefine;
-using HolyTech.GameEntity;
+using Thanos.GameEntity;
 using System;
 using System.Collections;
 using System.Collections.Generic;

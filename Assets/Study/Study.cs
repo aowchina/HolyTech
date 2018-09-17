@@ -1,4 +1,4 @@
-﻿using HolyTech.Resource;
+﻿using Thanos.Resource;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
