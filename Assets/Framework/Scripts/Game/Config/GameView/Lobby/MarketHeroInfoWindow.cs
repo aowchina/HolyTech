@@ -3,7 +3,7 @@ using System;
 using GameDefine;
 using Thanos.Ctrl;
 using System.Linq;
-
+using Thanos.Model;
 
 namespace Thanos.View
 {
